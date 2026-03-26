@@ -15,6 +15,11 @@ import TouristDashboard from './pages/TouristDashboard';
 import GuideRegistration from './pages/GuideRegistration';
 import GuideDashboard from './pages/GuideDashboard';
 import AdminPanel from './pages/AdminPanel';
+import HelpCenterPage from './pages/HelpCenterPage';
+import SafetyPage from './pages/SafetyPage';
+import CancellationPage from './pages/CancellationPage';
+import TermsPage from './pages/TermsPage';
+import PrivacyPage from './pages/PrivacyPage';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -59,6 +64,11 @@ export default function App() {
               <Route path="/dashboard" element={<TouristDashboard />} />
               <Route path="/guide-register" element={<GuideRegistration />} />
               <Route path="/guide-dashboard" element={<GuideDashboard />} />
+              <Route path="/help" element={<HelpCenterPage />} />
+              <Route path="/safety" element={<SafetyPage />} />
+              <Route path="/cancellation" element={<CancellationPage />} />
+              <Route path="/terms" element={<TermsPage />} />
+              <Route path="/privacy" element={<PrivacyPage />} />
             </Route>
 
             {/* Chat - no footer */}

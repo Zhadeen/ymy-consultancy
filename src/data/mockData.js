@@ -13,8 +13,12 @@ export const GUIDE_PHOTOS = [
   'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=400&h=400&fit=crop&crop=face',
 ];
 
-export const CITIES = ['Paris', 'Tokyo', 'Rome', 'Barcelona', 'Istanbul', 'Marrakech', 'Bangkok', 'Lisbon', 'Prague', 'Dubai', 'New York', 'London'];
-export const LANGUAGES = ['English', 'French', 'Spanish', 'Japanese', 'Italian', 'Turkish', 'Arabic', 'Thai', 'Portuguese', 'German', 'Mandarin', 'Hindi'];
+export const CITIES = [
+  'Argentina', 'Australia', 'Bangkok', 'Barcelona', 'Brazil', 'Canada', 'Chile', 'China', 'Colombia', 'Cuba', 'Dubai', 'Egypt', 'Fiji', 'France', 'Germany', 'India', 'Israel', 'Istanbul', 'Italy', 'Jamaica', 'Japan', 'Jordan', 'Kenya', 'Lisbon', 'London', 'Marrakech', 'Mexico', 'Morocco', 'New Zealand', 'New York', 'Nigeria', 'Papua New Guinea', 'Paris', 'Peru', 'Prague', 'Qatar', 'Rome', 'Russia', 'Samoa', 'Saudi Arabia', 'Singapore', 'South Africa', 'Tokyo', 'Turkey', 'UAE', 'UK', 'USA'
+];
+export const LANGUAGES = [
+  'Afrikaans', 'Alsatian', 'Arabic', 'Armenian', 'Aymara', 'Bengali', 'Berber (Tamazight)', 'Cantonese', 'Cree', 'English', 'Fijian', 'French', 'French Creole', 'German', 'Gujarati', 'Hausa', 'Hebrew', 'Hindi', 'Hiri Motu', 'Igbo', 'Italian', 'Jamaican Patois', 'Japanese', 'Kikuyu', 'Kurdish', 'Malay', 'Mandarin', 'Mapudungun', 'Mayan', 'Māori', 'Nahuatl', 'Portuguese', 'Quechua', 'Russian', 'Samoan', 'Scottish Gaelic', 'Shanghainese', 'Sicilian', 'Spanish', 'Swahili', 'Tamil', 'Tatar', 'Thai', 'Tok Pisin', 'Turkish', 'Urdu', 'Wayuu', 'Welsh', 'Xhosa', 'Yoruba', 'Zulu'
+];
 
 export const mockGuides = [
   {

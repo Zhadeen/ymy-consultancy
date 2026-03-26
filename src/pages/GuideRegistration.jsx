@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { User, Camera, FileText, DollarSign, ChevronRight, ChevronLeft, Globe, CheckCircle2 } from 'lucide-react';
 import { LANGUAGES, CITIES } from '../data/mockData';
 import ScrollReveal from '../components/common/ScrollReveal';
+import logo from '../assets/logo.png';
 
 const steps = ['Personal Info', 'Photo', 'Bio & Languages', 'Pricing', 'Review'];
 
@@ -63,7 +64,7 @@ export default function GuideRegistration() {
       <div className="max-w-2xl mx-auto px-4 sm:px-6 py-12">
         <ScrollReveal>
           <div className="text-center mb-10">
-            <Globe className="w-12 h-12 text-gold mx-auto mb-4" />
+            <img src={logo} alt="YMY Consultancy Logo" className="h-16 w-auto object-contain mx-auto mb-4 drop-shadow-lg" />
             <h1 className="font-heading text-3xl sm:text-4xl font-bold text-cream mb-2">Become a Guide</h1>
             <p className="text-muted">Share your expertise. Earn on your schedule. Join a global community.</p>
           </div>

@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Globe, ChevronDown } from 'lucide-react';
+import { Menu, X, ChevronDown } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import logo from '../../assets/logo.png';
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -40,12 +41,8 @@ export default function Navbar() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-20">
             {/* Logo */}
-            <Link to="/" className="flex items-center gap-2 group">
-              <Globe className="w-8 h-8 text-gold transition-transform duration-300 group-hover:rotate-12" />
-              <div>
-                <span className="text-xl font-heading font-bold text-cream tracking-wide">YMY</span>
-                <span className="text-xs text-muted block -mt-1 tracking-[0.2em] uppercase">Consultancy</span>
-              </div>
+            <Link to="/" className="flex items-center group py-2">
+              <img src={logo} alt="YMY Consultancy Logo" className="h-14 md:h-16 w-auto object-contain transition-transform duration-300 group-hover:scale-105" />
             </Link>
 
             {/* Desktop Nav */}
