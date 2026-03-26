@@ -11,6 +11,7 @@ export default function RegisterPage() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const { register, loginWithGoogle } = useAuth();
@@ -19,8 +20,16 @@ export default function RegisterPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!name || !email || !password) { setError('Please fill in all fields'); return; }
+    if (!agreedToTerms) { setError('Please agree to the Terms of Service and Privacy Policy'); return; }
     if (password !== confirmPassword) { setError('Passwords do not match'); return; }
-    if (password.length < 8) { setError('Password must be at least 8 characters'); return; }
+    
+    // Password complexity check
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/;
+    if (!passwordRegex.test(password)) {
+      setError('Password must be at least 6 characters and include uppercase, lowercase, a number, and a special character.');
+      return;
+    }
+
     try {
       await register(name, email, password, 'tourist');
       setSuccess(true);
@@ -115,9 +124,16 @@ export default function RegisterPage() {
               <Lock size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-dark" />
               <input type="password" placeholder="Confirm password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} className="input-dark !pl-10" id="register-confirm" />
             </div>
-            <label className="flex items-start gap-2 cursor-pointer">
-              <input type="checkbox" className="accent-gold w-4 h-4 mt-1" />
-              <span className="text-xs text-muted">I agree to the <a href="#" className="text-gold hover:underline">Terms of Service</a> and <a href="#" className="text-gold hover:underline">Privacy Policy</a></span>
+            <label className="flex items-start gap-2 cursor-pointer group">
+              <input 
+                type="checkbox" 
+                className="accent-gold w-4 h-4 mt-0.5" 
+                checked={agreedToTerms}
+                onChange={(e) => setAgreedToTerms(e.target.checked)}
+              />
+              <span className="text-[11px] text-muted leading-tight group-hover:text-cream transition-colors">
+                I agree to the <a href="#" className="text-gold hover:underline">Terms of Service</a> and <a href="#" className="text-gold hover:underline">Privacy Policy</a>
+              </span>
             </label>
             <button type="submit" className="btn-gold w-full !py-3.5 text-base" id="register-submit-btn">
               Create Account
