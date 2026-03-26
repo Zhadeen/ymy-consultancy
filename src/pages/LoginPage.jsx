@@ -10,7 +10,10 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
-  const { login, loginWithGoogle } = useAuth();
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [resetEmail, setResetEmail] = useState('');
+  const [resetSent, setResetSent] = useState(false);
+  const { login, loginWithGoogle, resetPassword } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -28,6 +31,17 @@ export default function LoginPage() {
     try {
       await loginWithGoogle();
       navigate('/dashboard');
+    } catch (err) {
+      setError(err.message.replace('Firebase: ', ''));
+    }
+  };
+
+  const handleResetPassword = async (e) => {
+    e.preventDefault();
+    if (!resetEmail) return;
+    try {
+      await resetPassword(resetEmail);
+      setResetSent(true);
     } catch (err) {
       setError(err.message.replace('Firebase: ', ''));
     }
@@ -86,7 +100,7 @@ export default function LoginPage() {
                 <input type="checkbox" className="accent-gold w-4 h-4" />
                 <span className="text-sm text-muted">Remember me</span>
               </label>
-              <a href="#" className="text-sm text-gold hover:underline">Forgot password?</a>
+              <a href="#" onClick={(e) => { e.preventDefault(); setShowForgotPassword(true); }} className="text-sm text-gold hover:underline">Forgot password?</a>
             </div>
             <button type="submit" className="btn-gold w-full !py-3.5 text-base" id="login-submit-btn">
               Sign In
@@ -98,6 +112,38 @@ export default function LoginPage() {
             <Link to="/register" className="text-gold hover:underline font-medium">Create one</Link>
           </p>
         </div>
+
+        {/* Forgot Password Modal */}
+        {showForgotPassword && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center px-4" onClick={() => { setShowForgotPassword(false); setResetSent(false); }}>
+            <div className="absolute inset-0 bg-black/60" />
+            <div className="relative card-dark p-8 w-full max-w-sm" onClick={e => e.stopPropagation()}>
+              {resetSent ? (
+                <div className="text-center">
+                  <div className="w-16 h-16 bg-green-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Mail size={28} className="text-green-400" />
+                  </div>
+                  <h3 className="font-heading text-xl font-bold text-cream mb-2">Reset Link Sent ✨</h3>
+                  <p className="text-muted text-sm mb-6">Check your inbox at <span className="text-gold">{resetEmail}</span> for a password reset link.</p>
+                  <button onClick={() => { setShowForgotPassword(false); setResetSent(false); }} className="btn-gold w-full !py-3">Done</button>
+                </div>
+              ) : (
+                <>
+                  <h3 className="font-heading text-xl font-bold text-cream mb-2">Reset Password</h3>
+                  <p className="text-muted text-sm mb-6">Enter your email and we'll send you a reset link.</p>
+                  <form onSubmit={handleResetPassword} className="space-y-4">
+                    <div className="relative">
+                      <Mail size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-dark" />
+                      <input type="email" placeholder="Email address" value={resetEmail} onChange={e => setResetEmail(e.target.value)} className="input-dark !pl-10" autoFocus />
+                    </div>
+                    <button type="submit" className="btn-gold w-full !py-3">Send Reset Link</button>
+                    <button type="button" onClick={() => setShowForgotPassword(false)} className="btn-ghost w-full !py-3">Cancel</button>
+                  </form>
+                </>
+              )}
+            </div>
+          </div>
+        )}
 
 
       </ScrollReveal>

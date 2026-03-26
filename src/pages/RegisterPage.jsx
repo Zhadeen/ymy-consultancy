@@ -12,6 +12,7 @@ export default function RegisterPage() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
   const { register, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
 
@@ -22,7 +23,7 @@ export default function RegisterPage() {
     if (password.length < 8) { setError('Password must be at least 8 characters'); return; }
     try {
       await register(name, email, password, 'tourist');
-      navigate('/dashboard');
+      setSuccess(true);
     } catch (err) {
       setError(err.message.replace('Firebase: ', ''));
     }
@@ -40,6 +41,27 @@ export default function RegisterPage() {
   return (
     <main className="pt-20 min-h-screen bg-dark-900 flex items-center justify-center px-4 py-12">
       <ScrollReveal className="w-full max-w-md">
+        {success ? (
+          <div className="text-center">
+            <div className="card-dark p-10">
+              <div className="w-20 h-20 bg-green-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Mail size={36} className="text-green-400" />
+              </div>
+              <h2 className="font-heading text-2xl font-bold text-cream mb-3">Check Your Email ✨</h2>
+              <p className="text-muted text-sm mb-6 leading-relaxed">
+                We've sent a verification link to <span className="text-gold font-medium">{email}</span>. 
+                Please check your inbox and click the link to verify your account.
+              </p>
+              <Link to="/login" className="btn-gold w-full block text-center !py-3.5">
+                Continue to Sign In
+              </Link>
+              <p className="text-muted-dark text-xs mt-4">
+                Didn't receive the email? Check your spam folder.
+              </p>
+            </div>
+          </div>
+        ) : (
+        <>
         <div className="text-center mb-8">
           <Link to="/" className="inline-flex items-center justify-center mb-6">
             <img src={logo} alt="YMY Consultancy Logo" className="h-16 w-auto object-contain drop-shadow-lg" />
@@ -107,6 +129,8 @@ export default function RegisterPage() {
             <Link to="/login" className="text-gold hover:underline font-medium">Sign in</Link>
           </p>
         </div>
+        </>
+        )}
       </ScrollReveal>
     </main>
   );

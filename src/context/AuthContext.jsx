@@ -6,7 +6,9 @@ import {
   onAuthStateChanged,
   updateProfile,
   signInWithPopup,
-  GoogleAuthProvider
+  GoogleAuthProvider,
+  sendEmailVerification,
+  sendPasswordResetEmail
 } from 'firebase/auth';
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { auth, db } from '../config/firebase';
@@ -80,6 +82,9 @@ export function AuthProvider({ children }) {
       displayName: name
     });
 
+    // Send email verification
+    await sendEmailVerification(userCredential.user);
+
     await setDoc(doc(db, 'users', userCredential.user.uid), {
       name,
       email,
@@ -90,12 +95,16 @@ export function AuthProvider({ children }) {
     return userCredential;
   };
 
+  const resetPassword = async (email) => {
+    return sendPasswordResetEmail(auth, email);
+  };
+
   const logout = async () => {
     return signOut(auth);
   };
 
   return (
-    <AuthContext.Provider value={{ user, isGuide, isAdmin, loading, login, loginWithGoogle, register, logout }}>
+    <AuthContext.Provider value={{ user, isGuide, isAdmin, loading, login, loginWithGoogle, register, logout, resetPassword }}>
       {!loading && children}
     </AuthContext.Provider>
   );
