@@ -54,7 +54,12 @@ export function AuthProvider({ children }) {
   }, []);
 
   const login = async (email, password) => {
-    return signInWithEmailAndPassword(auth, email, password);
+    const result = await signInWithEmailAndPassword(auth, email, password);
+    if (!result.user.emailVerified) {
+      await signOut(auth);
+      throw new Error('Please verify your email before signing in. Check your inbox for the verification link.');
+    }
+    return result;
   };
 
   const loginWithGoogle = async () => {
