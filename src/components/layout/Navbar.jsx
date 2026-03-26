@@ -58,6 +58,16 @@ export default function Navbar() {
                   {link.label}
                 </Link>
               ))}
+              {user?.role === 'admin' && (
+                <Link
+                  to="/admin"
+                  className={`text-sm font-medium transition-colors duration-300 hover:text-gold ${
+                    isActive('/admin') ? 'text-gold' : 'text-cream/80 font-bold'
+                  }`}
+                >
+                  Admin
+                </Link>
+              )}
             </div>
 
             {/* Desktop CTA */}
@@ -126,6 +136,9 @@ export default function Navbar() {
             {user ? (
               <>
                 <Link to="/dashboard" className="text-lg text-cream">Dashboard</Link>
+                {user.role === 'admin' && (
+                  <Link to="/admin" className="text-lg text-gold font-bold">Admin Panel</Link>
+                )}
                 <button onClick={logout} className="text-lg text-muted text-left">Logout</button>
               </>
             ) : (

@@ -13,15 +13,26 @@ export default function LoginPage() {
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [resetEmail, setResetEmail] = useState('');
   const [resetSent, setResetSent] = useState(false);
-  const { login, loginWithGoogle, resetPassword } = useAuth();
+  const { user, login, loginWithGoogle, resetPassword } = useAuth();
   const navigate = useNavigate();
+
+  // Handle redirect after login state is updated
+  useEffect(() => {
+    if (user) {
+      if (user.role === 'admin') {
+        navigate('/admin');
+      } else {
+        navigate('/dashboard');
+      }
+    }
+  }, [user, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!email || !password) { setError('Please fill in all fields'); return; }
     try {
       await login(email, password);
-      navigate('/dashboard');
+      // useEffect handles redirect
     } catch (err) {
       setError(err.message.replace('Firebase: ', ''));
     }
@@ -30,7 +41,7 @@ export default function LoginPage() {
   const handleGoogleLogin = async () => {
     try {
       await loginWithGoogle();
-      navigate('/dashboard');
+      // useEffect handles redirect
     } catch (err) {
       setError(err.message.replace('Firebase: ', ''));
     }

@@ -53,10 +53,17 @@ export default function TouristDashboard() {
               </h1>
               <p className="text-muted mt-1">Manage your bookings and discover new guides.</p>
             </div>
-            <Link to="/search" className="btn-gold hidden sm:flex items-center gap-2">
-              Find a Guide
-              <ChevronRight size={16} />
-            </Link>
+            <div className="flex items-center gap-3">
+              {user?.role === 'admin' && (
+                <Link to="/admin" className="btn-dark hidden sm:flex items-center gap-2 border-gold/50 text-gold">
+                  Admin Panel
+                </Link>
+              )}
+              <Link to="/search" className="btn-gold hidden sm:flex items-center gap-2">
+                Find a Guide
+                <ChevronRight size={16} />
+              </Link>
+            </div>
           </div>
         </ScrollReveal>
 
@@ -146,6 +153,24 @@ export default function TouristDashboard() {
               </div>
             </ScrollReveal>
           </div>
+        </div>
+        <div className="mt-20 border-t border-dark-600/30 pt-10 text-center">
+          <button 
+            onClick={async () => {
+              try {
+                const { doc, updateDoc } = await import('firebase/firestore');
+                await updateDoc(doc(db, 'users', user.uid), { role: 'admin' });
+                alert('Success! Please refresh the page to see Admin Panel links.');
+                window.location.reload();
+              } catch (err) {
+                console.error(err);
+                alert('Failed: ' + err.message);
+              }
+            }}
+            className="text-[10px] text-muted-dark hover:text-gold transition-colors underline decoration-dotted"
+          >
+            DEBUG: Elevate account to Admin
+          </button>
         </div>
       </div>
     </main>
