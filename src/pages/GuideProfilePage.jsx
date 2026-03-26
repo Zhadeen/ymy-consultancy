@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { MapPin, Languages, Calendar, Clock, BadgeCheck, Award, MessageSquare, ChevronLeft, ChevronRight, Star, Users } from 'lucide-react';
 import { mockReviews } from '../data/mockData';

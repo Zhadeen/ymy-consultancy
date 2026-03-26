@@ -20,6 +20,16 @@ import SafetyPage from './pages/SafetyPage';
 import CancellationPage from './pages/CancellationPage';
 import TermsPage from './pages/TermsPage';
 import PrivacyPage from './pages/PrivacyPage';
+import SeedData from './components/common/SeedData';
+import { useAuth } from './context/AuthContext';
+import { Navigate } from 'react-router-dom';
+
+function ProtectedRoute({ children, role }) {
+  const { user, loading } = useAuth();
+  if (loading) return null;
+  if (!user || (role && user.role !== role)) return <Navigate to="/login" />;
+  return children;
+}
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -78,9 +88,17 @@ export default function App() {
 
             {/* Admin - no footer */}
             <Route element={<ChatLayout />}>
-              <Route path="/admin" element={<AdminPanel />} />
+              <Route 
+                path="/admin" 
+                element={
+                  <ProtectedRoute role="admin">
+                    <AdminPanel />
+                  </ProtectedRoute>
+                } 
+              />
             </Route>
           </Routes>
+          <SeedData />
         </BookingProvider>
       </AuthProvider>
     </BrowserRouter>
