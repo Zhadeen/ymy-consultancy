@@ -154,24 +154,6 @@ export default function TouristDashboard() {
             </ScrollReveal>
           </div>
         </div>
-        <div className="mt-20 border-t border-dark-600/30 pt-10 text-center">
-          <button 
-            onClick={async () => {
-              try {
-                const { doc, updateDoc } = await import('firebase/firestore');
-                await updateDoc(doc(db, 'users', user.uid), { role: 'admin' });
-                alert('Success! Please refresh the page to see Admin Panel links.');
-                window.location.reload();
-              } catch (err) {
-                console.error(err);
-                alert('Failed: ' + err.message);
-              }
-            }}
-            className="text-[10px] text-muted-dark hover:text-gold transition-colors underline decoration-dotted"
-          >
-            DEBUG: Elevate account to Admin
-          </button>
-        </div>
       </div>
     </main>
   );

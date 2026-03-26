@@ -20,7 +20,6 @@ import SafetyPage from './pages/SafetyPage';
 import CancellationPage from './pages/CancellationPage';
 import TermsPage from './pages/TermsPage';
 import PrivacyPage from './pages/PrivacyPage';
-import SeedData from './components/common/SeedData';
 import { useAuth } from './context/AuthContext';
 import { Navigate } from 'react-router-dom';
 
@@ -98,7 +97,6 @@ export default function App() {
               />
             </Route>
           </Routes>
-          <SeedData />
         </BookingProvider>
       </AuthProvider>
     </BrowserRouter>
