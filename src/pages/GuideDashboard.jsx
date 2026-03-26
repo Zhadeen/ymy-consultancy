@@ -1,19 +1,49 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Calendar, DollarSign, MessageSquare, Settings, Star, TrendingUp, Users, Clock, ChevronRight, MapPin, Edit3 } from 'lucide-react';
-import { mockBookings, mockGuides } from '../data/mockData';
+import { useState, useEffect } from 'react';
+import { collection, query, where, getDocs, doc, getDoc } from 'firebase/firestore';
+import { db } from '../config/firebase';
 import { useAuth } from '../context/AuthContext';
 import ScrollReveal from '../components/common/ScrollReveal';
 
 export default function GuideDashboard() {
   const { user } = useAuth();
-  const guide = mockGuides[0];
+  const [guide, setGuide] = useState(null);
+  const [bookings, setBookings] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('upcoming');
 
-  const upcomingBookings = mockBookings.filter(b => b.status === 'upcoming');
-  const completedBookings = mockBookings.filter(b => b.status === 'completed');
+  useEffect(() => {
+    if (!user) return;
+    const fetchData = async () => {
+      try {
+        // Find guide doc by name for mock data compatibility, or by user.uid
+        const guidesRef = collection(db, 'guides');
+        const qG = query(guidesRef, where('name', '==', user.name)); // Temporary name match
+        const snapG = await getDocs(qG);
+        
+        if (!snapG.empty) {
+          const gData = { id: snapG.docs[0].id, ...snapG.docs[0].data() };
+          setGuide(gData);
 
-  const totalEarnings = mockBookings.reduce((sum, b) => sum + b.totalPrice, 0);
+          // Get bookings for this guide
+          const qB = query(collection(db, 'bookings'), where('guideId', '==', gData.id));
+          const snapB = await getDocs(qB);
+          setBookings(snapB.docs.map(d => ({ id: d.id, ...d.data() })));
+        }
+      } catch (err) {
+        console.error("Dashboard error:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, [user]);
+
+  if (loading) return <div className="pt-32 text-center text-cream">Loading Dashboard...</div>;
+  if (!guide) return <div className="pt-32 text-center text-cream">No Guide Profile Found. Please register/apply as a guide.</div>;
+
+  const upcomingBookings = bookings.filter(b => b.status === 'upcoming' || b.status === 'confirmed');
+  const completedBookings = bookings.filter(b => b.status === 'completed');
+  const totalEarnings = bookings.reduce((sum, b) => sum + (b.totalPrice || 0), 0);
 
   return (
     <main className="pt-20 min-h-screen bg-dark-800">

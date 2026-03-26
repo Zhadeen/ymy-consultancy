@@ -73,7 +73,7 @@ export default function App() {
 
             {/* Chat - no footer */}
             <Route element={<ChatLayout />}>
-              <Route path="/chat" element={<ChatPage />} />
+              <Route path="/chat/:guideId" element={<ChatPage />} />
             </Route>
 
             {/* Admin - no footer */}

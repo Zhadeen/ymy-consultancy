@@ -1,15 +1,34 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Calendar, Users, Clock, ChevronLeft, CreditCard, CheckCircle2, MapPin, Copy, Mail, Phone } from 'lucide-react';
-import { mockGuides } from '../data/mockData';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '../config/firebase';
 import { useBooking } from '../context/BookingContext';
 import ScrollReveal from '../components/common/ScrollReveal';
 
 export default function BookingPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const guide = mockGuides.find(g => g.id === id);
   const { booking, updateBooking, confirmBooking, confirmed } = useBooking();
+  const [guide, setGuide] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchGuide = async () => {
+      try {
+        const docRef = doc(db, 'guides', id);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          setGuide({ id: docSnap.id, ...docSnap.data() });
+        }
+      } catch (err) {
+        console.error("Error fetching guide for booking:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchGuide();
+  }, [id]);
 
   const [date, setDate] = useState('');
   const [tourType, setTourType] = useState('full');
@@ -19,6 +38,14 @@ export default function BookingPage() {
   const [specialRequests, setSpecialRequests] = useState('');
   const [processing, setProcessing] = useState(false);
   const [copied, setCopied] = useState(false);
+
+  if (loading) {
+    return (
+      <main className="pt-20 min-h-screen flex items-center justify-center bg-dark-800">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gold"></div>
+      </main>
+    );
+  }
 
   if (!guide) {
     return (
@@ -42,19 +69,18 @@ export default function BookingPage() {
   ];
 
   const availableDates = useMemo(() => {
+    if (!guide.availability) return [];
     return Object.entries(guide.availability)
       .filter(([, avail]) => avail)
       .map(([dateStr]) => dateStr)
       .sort();
   }, [guide]);
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     if (!date || !name || !email) return;
     setProcessing(true);
-    setTimeout(() => {
-      confirmBooking({ touristName: name, touristEmail: email, specialRequests, date, tourType, guests, totalPrice, guideName: guide.name, guideId: guide.id });
-      setProcessing(false);
-    }, 1500);
+    await confirmBooking({ touristName: name, touristEmail: email, specialRequests, date, tourType, guests, totalPrice, guideName: guide.name, guideId: guide.id });
+    setProcessing(false);
   };
 
   const handleCopyRef = () => {
@@ -123,7 +149,7 @@ export default function BookingPage() {
             </div>
 
             <div className="flex gap-3">
-              <Link to="/chat" className="btn-ghost flex-1">Message Guide</Link>
+              <Link to={`/chat/${confirmed.guideId}`} className="btn-ghost flex-1">Message Guide</Link>
               <Link to="/" className="btn-gold flex-1">Back to Home</Link>
             </div>
           </div>

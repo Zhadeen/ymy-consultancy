@@ -1,45 +1,111 @@
 import { useState, useRef, useEffect } from 'react';
 import { Send, Paperclip, Check, CheckCheck, ChevronLeft, Image as ImageIcon } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import { mockChatMessages, mockGuides } from '../data/mockData';
+import { Link, useParams, useNavigate } from 'react-router-dom';
+import { collection, doc, query, orderBy, onSnapshot, addDoc, serverTimestamp, getDoc } from 'firebase/firestore';
+import { db } from '../config/firebase';
+import { useAuth } from '../context/AuthContext';
 
 export default function ChatPage() {
-  const [messages, setMessages] = useState(mockChatMessages);
+  const { guideId } = useParams();
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  
+  const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
+  const [guide, setGuide] = useState(null);
+  const [loading, setLoading] = useState(true);
   const bottomRef = useRef(null);
-  const guide = mockGuides[0];
+
+  const chatId = user ? [user.uid, guideId].sort().join('_') : null;
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  const handleSend = () => {
-    if (!input.trim()) return;
-    const newMsg = {
-      id: String(Date.now()),
-      senderId: 'tourist',
-      text: input,
-      timestamp: new Date().toISOString(),
-      read: false,
-    };
-    setMessages(prev => [...prev, newMsg]);
-    setInput('');
+  useEffect(() => {
+    if (!user) return; // Wait for user to be available
 
-    // Simulate guide reply
-    setTimeout(() => {
-      setMessages(prev => [...prev, {
-        id: String(Date.now() + 1),
-        senderId: 'guide',
-        text: "Thanks for your message! I'll get back to you shortly. 😊",
-        timestamp: new Date().toISOString(),
-        read: true,
-      }]);
-    }, 2000);
+    const fetchGuide = async () => {
+      try {
+        const docRef = doc(db, 'guides', guideId);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          setGuide({ id: docSnap.id, ...docSnap.data() });
+        }
+      } catch (err) {
+        console.error("Error fetching guide for chat:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchGuide();
+
+    // Listen to messages
+    const q = query(
+      collection(db, 'chats', chatId, 'messages'),
+      orderBy('timestamp', 'asc')
+    );
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const msgs = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+        // Handle serverTimestamp pending state
+        timestamp: doc.data().timestamp ? doc.data().timestamp.toDate().toISOString() : new Date().toISOString()
+      }));
+      setMessages(msgs);
+    });
+
+    return () => unsubscribe();
+  }, [guideId, user, chatId]);
+
+  const handleSend = async () => {
+    if (!input.trim() || !user) return;
+    const textToSend = input;
+    setInput('');
+    try {
+      await addDoc(collection(db, 'chats', chatId, 'messages'), {
+        text: textToSend,
+        senderId: user.uid,
+        timestamp: serverTimestamp(),
+        read: false,
+      });
+
+      // Simulate a mock reply for demonstration purposes if desired
+      setTimeout(async () => {
+        await addDoc(collection(db, 'chats', chatId, 'messages'), {
+          text: "Thanks for your message! I'm currently reviewing your request.",
+          senderId: guideId,
+          timestamp: serverTimestamp(),
+          read: true,
+        });
+      }, 3000);
+
+    } catch (err) {
+      console.error("Error sending message:", err);
+    }
   };
 
   const formatTime = (timestamp) => {
+    if (!timestamp) return '';
     return new Date(timestamp).toLocaleTimeString('en', { hour: '2-digit', minute: '2-digit' });
   };
+
+  if (!user) {
+    return (
+      <main className="pt-20 h-screen bg-dark-900 flex flex-col items-center justify-center p-4">
+        <h2 className="text-xl text-cream mb-4 font-heading">Please log in to chat</h2>
+        <Link to="/login" className="btn-gold">Go to Login</Link>
+      </main>
+    );
+  }
+
+  if (loading || !guide) {
+    return (
+      <main className="pt-20 h-screen bg-dark-900 flex flex-col items-center justify-center p-4">
+         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gold"></div>
+      </main>
+    );
+  }
 
   return (
     <main className="pt-20 h-screen bg-dark-900 flex flex-col">
@@ -72,7 +138,7 @@ export default function ChatPage() {
           </div>
 
           {messages.map((msg) => {
-            const isMine = msg.senderId === 'tourist';
+            const isMine = msg.senderId === user.uid;
             return (
               <div key={msg.id} className={`flex ${isMine ? 'justify-end' : 'justify-start'}`}>
                 <div className={`max-w-[80%] sm:max-w-[70%] ${isMine ? 'order-1' : ''}`}>

@@ -1,15 +1,45 @@
 import { Link } from 'react-router-dom';
 import { Heart, Calendar, Star, MessageSquare, Settings, ChevronRight, MapPin } from 'lucide-react';
-import { mockBookings, mockGuides } from '../data/mockData';
+import { useState, useEffect } from 'react';
+import { collection, query, where, getDocs } from 'firebase/firestore';
+import { db } from '../config/firebase';
 import { useAuth } from '../context/AuthContext';
 import StarRating from '../components/common/StarRating';
 import ScrollReveal from '../components/common/ScrollReveal';
 
 export default function TouristDashboard() {
   const { user } = useAuth();
+  const [bookings, setBookings] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const savedGuides = mockGuides.slice(0, 4);
-  const bookings = mockBookings.slice(0, 3);
+  useEffect(() => {
+    if (!user) {
+      setLoading(false);
+      return;
+    }
+    const fetchBookings = async () => {
+      try {
+        const q = query(collection(db, 'bookings'), where('touristEmail', '==', user.email));
+        const snap = await getDocs(q);
+        setBookings(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+      } catch (err) {
+        console.error("Error fetching bookings:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchBookings();
+  }, [user]);
+
+  const savedGuides = []; // Empty for now until saved guides feature is implemented
+
+  if (loading) {
+    return (
+      <main className="pt-20 min-h-screen bg-dark-800 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gold" />
+      </main>
+    );
+  }
 
   return (
     <main className="pt-20 min-h-screen bg-dark-800">
@@ -34,10 +64,10 @@ export default function TouristDashboard() {
         <ScrollReveal delay={80}>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-10">
             {[
-              { icon: Calendar, label: 'Bookings', value: '3', color: 'text-gold' },
-              { icon: Heart, label: 'Saved Guides', value: '4', color: 'text-pink-400' },
-              { icon: Star, label: 'Reviews Given', value: '2', color: 'text-yellow-400' },
-              { icon: MessageSquare, label: 'Messages', value: '5', color: 'text-blue-400' },
+              { color: 'text-gold', icon: Calendar, label: 'Bookings', value: bookings.length },
+              { color: 'text-pink-400', icon: Heart, label: 'Saved Guides', value: 0 },
+              { color: 'text-yellow-400', icon: Star, label: 'Reviews Given', value: 0 },
+              { color: 'text-blue-400', icon: MessageSquare, label: 'Messages', value: 0 },
             ].map(stat => (
               <div key={stat.label} className="card-dark p-5 text-center">
                 <stat.icon size={24} className={`${stat.color} mx-auto mb-2`} />
@@ -78,9 +108,9 @@ export default function TouristDashboard() {
                       <div className="flex items-center gap-4">
                         <span className={`text-xs font-semibold px-3 py-1.5 rounded-full uppercase tracking-wider ${
                           booking.status === 'completed' ? 'bg-green-500/10 text-green-400' :
-                          booking.status === 'upcoming' ? 'bg-gold-100 text-gold' : 'bg-blue-500/10 text-blue-400'
+                          'bg-gold-100 text-gold'
                         }`}>
-                          {booking.status}
+                          {booking.status === 'confirmed' ? 'upcoming' : booking.status}
                         </span>
                         <span className="text-gold font-heading font-bold">${booking.totalPrice}</span>
                       </div>
@@ -96,7 +126,7 @@ export default function TouristDashboard() {
             <ScrollReveal>
               <h2 className="font-heading text-2xl font-bold text-cream mb-6">Saved Guides</h2>
               <div className="space-y-3">
-                {savedGuides.map((guide, i) => (
+                {savedGuides.length > 0 ? savedGuides.map((guide, i) => (
                   <ScrollReveal key={guide.id} delay={i * 60}>
                     <Link to={`/guide/${guide.id}`} className="card-dark p-4 flex items-center gap-3 group block">
                       <img src={guide.photo} alt={guide.name} className="w-12 h-12 rounded-full object-cover border border-dark-500" />
@@ -110,7 +140,9 @@ export default function TouristDashboard() {
                       <StarRating rating={guide.rating} size={12} showValue={false} />
                     </Link>
                   </ScrollReveal>
-                ))}
+                )) : (
+                  <div className="card-dark p-6 text-center text-muted">No saved guides yet.</div>
+                )}
               </div>
             </ScrollReveal>
           </div>

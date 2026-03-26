@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { User, Camera, FileText, DollarSign, ChevronRight, ChevronLeft, Globe, CheckCircle2 } from 'lucide-react';
 import { LANGUAGES, CITIES } from '../data/mockData';
 import ScrollReveal from '../components/common/ScrollReveal';
+import { useAuth } from '../context/AuthContext';
 import logo from '../assets/logo.png';
 
 const steps = ['Personal Info', 'Photo', 'Bio & Languages', 'Pricing', 'Review'];
@@ -10,10 +11,12 @@ const steps = ['Personal Info', 'Photo', 'Bio & Languages', 'Pricing', 'Review']
 export default function GuideRegistration() {
   const [step, setStep] = useState(0);
   const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState('');
+  const { register } = useAuth();
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
-    firstName: '', lastName: '', email: '', phone: '', city: '',
+    firstName: '', lastName: '', email: '', password: '', phone: '', city: '',
     photo: null, photoPreview: '',
     bio: '', languages: [], specialties: '',
     priceHalfDay: '', priceFullDay: '', priceCustom: '',
@@ -38,8 +41,17 @@ export default function GuideRegistration() {
     }
   };
 
-  const handleSubmit = () => {
-    setSubmitted(true);
+  const handleSubmit = async () => {
+    try {
+      if (!form.password || form.password.length < 8) {
+        setError('Password must be at least 8 characters');
+        return;
+      }
+      await register(`${form.firstName} ${form.lastName}`, form.email, form.password, 'guide');
+      setSubmitted(true);
+    } catch (err) {
+      setError(err.message.replace('Firebase: ', ''));
+    }
   };
 
   if (submitted) {
@@ -99,6 +111,7 @@ export default function GuideRegistration() {
                 <input type="text" placeholder="Last Name" value={form.lastName} onChange={e => update('lastName', e.target.value)} className="input-dark" />
               </div>
               <input type="email" placeholder="Email Address" value={form.email} onChange={e => update('email', e.target.value)} className="input-dark" />
+              <input type="password" placeholder="Create Password (min 8 chars)" value={form.password} onChange={e => update('password', e.target.value)} className="input-dark" />
               <input type="tel" placeholder="Phone Number" value={form.phone} onChange={e => update('phone', e.target.value)} className="input-dark" />
               <select value={form.city} onChange={e => update('city', e.target.value)} className="input-dark">
                 <option value="">Select your city</option>
@@ -199,6 +212,11 @@ export default function GuideRegistration() {
           {step === 4 && (
             <div className="space-y-4">
               <p className="text-muted text-sm mb-6">Review your application before submitting.</p>
+              {error && (
+                <div className="bg-red-500/10 border border-red-500/30 rounded-2xl p-4 mb-4">
+                  <p className="text-red-400 text-sm text-center">{error}</p>
+                </div>
+              )}
               <div className="bg-dark-600 rounded-2xl p-5 space-y-3">
                 <div className="flex justify-between text-sm"><span className="text-muted">Name</span><span className="text-cream">{form.firstName} {form.lastName}</span></div>
                 <div className="flex justify-between text-sm"><span className="text-muted">Email</span><span className="text-cream">{form.email}</span></div>

@@ -1,4 +1,15 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
+import { 
+  createUserWithEmailAndPassword, 
+  signInWithEmailAndPassword, 
+  signOut, 
+  onAuthStateChanged,
+  updateProfile,
+  signInWithPopup,
+  GoogleAuthProvider
+} from 'firebase/auth';
+import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { auth, db } from '../config/firebase';
 
 const AuthContext = createContext(null);
 
@@ -6,36 +17,86 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [isGuide, setIsGuide] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  const login = (email, password) => {
-    if (email === 'admin@ymy.com') {
-      setUser({ name: 'Admin', email, avatar: null });
-      setIsAdmin(true);
-      return true;
-    }
-    if (email === 'guide@ymy.com') {
-      setUser({ name: 'Antoine Moreau', email, avatar: null });
-      setIsGuide(true);
-      return true;
-    }
-    setUser({ name: 'Laura Stevens', email, avatar: null });
-    return true;
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      if (firebaseUser) {
+        // Fetch custom user doc from Firestore
+        const docRef = doc(db, 'users', firebaseUser.uid);
+        const docSnap = await getDoc(docRef);
+        
+        let role = 'tourist';
+        if (docSnap.exists()) {
+          role = docSnap.data().role;
+        }
+        
+        setUser({
+          uid: firebaseUser.uid,
+          name: firebaseUser.displayName || 'Traveler',
+          email: firebaseUser.email,
+          avatar: firebaseUser.photoURL || null,
+          role: role
+        });
+        setIsGuide(role === 'guide');
+        setIsAdmin(role === 'admin');
+      } else {
+        setUser(null);
+        setIsGuide(false);
+        setIsAdmin(false);
+      }
+      setLoading(false);
+    });
+
+    return unsubscribe;
+  }, []);
+
+  const login = async (email, password) => {
+    return signInWithEmailAndPassword(auth, email, password);
   };
 
-  const register = (name, email) => {
-    setUser({ name, email, avatar: null });
-    return true;
+  const loginWithGoogle = async () => {
+    const provider = new GoogleAuthProvider();
+    const result = await signInWithPopup(auth, provider);
+    
+    // Check if user doc exists, if not create base tourist
+    const docRef = doc(db, 'users', result.user.uid);
+    const docSnap = await getDoc(docRef);
+    if (!docSnap.exists()) {
+      await setDoc(docRef, {
+        name: result.user.displayName || 'Traveler',
+        email: result.user.email,
+        role: 'tourist',
+        createdAt: serverTimestamp()
+      });
+    }
+    return result;
   };
 
-  const logout = () => {
-    setUser(null);
-    setIsGuide(false);
-    setIsAdmin(false);
+  const register = async (name, email, password, role = 'tourist') => {
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    
+    await updateProfile(userCredential.user, {
+      displayName: name
+    });
+
+    await setDoc(doc(db, 'users', userCredential.user.uid), {
+      name,
+      email,
+      role,
+      createdAt: serverTimestamp()
+    });
+
+    return userCredential;
+  };
+
+  const logout = async () => {
+    return signOut(auth);
   };
 
   return (
-    <AuthContext.Provider value={{ user, isGuide, isAdmin, login, register, logout }}>
-      {children}
+    <AuthContext.Provider value={{ user, isGuide, isAdmin, loading, login, loginWithGoogle, register, logout }}>
+      {!loading && children}
     </AuthContext.Provider>
   );
 }

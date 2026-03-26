@@ -1,7 +1,8 @@
-import { useRef } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, MapPin, Languages, BadgeCheck } from 'lucide-react';
-import { mockGuides } from '../../data/mockData';
+import { query, collection, limit, getDocs } from 'firebase/firestore';
+import { db } from '../../config/firebase';
 import StarRating from '../common/StarRating';
 import ScrollReveal from '../common/ScrollReveal';
 
@@ -13,6 +14,24 @@ export default function FeaturedGuides() {
       scrollRef.current.scrollBy({ left: dir * 340, behavior: 'smooth' });
     }
   };
+
+  const [guides, setGuides] = useState([]);
+  const [loading, setLoading] = useState(true);
+  
+  useEffect(() => {
+    const fetchFeatured = async () => {
+      try {
+        const q = query(collection(db, 'guides'), limit(8));
+        const snap = await getDocs(q);
+        setGuides(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+      } catch (err) {
+        console.error("Error fetching featured guides:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchFeatured();
+  }, []);
 
   return (
     <section className="section-padding bg-dark-800">
@@ -49,7 +68,11 @@ export default function FeaturedGuides() {
           ref={scrollRef}
           className="flex gap-6 overflow-x-auto no-scrollbar pb-4 -mx-4 px-4"
         >
-          {mockGuides.slice(0, 8).map((guide, i) => (
+          {loading ? (
+            <div className="w-full py-12 flex justify-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gold"></div>
+            </div>
+          ) : guides.map((guide, i) => (
             <ScrollReveal key={guide.id} delay={i * 80} className="flex-shrink-0 w-[300px]">
               <Link to={`/guide/${guide.id}`} className="block group">
                 <div className="card-dark overflow-hidden">

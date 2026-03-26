@@ -1,4 +1,6 @@
 import { createContext, useContext, useState } from 'react';
+import { collection, addDoc } from 'firebase/firestore';
+import { db } from '../config/firebase';
 
 const BookingContext = createContext(null);
 
@@ -18,7 +20,7 @@ export function BookingProvider({ children }) {
     setBooking(prev => ({ ...prev, ...updates }));
   };
 
-  const confirmBooking = (touristDetails) => {
+  const confirmBooking = async (touristDetails) => {
     const ref = `YMY-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 9999)).padStart(4, '0')}`;
     const confirmation = {
       ...booking,
@@ -27,6 +29,13 @@ export function BookingProvider({ children }) {
       status: 'confirmed',
       confirmedAt: new Date().toISOString(),
     };
+
+    try {
+      await addDoc(collection(db, 'bookings'), confirmation);
+    } catch (err) {
+      console.error('Error saving booking to Firestore:', err);
+    }
+
     setConfirmed(confirmation);
     return confirmation;
   };

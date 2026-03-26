@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Users, Globe, Calendar, DollarSign, TrendingUp, CheckCircle, XCircle, Clock, ChevronDown, Search, BarChart3, ArrowUpRight, ArrowDownRight, Eye, Ban, Trash2 } from 'lucide-react';
-import { mockGuides, mockBookings, mockAdminStats } from '../data/mockData';
+import { collection, getDocs, query, orderBy } from 'firebase/firestore';
+import { db } from '../config/firebase';
 import ScrollReveal from '../components/common/ScrollReveal';
 
 const tabs = [
@@ -13,11 +14,44 @@ const tabs = [
 export default function AdminPanel() {
   const [activeTab, setActiveTab] = useState('overview');
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [users, setUsers] = useState([]);
+  const [guides, setGuides] = useState([]);
+  const [bookings, setBookings] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const stats = mockAdminStats;
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [uSnap, gSnap, bSnap] = await Promise.all([
+          getDocs(collection(db, 'users')),
+          getDocs(collection(db, 'guides')),
+          getDocs(collection(db, 'bookings'))
+        ]);
+        setUsers(uSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+        setGuides(gSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+        setBookings(bSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+      } catch (err) {
+        console.error("Admin fetch error:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
 
-  // Simple revenue chart
-  const maxRevenue = Math.max(...stats.monthlyRevenue);
+  if (loading) return <div className="pt-32 text-center text-cream min-h-screen bg-dark-900">Loading Dashboard...</div>;
+
+  const totalRevenue = bookings.reduce((sum, b) => sum + (b.totalPrice || 0), 0);
+  const stats = {
+    totalUsers: users.length,
+    totalGuides: guides.length,
+    totalBookings: bookings.length,
+    revenue: totalRevenue,
+    monthlyRevenue: new Array(12).fill(0), // Simplified
+    pendingGuides: 0
+  };
+
+  const maxRevenue = Math.max(...stats.monthlyRevenue, 1);
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
   return (
@@ -158,34 +192,20 @@ export default function AdminPanel() {
                       </tr>
                     </thead>
                     <tbody>
-                      {[
-                        { name: 'Laura Stevens', email: 'laura@email.com', date: 'Jan 5, 2026', status: 'active' },
-                        { name: 'Alex Rodriguez', email: 'alex@email.com', date: 'Jan 12, 2026', status: 'active' },
-                        { name: 'Emma Laurent', email: 'emma@email.com', date: 'Feb 1, 2026', status: 'active' },
-                        { name: 'Thomas Brown', email: 'thomas@email.com', date: 'Feb 8, 2026', status: 'suspended' },
-                        { name: 'Julia Weber', email: 'julia@email.com', date: 'Feb 15, 2026', status: 'active' },
-                      ].map((user, i) => (
-                        <tr key={i} className="border-b border-dark-700/50 hover:bg-dark-700/30 transition-colors">
+                      {users.map((user, i) => (
+                        <tr key={user.id} className="border-b border-dark-700/50 hover:bg-dark-700/30 transition-colors">
                           <td className="px-5 py-4 text-cream text-sm font-medium">{user.name}</td>
                           <td className="px-5 py-4 text-muted text-sm">{user.email}</td>
-                          <td className="px-5 py-4 text-muted text-sm">{user.date}</td>
+                          <td className="px-5 py-4 text-muted text-sm">{user.createdAt?.toDate ? user.createdAt.toDate().toLocaleDateString() : 'New'}</td>
                           <td className="px-5 py-4">
-                            <span className={`text-xs font-semibold px-2.5 py-1 rounded-full uppercase tracking-wider ${
-                              user.status === 'active' ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400'
-                            }`}>
-                              {user.status}
+                            <span className="text-xs font-semibold px-2.5 py-1 rounded-full uppercase tracking-wider bg-green-500/10 text-green-400">
+                              Active
                             </span>
                           </td>
                           <td className="px-5 py-4">
                             <div className="flex items-center gap-2">
                               <button className="w-8 h-8 rounded-lg bg-dark-600 flex items-center justify-center text-muted hover:text-cream transition-colors" title="View">
                                 <Eye size={14} />
-                              </button>
-                              <button className="w-8 h-8 rounded-lg bg-dark-600 flex items-center justify-center text-muted hover:text-yellow-400 transition-colors" title="Suspend">
-                                <Ban size={14} />
-                              </button>
-                              <button className="w-8 h-8 rounded-lg bg-dark-600 flex items-center justify-center text-muted hover:text-red-400 transition-colors" title="Delete">
-                                <Trash2 size={14} />
                               </button>
                             </div>
                           </td>
@@ -220,7 +240,7 @@ export default function AdminPanel() {
                       </tr>
                     </thead>
                     <tbody>
-                      {mockGuides.slice(0, 8).map((guide, i) => (
+                      {guides.map((guide, i) => (
                         <tr key={guide.id} className="border-b border-dark-700/50 hover:bg-dark-700/30 transition-colors">
                           <td className="px-5 py-4">
                             <div className="flex items-center gap-3">
@@ -239,9 +259,6 @@ export default function AdminPanel() {
                             <div className="flex items-center gap-2">
                               <button className="w-8 h-8 rounded-lg bg-dark-600 flex items-center justify-center text-muted hover:text-cream transition-colors" title="View">
                                 <Eye size={14} />
-                              </button>
-                              <button className="w-8 h-8 rounded-lg bg-dark-600 flex items-center justify-center text-muted hover:text-yellow-400 transition-colors" title="Suspend">
-                                <Ban size={14} />
                               </button>
                             </div>
                           </td>
@@ -277,7 +294,7 @@ export default function AdminPanel() {
                       </tr>
                     </thead>
                     <tbody>
-                      {mockBookings.map((booking, i) => (
+                      {bookings.map((booking, i) => (
                         <tr key={booking.id} className="border-b border-dark-700/50 hover:bg-dark-700/30 transition-colors">
                           <td className="px-5 py-4 text-gold font-mono text-sm">{booking.reference}</td>
                           <td className="px-5 py-4 text-cream text-sm">{booking.touristName}</td>
@@ -286,7 +303,7 @@ export default function AdminPanel() {
                           <td className="px-5 py-4">
                             <span className={`text-xs font-semibold px-2.5 py-1 rounded-full uppercase tracking-wider ${
                               booking.status === 'completed' ? 'bg-green-500/10 text-green-400' :
-                              booking.status === 'upcoming' ? 'bg-gold-100 text-gold' : 'bg-blue-500/10 text-blue-400'
+                              'bg-gold-100 text-gold'
                             }`}>
                               {booking.status}
                             </span>

@@ -1,7 +1,9 @@
 import { useState, useMemo } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { MapPin, Languages, Calendar, Clock, BadgeCheck, Award, MessageSquare, ChevronLeft, ChevronRight, Star, Users } from 'lucide-react';
-import { mockGuides, mockReviews } from '../data/mockData';
+import { mockReviews } from '../data/mockData';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '../config/firebase';
 import StarRating from '../components/common/StarRating';
 import ScrollReveal from '../components/common/ScrollReveal';
 import { useBooking } from '../context/BookingContext';
@@ -10,13 +12,39 @@ export default function GuideProfilePage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { updateBooking } = useBooking();
-  const guide = mockGuides.find(g => g.id === id);
+  const [guide, setGuide] = useState(null);
+  const [loading, setLoading] = useState(true);
   const reviews = mockReviews.filter(r => r.guideId === id);
+
+  useEffect(() => {
+    const fetchGuide = async () => {
+      try {
+        const docRef = doc(db, 'guides', id);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          setGuide({ id: docSnap.id, ...docSnap.data() });
+        }
+      } catch (err) {
+        console.error("Error fetching guide:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchGuide();
+  }, [id]);
 
   const [calMonth, setCalMonth] = useState(() => {
     const d = new Date();
     return { year: d.getFullYear(), month: d.getMonth() };
   });
+
+  if (loading) {
+    return (
+      <main className="pt-20 min-h-screen flex items-center justify-center bg-dark-800">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gold"></div>
+      </main>
+    );
+  }
 
   if (!guide) {
     return (
@@ -53,6 +81,7 @@ export default function GuideProfilePage() {
   };
 
   const isAvailable = (day) => {
+    if (!guide || !guide.availability) return true;
     const dateStr = `${calMonth.year}-${String(calMonth.month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
     return guide.availability[dateStr];
   };
@@ -114,13 +143,13 @@ export default function GuideProfilePage() {
 
               {/* Badges */}
               <div className="flex flex-wrap gap-3 mb-8">
-                {guide.languages.map(lang => (
+                {(guide.languages || []).map(lang => (
                   <span key={lang} className="bg-dark-700 border border-dark-500 rounded-full px-4 py-1.5 text-sm text-cream flex items-center gap-1.5">
                     <Languages size={14} className="text-gold" />
                     {lang}
                   </span>
                 ))}
-                {guide.specialties.map(spec => (
+                {(guide.specialties || []).map(spec => (
                   <span key={spec} className="bg-gold-100 border border-gold-200 rounded-full px-4 py-1.5 text-sm text-gold flex items-center gap-1.5">
                     <Award size={14} />
                     {spec}
@@ -275,7 +304,7 @@ export default function GuideProfilePage() {
                 </button>
 
                 <Link
-                  to="/chat"
+                  to={`/chat/${guide.id}`}
                   className="btn-ghost w-full flex items-center justify-center gap-2 mt-3"
                 >
                   <MessageSquare size={18} />

@@ -1,7 +1,9 @@
 import { useState, useMemo, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { MapPin, Languages, Filter, X, ChevronDown, SlidersHorizontal, BadgeCheck, Star } from 'lucide-react';
-import { mockGuides, CITIES, LANGUAGES } from '../data/mockData';
+import { CITIES, LANGUAGES } from '../data/mockData';
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '../config/firebase';
 import StarRating from '../components/common/StarRating';
 import ScrollReveal from '../components/common/ScrollReveal';
 
@@ -15,26 +17,47 @@ export default function SearchPage() {
   const [minRating, setMinRating] = useState(0);
   const [sortBy, setSortBy] = useState('rating');
 
+  const [allGuides, setAllGuides] = useState([]);
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     if (searchParams.get('city')) setCity(searchParams.get('city'));
     if (searchParams.get('language')) setLanguage(searchParams.get('language'));
   }, [searchParams]);
 
+  useEffect(() => {
+    const fetchGuides = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, 'guides'));
+        const guidesData = querySnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+        setAllGuides(guidesData);
+      } catch (err) {
+        console.error('Error fetching guides:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchGuides();
+  }, []);
+
   const filteredGuides = useMemo(() => {
-    let guides = [...mockGuides];
+    let guides = [...allGuides];
     if (city) guides = guides.filter(g => g.city === city);
-    if (language) guides = guides.filter(g => g.languages.includes(language));
-    guides = guides.filter(g => g.priceFullDay <= maxPrice);
-    guides = guides.filter(g => g.rating >= minRating);
+    if (language) guides = guides.filter(g => (g.languages || []).includes(language));
+    guides = guides.filter(g => (g.priceFullDay || 9999) <= maxPrice);
+    guides = guides.filter(g => (g.rating || 0) >= minRating);
 
     switch (sortBy) {
-      case 'price-low': guides.sort((a, b) => a.priceFullDay - b.priceFullDay); break;
-      case 'price-high': guides.sort((a, b) => b.priceFullDay - a.priceFullDay); break;
-      case 'rating': guides.sort((a, b) => b.rating - a.rating); break;
-      case 'bookings': guides.sort((a, b) => b.totalBookings - a.totalBookings); break;
+      case 'price-low': guides.sort((a, b) => (a.priceFullDay || 0) - (b.priceFullDay || 0)); break;
+      case 'price-high': guides.sort((a, b) => (b.priceFullDay || 0) - (a.priceFullDay || 0)); break;
+      case 'rating': guides.sort((a, b) => (b.rating || 0) - (a.rating || 0)); break;
+      case 'bookings': guides.sort((a, b) => (b.totalBookings || 0) - (a.totalBookings || 0)); break;
     }
     return guides;
-  }, [city, language, maxPrice, minRating, sortBy]);
+  }, [allGuides, city, language, maxPrice, minRating, sortBy]);
 
   const clearFilters = () => {
     setCity('');
@@ -170,7 +193,11 @@ export default function SearchPage() {
             </div>
 
             {/* Guide Grid */}
-            {filteredGuides.length > 0 ? (
+            {loading ? (
+              <div className="flex justify-center items-center py-20">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gold"></div>
+              </div>
+            ) : filteredGuides.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
                 {filteredGuides.map((guide, i) => (
                   <ScrollReveal key={guide.id} delay={i * 60}>
@@ -235,7 +262,9 @@ export default function SearchPage() {
                 <div className="text-6xl mb-4">🔍</div>
                 <h3 className="font-heading text-2xl text-cream mb-2">No guides found</h3>
                 <p className="text-muted mb-6">Try adjusting your filters to see more results.</p>
-                <button onClick={clearFilters} className="btn-gold">Clear All Filters</button>
+                <div className="flex flex-col gap-3 max-w-xs mx-auto">
+                   <button onClick={clearFilters} className="btn-gold">Clear All Filters</button>
+                </div>
               </div>
             )}
           </div>
