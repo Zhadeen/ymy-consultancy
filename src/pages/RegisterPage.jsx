@@ -18,7 +18,8 @@ export default function RegisterPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!name || !email || !password) { setError('Please fill in all fields'); return; }
+    if (!name.trim()) { setError('Please enter your full name'); return; }
+    if (!email || !password) { setError('Please fill in all email and password fields'); return; }
     if (!agreedToTerms) { setError('Please agree to the Terms of Service and Privacy Policy'); return; }
     if (password !== confirmPassword) { setError('Passwords do not match'); return; }
     
