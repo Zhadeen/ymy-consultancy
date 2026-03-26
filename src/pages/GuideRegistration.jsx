@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { User, Camera, FileText, DollarSign, ChevronRight, ChevronLeft, Globe, CheckCircle2 } from 'lucide-react';
+import { Mail, Lock, User, Camera, FileText, DollarSign, ChevronRight, ChevronLeft, Globe, CheckCircle2 } from 'lucide-react';
+import { collection, doc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { auth, db } from '../config/firebase';
 import { LANGUAGES, CITIES } from '../data/mockData';
 import ScrollReveal from '../components/common/ScrollReveal';
 import { useAuth } from '../context/AuthContext';
@@ -47,7 +49,28 @@ export default function GuideRegistration() {
         setError('Password must be at least 8 characters');
         return;
       }
-      await register(`${form.firstName} ${form.lastName}`, form.email, form.password, 'guide');
+      // Create user auth with role 'pending_guide'
+      const userCredential = await register(`${form.firstName} ${form.lastName}`, form.email, form.password, 'pending_guide');
+      const uid = userCredential.user.uid;
+
+      // Save application details to 'guide_applications' collection
+      await setDoc(doc(db, 'guide_applications', uid), {
+        uid,
+        name: `${form.firstName} ${form.lastName}`,
+        email: form.email,
+        city: form.city,
+        phone: form.phone,
+        photo: form.photoPreview || 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&q=80&w=200',
+        bio: form.bio,
+        languages: form.languages,
+        specialties: form.specialties,
+        priceHalfDay: Number(form.priceHalfDay),
+        priceFullDay: Number(form.priceFullDay),
+        priceCustom: Number(form.priceCustom),
+        status: 'pending',
+        createdAt: serverTimestamp()
+      });
+
       setSubmitted(true);
     } catch (err) {
       setError(err.message.replace('Firebase: ', ''));

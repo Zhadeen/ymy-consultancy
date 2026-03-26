@@ -6,6 +6,7 @@ import ScrollReveal from '../components/common/ScrollReveal';
 
 const tabs = [
   { id: 'overview', label: 'Overview', icon: BarChart3 },
+  { id: 'applications', label: 'Applications', icon: Clock },
   { id: 'users', label: 'Users', icon: Users },
   { id: 'guides', label: 'Guides', icon: Globe },
   { id: 'bookings', label: 'Bookings', icon: Calendar },
@@ -17,19 +18,23 @@ export default function AdminPanel() {
   const [users, setUsers] = useState([]);
   const [guides, setGuides] = useState([]);
   const [bookings, setBookings] = useState([]);
+  const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [actionLoading, setActionLoading] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [uSnap, gSnap, bSnap] = await Promise.all([
+        const [uSnap, gSnap, bSnap, aSnap] = await Promise.all([
           getDocs(collection(db, 'users')),
           getDocs(collection(db, 'guides')),
-          getDocs(collection(db, 'bookings'))
+          getDocs(collection(db, 'bookings')),
+          getDocs(query(collection(db, 'guide_applications'), orderBy('createdAt', 'desc')))
         ]);
         setUsers(uSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
         setGuides(gSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
         setBookings(bSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+        setApplications(aSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
       } catch (err) {
         console.error("Admin fetch error:", err);
       } finally {
@@ -48,11 +53,62 @@ export default function AdminPanel() {
     totalBookings: bookings.length,
     revenue: totalRevenue,
     monthlyRevenue: new Array(12).fill(0), // Simplified
-    pendingGuides: 0
+    pendingGuides: applications.length
   };
 
   const maxRevenue = Math.max(...stats.monthlyRevenue, 1);
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+  const handleApprove = async (app) => {
+    setActionLoading(app.id);
+    try {
+      const { doc, setDoc, updateDoc, deleteDoc, serverTimestamp } = await import('firebase/firestore');
+      
+      // 1. Update user role to 'guide'
+      await updateDoc(doc(db, 'users', app.uid), {
+        role: 'guide'
+      });
+
+      // 2. Add to public guides collection
+      await setDoc(doc(db, 'guides', app.uid), {
+        ...app,
+        id: app.uid,
+        rating: 5.0,
+        reviewsCount: 0,
+        status: 'active',
+        approvedAt: serverTimestamp()
+      });
+
+      // 3. Remove application
+      await deleteDoc(doc(db, 'guide_applications', app.id));
+
+      // 4. Update local state
+      setApplications(prev => prev.filter(a => a.id !== app.id));
+      setGuides(prev => [...prev, { ...app, id: app.uid, rating: 5.0, status: 'active' }]);
+      // Update user role locally too
+      setUsers(prev => prev.map(u => u.id === app.uid ? { ...u, role: 'guide' } : u));
+      
+    } catch (err) {
+      console.error("Approval failed:", err);
+      alert("Failed to approve application. Check console.");
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const handleReject = async (app) => {
+    if (!window.confirm("Are you sure you want to reject this application?")) return;
+    setActionLoading(app.id);
+    try {
+      const { doc, deleteDoc } = await import('firebase/firestore');
+      await deleteDoc(doc(db, 'guide_applications', app.id));
+      setApplications(prev => prev.filter(a => a.id !== app.id));
+    } catch (err) {
+      console.error("Rejection failed:", err);
+    } finally {
+      setActionLoading(null);
+    }
+  };
 
   return (
     <main className="pt-20 min-h-screen bg-dark-900 flex">
@@ -269,6 +325,61 @@ export default function AdminPanel() {
                 </div>
               </div>
             </ScrollReveal>
+          </div>
+        )}
+
+        {/* Applications */}
+        {activeTab === 'applications' && (
+          <div>
+            <ScrollReveal>
+              <h1 className="font-heading text-3xl font-bold text-cream mb-6">Guide Applications</h1>
+            </ScrollReveal>
+
+            <div className="grid grid-cols-1 gap-6">
+              {applications.length === 0 ? (
+                <div className="card-dark p-12 text-center">
+                  <Clock size={48} className="text-muted-dark mx-auto mb-4" />
+                  <p className="text-muted">No pending applications at the moment.</p>
+                </div>
+              ) : (
+                applications.map((app, i) => (
+                  <ScrollReveal key={app.id} delay={i * 50}>
+                    <div className="card-dark p-6 flex flex-col md:flex-row gap-6">
+                      <img src={app.photo} alt={app.name} className="w-32 h-32 rounded-2xl object-cover border border-dark-500" />
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between mb-2">
+                          <h3 className="font-heading text-xl font-bold text-cream">{app.name}</h3>
+                          <span className="text-xs font-semibold px-2 px-1 text-gold bg-gold-100 rounded-full uppercase">Pending Review</span>
+                        </div>
+                        <p className="text-muted text-sm mb-4 line-clamp-2">{app.bio}</p>
+                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6 text-xs">
+                          <div><span className="text-muted-dark block">Location</span><span className="text-cream">{app.city}</span></div>
+                          <div><span className="text-muted-dark block">Languages</span><span className="text-cream">{app.languages?.join(', ')}</span></div>
+                          <div><span className="text-muted-dark block">Pricing</span><span className="text-gold font-bold">${app.priceHalfDay} / ${app.priceFullDay}</span></div>
+                          <div><span className="text-muted-dark block">Email</span><span className="text-cream">{app.email}</span></div>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <button 
+                            onClick={() => handleApprove(app)} 
+                            disabled={actionLoading === app.id}
+                            className="btn-gold !py-2 !px-6 text-sm flex items-center gap-2"
+                          >
+                            {actionLoading === app.id ? 'Processing...' : <><CheckCircle size={16} /> Approve Application</>}
+                          </button>
+                          <button 
+                            onClick={() => handleReject(app)}
+                            disabled={actionLoading === app.id}
+                            className="text-red-400 hover:text-red-300 transition-colors text-sm font-medium flex items-center gap-2 px-4"
+                          >
+                            <XCircle size={16} /> Reject
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </ScrollReveal>
+                ))
+              )}
+            </div>
           </div>
         )}
 
