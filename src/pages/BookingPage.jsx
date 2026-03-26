@@ -69,7 +69,7 @@ export default function BookingPage() {
   ];
 
   const availableDates = useMemo(() => {
-    if (!guide.availability) return [];
+    if (!guide || !guide.availability) return [];
     return Object.entries(guide.availability)
       .filter(([, avail]) => avail)
       .map(([dateStr]) => dateStr)
