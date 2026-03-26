@@ -1,0 +1,121 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ===== BASE STYLES ===== */
+@layer base {
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: 'DM Sans', system-ui, sans-serif;
+    background-color: #1C1C1C;
+    color: #F5F0E8;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  ::selection {
+    background-color: rgba(201, 168, 76, 0.3);
+    color: #F5F0E8;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #1C1C1C;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #3D3D3D;
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #C9A84C;
+  }
+
+  input, textarea, select {
+    font-family: 'DM Sans', system-ui, sans-serif;
+  }
+}
+
+/* ===== COMPONENT STYLES ===== */
+@layer components {
+  .btn-gold {
+    @apply bg-gold text-dark-900 font-semibold px-6 py-3 rounded-btn
+           transition-all duration-300 ease-out
+           hover:bg-gold-light hover:shadow-gold-glow
+           active:scale-[0.97]
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-ghost {
+    @apply border border-gold-200 text-gold px-6 py-3 rounded-btn
+           transition-all duration-300 ease-out
+           hover:bg-gold-100 hover:border-gold
+           active:scale-[0.97];
+  }
+
+  .btn-dark {
+    @apply bg-dark-600 text-cream px-6 py-3 rounded-btn
+           transition-all duration-300 ease-out
+           hover:bg-dark-500
+           active:scale-[0.97];
+  }
+
+  .card-dark {
+    @apply bg-dark-700 rounded-2xl border border-dark-500
+           transition-all duration-300 ease-out
+           hover:border-gold-200 hover:shadow-card-hover hover:-translate-y-1;
+  }
+
+  .input-dark {
+    @apply w-full bg-dark-600 border border-dark-500 rounded-btn
+           px-4 py-3 text-cream placeholder-muted-dark
+           transition-all duration-300
+           focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold-200;
+  }
+
+  .section-padding {
+    @apply py-[100px] px-4 sm:px-6 lg:px-8;
+  }
+
+  .glass-dark {
+    @apply bg-dark-800/80 backdrop-blur-xl border border-dark-500/50;
+  }
+
+  .text-gradient-gold {
+    @apply bg-gradient-to-r from-gold to-gold-light bg-clip-text text-transparent;
+  }
+
+  .gold-divider {
+    @apply w-16 h-[2px] bg-gradient-to-r from-gold to-transparent;
+  }
+}
+
+/* ===== UTILITY STYLES ===== */
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
