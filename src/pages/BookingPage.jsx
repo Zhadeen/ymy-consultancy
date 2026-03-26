@@ -39,28 +39,7 @@ export default function BookingPage() {
   const [processing, setProcessing] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  if (loading) {
-    return (
-      <main className="pt-20 min-h-screen flex items-center justify-center bg-dark-800">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gold"></div>
-      </main>
-    );
-  }
 
-  if (!guide) {
-    return (
-      <main className="pt-20 min-h-screen flex items-center justify-center bg-dark-800">
-        <div className="text-center">
-          <h2 className="font-heading text-3xl text-cream mb-4">Guide Not Found</h2>
-          <Link to="/search" className="btn-gold">Back to Search</Link>
-        </div>
-      </main>
-    );
-  }
-
-  const priceMap = { half: guide.priceHalfDay, full: guide.priceFullDay, custom: guide.priceCustom * 4 };
-  const basePrice = priceMap[tourType] || guide.priceFullDay;
-  const totalPrice = basePrice * guests;
 
   const tourTypes = [
     { value: 'half', label: 'Half Day', sublabel: '4 hours', icon: '🌤️' },
@@ -90,6 +69,29 @@ export default function BookingPage() {
       setTimeout(() => setCopied(false), 2000);
     }
   };
+
+  if (loading) {
+    return (
+      <main className="pt-20 min-h-screen flex items-center justify-center bg-dark-800">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gold"></div>
+      </main>
+    );
+  }
+
+  if (!guide) {
+    return (
+      <main className="pt-20 min-h-screen flex items-center justify-center bg-dark-800">
+        <div className="text-center">
+          <h2 className="font-heading text-3xl text-cream mb-4">Guide Not Found</h2>
+          <Link to="/search" className="btn-gold">Back to Search</Link>
+        </div>
+      </main>
+    );
+  }
+
+  const priceMap = { half: guide.priceHalfDay, full: guide.priceFullDay, custom: (guide.priceCustom || 0) * 4 };
+  const basePrice = priceMap[tourType] || guide.priceFullDay;
+  const totalPrice = basePrice * guests;
 
   // Confirmation screen
   if (confirmed) {
