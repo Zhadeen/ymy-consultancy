@@ -7,7 +7,6 @@ import {
   updateProfile,
   signInWithPopup,
   GoogleAuthProvider,
-  sendEmailVerification,
   sendPasswordResetEmail
 } from 'firebase/auth';
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
@@ -54,12 +53,7 @@ export function AuthProvider({ children }) {
   }, []);
 
   const login = async (email, password) => {
-    const result = await signInWithEmailAndPassword(auth, email, password);
-    if (!result.user.emailVerified) {
-      await signOut(auth);
-      throw new Error('Please verify your email before signing in. Check your inbox for the verification link.');
-    }
-    return result;
+    return signInWithEmailAndPassword(auth, email, password);
   };
 
   const loginWithGoogle = async () => {
@@ -88,7 +82,7 @@ export function AuthProvider({ children }) {
     });
 
     // Send email verification
-    await sendEmailVerification(userCredential.user);
+    // await sendEmailVerification(userCredential.user);
 
     await setDoc(doc(db, 'users', userCredential.user.uid), {
       name,
