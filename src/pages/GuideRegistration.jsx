@@ -6,20 +6,23 @@ import { auth, db } from '../config/firebase';
 import { LANGUAGES, CITIES } from '../data/mockData';
 import ScrollReveal from '../components/common/ScrollReveal';
 import { useAuth } from '../context/AuthContext';
+import { uploadFile } from '../utils/firebaseHelpers';
 import logo from '../assets/logo.png';
 
-const steps = ['Personal Info', 'Photo', 'Bio & Languages', 'Pricing', 'Review'];
+const steps = ['Personal Info', 'Photo', 'ID Verification', 'Bio & Languages', 'Pricing', 'Review'];
 
 export default function GuideRegistration() {
   const [step, setStep] = useState(0);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState('');
+  const [processing, setProcessing] = useState(false);
   const { register } = useAuth();
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
     firstName: '', lastName: '', email: '', password: '', phone: '', city: '',
     photo: null, photoPreview: '',
+    idType: 'Passport', idDocument: null, idDocumentPreview: '',
     bio: '', languages: [], specialties: '',
     priceHalfDay: '', priceFullDay: '', priceCustom: '',
   });
@@ -43,15 +46,42 @@ export default function GuideRegistration() {
     }
   };
 
+  const handleIDUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      update('idDocument', file);
+      update('idDocumentPreview', URL.createObjectURL(file));
+    }
+  };
+
   const handleSubmit = async () => {
     try {
       if (!form.password || form.password.length < 8) {
         setError('Password must be at least 8 characters');
         return;
       }
+      if (!form.idDocument) {
+        setError('Please upload an ID document for verification');
+        return;
+      }
+
+      setProcessing(true); // Need to add processing state
+
       // Create user auth with role 'pending_guide'
       const userCredential = await register(`${form.firstName} ${form.lastName}`, form.email, form.password, 'pending_guide');
       const uid = userCredential.user.uid;
+
+      // Upload files to Firebase Storage
+      let photoUrl = 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&q=80&w=200';
+      let idDocumentUrl = '';
+
+      if (form.photo) {
+        photoUrl = await uploadFile(form.photo, 'profile_photos', `${uid}_profile`);
+      }
+      
+      if (form.idDocument) {
+        idDocumentUrl = await uploadFile(form.idDocument, 'id_documents', `${uid}_id`);
+      }
 
       // Save application details to 'guide_applications' collection
       await setDoc(doc(db, 'guide_applications', uid), {
@@ -60,7 +90,10 @@ export default function GuideRegistration() {
         email: form.email,
         city: form.city,
         phone: form.phone,
-        photo: form.photoPreview || 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&q=80&w=200',
+        photo: photoUrl,
+        idType: form.idType,
+        idDocumentUrl: idDocumentUrl,
+        idVerified: false,
         bio: form.bio,
         languages: form.languages,
         specialties: form.specialties,
@@ -74,6 +107,8 @@ export default function GuideRegistration() {
       setSubmitted(true);
     } catch (err) {
       setError(err.message.replace('Firebase: ', ''));
+    } finally {
+      setProcessing(false);
     }
   };
 
@@ -162,8 +197,60 @@ export default function GuideRegistration() {
             </div>
           )}
 
-          {/* Step 2: Bio & Languages */}
+          {/* Step 2: ID Verification */}
           {step === 2 && (
+            <div className="space-y-6">
+              <p className="text-muted text-sm">To ensure the safety of our tourists, we require a clear photo of your government-issued ID.</p>
+              
+              <div>
+                <label className="text-sm text-cream font-medium mb-3 block">Document Type</label>
+                <div className="flex gap-3">
+                  {['Passport', 'National ID', 'Driver License'].map(type => (
+                    <button
+                      key={type}
+                      onClick={() => update('idType', type)}
+                      className={`flex-1 py-3 rounded-xl border transition-all duration-300 ${
+                        form.idType === type 
+                          ? 'border-gold bg-gold-100 text-gold' 
+                          : 'border-dark-500 text-muted hover:border-gold-200'
+                      }`}
+                    >
+                      {type}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="card-dark p-8 border-dashed border-2 border-dark-500 text-center">
+                {form.idDocumentPreview ? (
+                  <div className="relative group">
+                    <img src={form.idDocumentPreview} alt="ID Document Preview" className="max-h-60 mx-auto rounded-xl shadow-2xl" />
+                    <label className="absolute inset-0 bg-dark-900/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer rounded-xl">
+                      <Camera size={24} className="text-gold" />
+                      <input type="file" accept="image/*" onChange={handleIDUpload} className="hidden" />
+                    </label>
+                  </div>
+                ) : (
+                  <label className="cursor-pointer block">
+                    <FileText size={48} className="text-muted-dark mx-auto mb-4" />
+                    <p className="text-cream font-medium mb-1">Click to upload ID photo</p>
+                    <p className="text-muted text-xs">PNG, JPG or PDF up to 10MB</p>
+                    <input type="file" accept="image/*" onChange={handleIDUpload} className="hidden" />
+                  </label>
+                )}
+              </div>
+              
+              <div className="bg-gold-50/10 border border-gold-200/20 rounded-xl p-4 flex gap-3">
+                <div className="text-gold mt-0.5">🛡️</div>
+                <p className="text-xs text-muted-dark leading-relaxed">
+                  Your ID is processed securely and is only visible to YMY administrators for verification purposes. It will never be shared with touristers or third parties.
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* Step 3: Bio & Languages */}
+          {step === 3 && (
             <div className="space-y-6">
               <div>
                 <label className="text-sm text-cream font-medium mb-2 block">Bio</label>
@@ -195,8 +282,8 @@ export default function GuideRegistration() {
             </div>
           )}
 
-          {/* Step 3: Pricing */}
-          {step === 3 && (
+          {/* Step 4: Pricing */}
+          {step === 4 && (
             <div className="space-y-6">
               <p className="text-muted text-sm">Set your rates. You can change these anytime from your dashboard.</p>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -231,8 +318,8 @@ export default function GuideRegistration() {
             </div>
           )}
 
-          {/* Step 4: Review */}
-          {step === 4 && (
+          {/* Step 5: Review */}
+          {step === 5 && (
             <div className="space-y-4">
               <p className="text-muted text-sm mb-6">Review your application before submitting.</p>
               {error && (
@@ -240,19 +327,15 @@ export default function GuideRegistration() {
                   <p className="text-red-400 text-sm text-center">{error}</p>
                 </div>
               )}
-              <div className="bg-dark-600 rounded-2xl p-5 space-y-3">
-                <div className="flex justify-between text-sm"><span className="text-muted">Name</span><span className="text-cream">{form.firstName} {form.lastName}</span></div>
-                <div className="flex justify-between text-sm"><span className="text-muted">Email</span><span className="text-cream">{form.email}</span></div>
-                <div className="flex justify-between text-sm"><span className="text-muted">City</span><span className="text-cream">{form.city}</span></div>
-                <div className="flex justify-between text-sm"><span className="text-muted">Languages</span><span className="text-cream">{form.languages.join(', ') || 'None selected'}</span></div>
-                <div className="flex justify-between text-sm"><span className="text-muted">Pricing</span><span className="text-cream">${form.priceHalfDay || '–'} / ${form.priceFullDay || '–'} / ${form.priceCustom || '–'}/hr</span></div>
+              <div className="bg-dark-600 rounded-2xl p-5 space-y-3 text-sm">
+                <div className="flex justify-between"><span className="text-muted">Name</span><span className="text-cream">{form.firstName} {form.lastName}</span></div>
+                <div className="flex justify-between"><span className="text-muted">Email</span><span className="text-cream">{form.email}</span></div>
+                <div className="flex justify-between"><span className="text-muted">ID Type</span><span className="text-cream">{form.idType}</span></div>
+                <div className="flex justify-between"><span className="text-muted">ID Document</span><span className={form.idDocument ? 'text-green-400' : 'text-red-400'}>{form.idDocument ? '✓ Uploaded' : '✗ Missing'}</span></div>
+                <div className="flex justify-between"><span className="text-muted">City</span><span className="text-cream">{form.city}</span></div>
+                <div className="flex justify-between"><span className="text-muted">Languages</span><span className="text-cream">{form.languages.join(', ') || 'None selected'}</span></div>
+                <div className="flex justify-between font-medium pt-2 border-t border-dark-500"><span className="text-muted">Pricing</span><span className="text-gold">${form.priceHalfDay || '–'} / ${form.priceFullDay || '–'} / ${form.priceCustom || '–'}/hr</span></div>
               </div>
-              {form.bio && (
-                <div className="bg-dark-600 rounded-2xl p-5">
-                  <p className="text-muted text-xs mb-1">Bio</p>
-                  <p className="text-cream text-sm">{form.bio}</p>
-                </div>
-              )}
             </div>
           )}
 
@@ -264,12 +347,26 @@ export default function GuideRegistration() {
               </button>
             ) : <div />}
             {step < steps.length - 1 ? (
-              <button onClick={() => setStep(step + 1)} className="btn-gold flex items-center gap-2">
+              <button 
+                onClick={() => {
+                  if (step === 2 && !form.idDocument) {
+                    setError('Please upload an ID document to proceed.');
+                    return;
+                  }
+                  setError('');
+                  setStep(step + 1);
+                }} 
+                className="btn-gold flex items-center gap-2"
+              >
                 Next <ChevronRight size={16} />
               </button>
             ) : (
-              <button onClick={handleSubmit} className="btn-gold flex items-center gap-2">
-                Submit Application <CheckCircle2 size={16} />
+              <button 
+                onClick={handleSubmit} 
+                className="btn-gold flex items-center gap-2"
+                disabled={processing}
+              >
+                {processing ? 'Processing...' : 'Submit Application'} <CheckCircle2 size={16} />
               </button>
             )}
           </div>

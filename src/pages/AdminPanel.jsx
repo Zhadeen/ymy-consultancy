@@ -76,6 +76,7 @@ export default function AdminPanel() {
         rating: 5.0,
         reviewsCount: 0,
         status: 'active',
+        idVerified: true, // Mark as ID verified upon admin approval
         approvedAt: serverTimestamp()
       });
 
@@ -352,11 +353,22 @@ export default function AdminPanel() {
                           <span className="text-xs font-semibold px-2 px-1 text-gold bg-gold-100 rounded-full uppercase">Pending Review</span>
                         </div>
                         <p className="text-muted text-sm mb-4 line-clamp-2">{app.bio}</p>
-                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6 text-xs">
+                        <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-6 text-xs">
                           <div><span className="text-muted-dark block">Location</span><span className="text-cream">{app.city}</span></div>
                           <div><span className="text-muted-dark block">Languages</span><span className="text-cream">{app.languages?.join(', ')}</span></div>
                           <div><span className="text-muted-dark block">Pricing</span><span className="text-gold font-bold">${app.priceHalfDay} / ${app.priceFullDay}</span></div>
                           <div><span className="text-muted-dark block">Email</span><span className="text-cream">{app.email}</span></div>
+                          <div>
+                            <span className="text-muted-dark block">ID Verification</span>
+                            <a 
+                              href={app.idDocumentUrl} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="text-gold hover:text-gold-light flex items-center gap-1 mt-0.5 font-medium underline"
+                            >
+                              <Eye size={12} /> View {app.idType}
+                            </a>
+                          </div>
                         </div>
                         <div className="flex items-center gap-3">
                           <button 

@@ -210,10 +210,10 @@ export default function SearchPage() {
                             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                           />
                           <div className="absolute inset-0 bg-gradient-to-t from-dark-700 via-transparent to-transparent" />
-                          {guide.verified && (
-                            <div className="absolute top-3 right-3 bg-dark-800/80 backdrop-blur rounded-full px-2.5 py-1 flex items-center gap-1">
+                          {guide.idVerified && (
+                            <div className="absolute top-3 right-3 bg-dark-800/80 backdrop-blur rounded-full px-2.5 py-1 flex items-center gap-1 border border-gold/30">
                               <BadgeCheck size={12} className="text-gold" />
-                              <span className="text-[10px] text-cream font-medium">Verified</span>
+                              <span className="text-[10px] text-cream font-medium">ID Verified</span>
                             </div>
                           )}
                           <div className="absolute bottom-3 left-3">

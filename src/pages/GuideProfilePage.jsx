@@ -105,10 +105,10 @@ export default function GuideProfilePage() {
                   alt={guide.name}
                   className="w-full h-80 lg:h-96 object-cover rounded-2xl border border-dark-500"
                 />
-                {guide.verified && (
+                {guide.idVerified && (
                   <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-gold rounded-full px-4 py-1.5 flex items-center gap-1.5 shadow-gold-glow">
                     <BadgeCheck size={16} className="text-dark-900" />
-                    <span className="text-dark-900 text-sm font-bold">Verified Guide</span>
+                    <span className="text-dark-900 text-sm font-bold">ID Verified Guide</span>
                   </div>
                 )}
               </div>
