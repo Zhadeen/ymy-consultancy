@@ -86,10 +86,10 @@ export default function FeaturedGuides() {
                     <div className="absolute inset-0 bg-gradient-to-t from-dark-700 via-transparent to-transparent" />
 
                     {/* Verified badge */}
-                    {guide.verified && (
-                      <div className="absolute top-3 right-3 bg-dark-800/80 backdrop-blur-md rounded-full px-3 py-1 flex items-center gap-1.5">
+                    {guide.idVerified && (
+                      <div className="absolute top-3 right-3 bg-dark-800/80 backdrop-blur-md rounded-full px-3 py-1 flex items-center gap-1.5 border border-gold/30">
                         <BadgeCheck size={14} className="text-gold" />
-                        <span className="text-xs text-cream font-medium">Verified</span>
+                        <span className="text-xs text-cream font-medium">ID Verified</span>
                       </div>
                     )}
 
