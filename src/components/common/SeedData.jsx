@@ -9,12 +9,12 @@ export default function SeedData() {
   const seedDatabase = async () => {
     setStatus('Seeding guides...');
     try {
-      const guidesRef = collection(db, 'guides');
+      const { doc, setDoc } = await import('firebase/firestore');
       
       for (let i = 0; i < mockGuides.length; i++) {
-        const { id, ...guideData } = mockGuides[i];
-        await addDoc(guidesRef, {
-          ...guideData,
+        const guide = mockGuides[i];
+        await setDoc(doc(db, 'guides', guide.id), {
+          ...guide,
           createdAt: new Date()
         });
       }
