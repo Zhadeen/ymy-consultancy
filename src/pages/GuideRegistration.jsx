@@ -16,6 +16,7 @@ export default function GuideRegistration() {
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState('');
   const [processing, setProcessing] = useState(false);
+  const [statusText, setStatusText] = useState('');
   const { register } = useAuth();
   const navigate = useNavigate();
 
@@ -69,25 +70,34 @@ export default function GuideRegistration() {
         return;
       }
 
-      setProcessing(true); // Need to add processing state
+      setProcessing(true);
+      setStatusText('Creating account...');
+      console.log("Starting registration for:", form.email);
 
       // Create user auth with role 'pending_guide'
       const userCredential = await register(`${form.firstName} ${form.lastName}`, form.email, form.password, 'pending_guide');
       const uid = userCredential.user.uid;
+      console.log("Auth successful, UID:", uid);
 
       // Upload files to Firebase Storage
       let photoUrl = 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&q=80&w=200';
       let idDocumentUrl = '';
 
       if (form.photo) {
+        setStatusText('Uploading profile photo...');
+        console.log("Uploading photo...");
         photoUrl = await uploadFile(form.photo, 'profile_photos', `${uid}_profile`);
       }
       
       if (form.idDocument) {
+        setStatusText('Uploading ID document...');
+        console.log("Uploading ID...");
         idDocumentUrl = await uploadFile(form.idDocument, 'id_documents', `${uid}_id`);
       }
 
       // Save application details to 'guide_applications' collection
+      setStatusText('Finalizing application...');
+      console.log("Saving to Firestore...");
       await setDoc(doc(db, 'guide_applications', uid), {
         uid,
         name: `${form.firstName} ${form.lastName}`,
@@ -108,11 +118,14 @@ export default function GuideRegistration() {
         createdAt: serverTimestamp()
       });
 
+      console.log("Registration complete!");
       setSubmitted(true);
     } catch (err) {
+      console.error("Registration failed:", err);
       setError(err.message.replace('Firebase: ', ''));
     } finally {
       setProcessing(false);
+      setStatusText('');
     }
   };
 
@@ -370,7 +383,7 @@ export default function GuideRegistration() {
                 className="btn-gold flex items-center gap-2"
                 disabled={processing}
               >
-                {processing ? 'Processing...' : 'Submit Application'} <CheckCircle2 size={16} />
+                {processing ? (statusText || 'Processing...') : 'Submit Application'} <CheckCircle2 size={16} />
               </button>
             )}
           </div>
