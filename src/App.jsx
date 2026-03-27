@@ -22,7 +22,6 @@ import TermsPage from './pages/TermsPage';
 import PrivacyPage from './pages/PrivacyPage';
 import { useAuth } from './context/AuthContext';
 import { Navigate } from 'react-router-dom';
-import SeedData from './components/common/SeedData';
 
 function ProtectedRoute({ children, role }) {
   const { user, loading } = useAuth();
@@ -61,7 +60,6 @@ export default function App() {
     <BrowserRouter>
       <AuthProvider>
         <BookingProvider>
-          <SeedData />
           <ScrollToTop />
           <Routes>
             {/* Main layout with footer */}
