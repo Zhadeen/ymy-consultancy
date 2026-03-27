@@ -56,6 +56,10 @@ export default function GuideRegistration() {
 
   const handleSubmit = async () => {
     try {
+      if (!form.firstName.trim() || !form.lastName.trim()) {
+        setError('Please enter both your first and last name');
+        return;
+      }
       if (!form.password || form.password.length < 8) {
         setError('Password must be at least 8 characters');
         return;
