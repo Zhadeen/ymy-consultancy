@@ -21,13 +21,14 @@ export default function GuideRegistration() {
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
-    firstName: '', lastName: '', email: '', password: '', phone: '', country: '', countryCode: '', city: '',
+    firstName: '', lastName: '', email: '', password: '', phone: '', country: '', countryCode: '', phoneCode: '', city: '',
     photo: null, photoPreview: '',
     idType: 'Passport', idDocument: null, idDocumentPreview: '',
     bio: '', languages: [], specialties: '',
     priceHalfDay: '', priceFullDay: '', priceCustom: '',
   });
 
+  const selectedCountry = COUNTRIES.find(c => c.name === form.country);
   const availableCities = form.countryCode ? (CITIES_BY_COUNTRY[form.countryCode] || []) : [];
 
   const update = (field, value) => setForm(prev => ({ ...prev, [field]: value }));
@@ -108,6 +109,7 @@ export default function GuideRegistration() {
         countryCode: form.countryCode,
         city: form.city,
         phone: form.phone,
+        phoneCode: form.phoneCode,
         photo: photoUrl,
         idType: form.idType,
         idDocumentUrl: idDocumentUrl,
@@ -191,8 +193,13 @@ export default function GuideRegistration() {
               </div>
               <input type="email" placeholder="Email Address" value={form.email} onChange={e => update('email', e.target.value)} className="input-dark" />
               <input type="password" placeholder="Create Password (min 8 chars)" value={form.password} onChange={e => update('password', e.target.value)} className="input-dark" />
-              <input type="tel" placeholder="Phone Number" value={form.phone} onChange={e => update('phone', e.target.value)} className="input-dark" />
-              <select value={form.country} onChange={e => { const selected = COUNTRIES.find(c => c.name === e.target.value); update('country', e.target.value); update('countryCode', selected?.code || ''); update('city', ''); }} className="input-dark">
+              <div className="flex gap-2">
+                <div className="w-28 flex-shrink-0">
+                  <input type="text" value={form.phoneCode} readOnly placeholder="+XXX" className="input-dark text-center" />
+                </div>
+                <input type="tel" placeholder="Your phone number" value={form.phone} onChange={e => update('phone', e.target.value)} className="input-dark flex-1" />
+              </div>
+              <select value={form.country} onChange={e => { const selected = COUNTRIES.find(c => c.name === e.target.value); update('country', e.target.value); update('countryCode', selected?.code || ''); update('phoneCode', selected?.phoneCode || ''); update('city', ''); }} className="input-dark">
                 <option value="">Select your country</option>
                 {COUNTRIES.map(c => <option key={c.code} value={c.name}>{c.flag} {c.name} ({c.code})</option>)}
               </select>
@@ -357,6 +364,7 @@ export default function GuideRegistration() {
               <div className="bg-dark-600 rounded-2xl p-5 space-y-3 text-sm">
                 <div className="flex justify-between"><span className="text-muted">Name</span><span className="text-cream">{form.firstName} {form.lastName}</span></div>
                 <div className="flex justify-between"><span className="text-muted">Email</span><span className="text-cream">{form.email}</span></div>
+                <div className="flex justify-between"><span className="text-muted">Phone</span><span className="text-cream">{form.phoneCode} {form.phone}</span></div>
                 <div className="flex justify-between"><span className="text-muted">ID Type</span><span className="text-cream">{form.idType}</span></div>
                 <div className="flex justify-between"><span className="text-muted">ID Document</span><span className={form.idDocument ? 'text-green-400' : 'text-red-400'}>{form.idDocument ? '✓ Uploaded' : '✗ Missing'}</span></div>
                 <div className="flex justify-between"><span className="text-muted">Country</span><span className="text-cream">{form.country} ({form.countryCode})</span></div>
