@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { Mail, Lock, User, Camera, FileText, DollarSign, ChevronRight, ChevronLeft, Globe, CheckCircle2 } from 'lucide-react';
 import { collection, doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { auth, db } from '../config/firebase';
-import { LANGUAGES, CITIES } from '../data/mockData';
+import { LANGUAGES, COUNTRIES, CITIES_BY_COUNTRY } from '../data/mockData';
 import ScrollReveal from '../components/common/ScrollReveal';
 import { useAuth } from '../context/AuthContext';
 import { uploadFile } from '../utils/firebaseHelpers';
@@ -21,12 +21,14 @@ export default function GuideRegistration() {
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
-    firstName: '', lastName: '', email: '', password: '', phone: '', city: '',
+    firstName: '', lastName: '', email: '', password: '', phone: '', country: '', countryCode: '', city: '',
     photo: null, photoPreview: '',
     idType: 'Passport', idDocument: null, idDocumentPreview: '',
     bio: '', languages: [], specialties: '',
     priceHalfDay: '', priceFullDay: '', priceCustom: '',
   });
+
+  const availableCities = form.country ? (CITIES_BY_COUNTRY[form.country] || []) : [];
 
   const update = (field, value) => setForm(prev => ({ ...prev, [field]: value }));
 
@@ -102,6 +104,8 @@ export default function GuideRegistration() {
         uid,
         name: `${form.firstName} ${form.lastName}`,
         email: form.email,
+        country: form.country,
+        countryCode: form.countryCode,
         city: form.city,
         phone: form.phone,
         photo: photoUrl,
@@ -188,10 +192,16 @@ export default function GuideRegistration() {
               <input type="email" placeholder="Email Address" value={form.email} onChange={e => update('email', e.target.value)} className="input-dark" />
               <input type="password" placeholder="Create Password (min 8 chars)" value={form.password} onChange={e => update('password', e.target.value)} className="input-dark" />
               <input type="tel" placeholder="Phone Number" value={form.phone} onChange={e => update('phone', e.target.value)} className="input-dark" />
-              <select value={form.city} onChange={e => update('city', e.target.value)} className="input-dark">
-                <option value="">Select your city</option>
-                {CITIES.map(c => <option key={c} value={c}>{c}</option>)}
+              <select value={form.country} onChange={e => { const selected = COUNTRIES.find(c => c.name === e.target.value); update('country', e.target.value); update('countryCode', selected?.code || ''); update('city', ''); }} className="input-dark">
+                <option value="">Select your country</option>
+                {COUNTRIES.map(c => <option key={c.code} value={c.name}>{c.flag} {c.name} ({c.code})</option>)}
               </select>
+              {form.country && (
+                <select value={form.city} onChange={e => update('city', e.target.value)} className="input-dark mt-4">
+                  <option value="">Select your city</option>
+                  {availableCities.map(c => <option key={c} value={c}>{c}</option>)}
+                </select>
+              )}
             </div>
           )}
 
@@ -349,6 +359,7 @@ export default function GuideRegistration() {
                 <div className="flex justify-between"><span className="text-muted">Email</span><span className="text-cream">{form.email}</span></div>
                 <div className="flex justify-between"><span className="text-muted">ID Type</span><span className="text-cream">{form.idType}</span></div>
                 <div className="flex justify-between"><span className="text-muted">ID Document</span><span className={form.idDocument ? 'text-green-400' : 'text-red-400'}>{form.idDocument ? '✓ Uploaded' : '✗ Missing'}</span></div>
+                <div className="flex justify-between"><span className="text-muted">Country</span><span className="text-cream">{form.country} ({form.countryCode})</span></div>
                 <div className="flex justify-between"><span className="text-muted">City</span><span className="text-cream">{form.city}</span></div>
                 <div className="flex justify-between"><span className="text-muted">Languages</span><span className="text-cream">{form.languages.join(', ') || 'None selected'}</span></div>
                 <div className="flex justify-between font-medium pt-2 border-t border-dark-500"><span className="text-muted">Pricing</span><span className="text-gold">${form.priceHalfDay || '–'} / ${form.priceFullDay || '–'} / ${form.priceCustom || '–'}/hr</span></div>
