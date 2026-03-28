@@ -85,39 +85,30 @@ export default function GuideRegistration() {
       let photoUrl = 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&q=80&w=200';
       let idDocumentUrl = '';
 
-      // Upload files with timeout
-      const uploadWithTimeout = async (file, path, name, timeout = 10000) => {
+      // Upload profile photo
+      if (form.photo && form.photo instanceof File) {
+        setStatusText('Uploading profile photo...');
         try {
-          const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), timeout);
-          
-          const result = await uploadFile(file, path, name);
-          clearTimeout(timeoutId);
-          return result;
-        } catch (err) {
-          if (err.name === 'AbortError') {
-            console.warn(`Upload timed out for ${name}`);
+          const uploadedUrl = await uploadFile(form.photo, 'profile_photos', `${uid}_profile`);
+          if (uploadedUrl) {
+            photoUrl = uploadedUrl;
           }
-          throw err;
+        } catch (err) {
+          console.error("Photo upload error:", err);
         }
-      };
-
-      try {
-        if (form.photo && form.photo instanceof File) {
-          setStatusText('Uploading profile photo...');
-          await uploadWithTimeout(form.photo, 'profile_photos', `${uid}_profile`)
-            .then(url => { if (url) photoUrl = url; })
-            .catch(() => {});
+      }
+      
+      // Upload ID document
+      if (form.idDocument && form.idDocument instanceof File) {
+        setStatusText('Uploading ID document...');
+        try {
+          const uploadedUrl = await uploadFile(form.idDocument, 'id_documents', `${uid}_id`);
+          if (uploadedUrl) {
+            idDocumentUrl = uploadedUrl;
+          }
+        } catch (err) {
+          console.error("ID upload error:", err);
         }
-        
-        if (form.idDocument && form.idDocument instanceof File) {
-          setStatusText('Uploading ID document...');
-          await uploadWithTimeout(form.idDocument, 'id_documents', `${uid}_id`)
-            .then(url => { if (url) idDocumentUrl = url; })
-            .catch(() => {});
-        }
-      } catch (uploadErr) {
-        console.error("Upload error:", uploadErr);
       }
       
       setStatusText('Finalizing application...');
