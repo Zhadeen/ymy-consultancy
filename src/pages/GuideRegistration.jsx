@@ -28,7 +28,7 @@ export default function GuideRegistration() {
     priceHalfDay: '', priceFullDay: '', priceCustom: '',
   });
 
-  const availableCities = form.country ? (CITIES_BY_COUNTRY[form.country] || []) : [];
+  const availableCities = form.countryCode ? (CITIES_BY_COUNTRY[form.countryCode] || []) : [];
 
   const update = (field, value) => setForm(prev => ({ ...prev, [field]: value }));
 
