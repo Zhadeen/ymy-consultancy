@@ -70,23 +70,40 @@ export default function AdminPanel() {
         role: 'guide'
       });
 
-      // 2. Add to public guides collection
-      await setDoc(doc(db, 'guides', app.uid), {
+      // 2. Add to public guides collection with all required fields
+      const guideData = {
         ...app,
         id: app.uid,
+        uid: app.uid,
+        name: app.name,
+        city: app.city || 'Not specified',
+        country: app.country || 'Not specified',
+        countryCode: app.countryCode || '',
+        photo: app.photo || 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=400&h=400&fit=crop&crop=face',
+        bio: app.bio || '',
+        languages: app.languages || [],
+        specialties: app.specialties || '',
+        priceHalfDay: app.priceHalfDay || 100,
+        priceFullDay: app.priceFullDay || 150,
+        priceCustom: app.priceCustom || 50,
         rating: 5.0,
-        reviewsCount: 0,
+        reviewCount: 0,
+        totalBookings: 0,
+        experience: 0,
         status: 'active',
-        idVerified: true, // Mark as ID verified upon admin approval
+        verified: true,
+        idVerified: true,
         approvedAt: serverTimestamp()
-      });
+      };
+
+      await setDoc(doc(db, 'guides', app.uid), guideData);
 
       // 3. Remove application
       await deleteDoc(doc(db, 'guide_applications', app.id));
 
       // 4. Update local state
       setApplications(prev => prev.filter(a => a.id !== app.id));
-      setGuides(prev => [...prev, { ...app, id: app.uid, rating: 5.0, status: 'active' }]);
+      setGuides(prev => [...prev, guideData]);
       // Update user role locally too
       setUsers(prev => prev.map(u => u.id === app.uid ? { ...u, role: 'guide' } : u));
       
