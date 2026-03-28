@@ -107,7 +107,7 @@ export default function FeaturedGuides() {
                     </h3>
                     <div className="flex items-center gap-1.5 text-muted text-sm mt-1 mb-3">
                       <MapPin size={14} />
-                      <span>{guide.city}, {guide.country}</span>
+                      <span>{guide.country}, {guide.city}</span>
                     </div>
 
                     <StarRating rating={guide.rating} size={14} />

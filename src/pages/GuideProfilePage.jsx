@@ -122,7 +122,7 @@ export default function GuideProfilePage() {
               <div className="flex flex-wrap items-center gap-4 text-muted mb-6">
                 <span className="flex items-center gap-1.5">
                   <MapPin size={16} />
-                  {guide.city}, {guide.country}
+                  {guide.country}, {guide.city}
                 </span>
                 <span className="flex items-center gap-1.5">
                   <Clock size={16} />

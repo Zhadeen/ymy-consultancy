@@ -59,7 +59,7 @@ export default function GuideDashboard() {
                   Guide Dashboard
                 </h1>
                 <p className="text-muted flex items-center gap-1">
-                  <MapPin size={14} /> {guide.city}, {guide.country}
+                  <MapPin size={14} /> {guide.country}, {guide.city}
                 </p>
               </div>
             </div>
