@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { collection, query, where, getDocs, doc, getDoc } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import { useAuth } from '../context/AuthContext';
 import ScrollReveal from '../components/common/ScrollReveal';
+import { MapPin, Edit3, DollarSign, Calendar, Star, Users, Clock, MessageSquare, Settings, TrendingUp, ChevronRight } from 'lucide-react';
 
 export default function GuideDashboard() {
   const { user } = useAuth();
@@ -15,9 +17,8 @@ export default function GuideDashboard() {
     if (!user) return;
     const fetchData = async () => {
       try {
-        // Find guide doc by name for mock data compatibility, or by user.uid
         const guidesRef = collection(db, 'guides');
-        const qG = query(guidesRef, where('name', '==', user.name)); // Temporary name match
+        const qG = query(guidesRef, where('uid', '==', user.uid));
         const snapG = await getDocs(qG);
         
         if (!snapG.empty) {

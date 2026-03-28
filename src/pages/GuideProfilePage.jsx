@@ -322,7 +322,7 @@ export default function GuideProfilePage() {
                   </div>
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-muted">Languages</span>
-                    <span className="text-cream font-medium">{guide.languages.length}</span>
+                    <span className="text-cream font-medium">{(guide.languages || []).length}</span>
                   </div>
                 </div>
               </div>

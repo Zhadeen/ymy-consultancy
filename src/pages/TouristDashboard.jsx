@@ -117,7 +117,7 @@ export default function TouristDashboard() {
                           booking.status === 'completed' ? 'bg-green-500/10 text-green-400' :
                           'bg-gold-100 text-gold'
                         }`}>
-                          {booking.status === 'confirmed' ? 'upcoming' : booking.status}
+                          {booking.status}
                         </span>
                         <span className="text-gold font-heading font-bold">${booking.totalPrice}</span>
                       </div>

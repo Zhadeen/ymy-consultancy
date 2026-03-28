@@ -72,7 +72,14 @@ export default function App() {
               <Route path="/register" element={<RegisterPage />} />
               <Route path="/dashboard" element={<TouristDashboard />} />
               <Route path="/guide-register" element={<GuideRegistration />} />
-              <Route path="/guide-dashboard" element={<GuideDashboard />} />
+              <Route 
+                path="/guide-dashboard" 
+                element={
+                  <ProtectedRoute role="guide">
+                    <GuideDashboard />
+                  </ProtectedRoute>
+                } 
+              />
               <Route path="/help" element={<HelpCenterPage />} />
               <Route path="/safety" element={<SafetyPage />} />
               <Route path="/cancellation" element={<CancellationPage />} />

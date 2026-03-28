@@ -15,6 +15,7 @@ export function BookingProvider({ children }) {
     specialRequests: '',
   });
   const [confirmed, setConfirmed] = useState(null);
+  const [error, setError] = useState(null);
 
   const updateBooking = (updates) => {
     setBooking(prev => ({ ...prev, ...updates }));
@@ -32,12 +33,14 @@ export function BookingProvider({ children }) {
 
     try {
       await addDoc(collection(db, 'bookings'), confirmation);
+      setConfirmed(confirmation);
+      setError(null);
+      return confirmation;
     } catch (err) {
       console.error('Error saving booking to Firestore:', err);
+      setError(err.message);
+      throw err;
     }
-
-    setConfirmed(confirmation);
-    return confirmation;
   };
 
   const resetBooking = () => {
@@ -46,7 +49,7 @@ export function BookingProvider({ children }) {
   };
 
   return (
-    <BookingContext.Provider value={{ booking, confirmed, updateBooking, confirmBooking, resetBooking }}>
+    <BookingContext.Provider value={{ booking, confirmed, error, updateBooking, confirmBooking, resetBooking }}>
       {children}
     </BookingContext.Provider>
   );

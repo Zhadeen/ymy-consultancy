@@ -114,7 +114,7 @@ export default function FeaturedGuides() {
 
                     <div className="flex items-center gap-1.5 text-muted-dark text-xs mt-3">
                       <Languages size={12} />
-                      <span>{guide.languages.join(' · ')}</span>
+                      <span>{(guide.languages || []).join(' · ')}</span>
                     </div>
                   </div>
                 </div>

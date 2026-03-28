@@ -136,7 +136,7 @@ export default function Navbar() {
             {user ? (
               <>
                 <Link to="/dashboard" className="text-lg text-cream">Dashboard</Link>
-                {user.role === 'admin' && (
+                {user?.role === 'admin' && (
                   <Link to="/admin" className="text-lg text-gold font-bold">Admin Panel</Link>
                 )}
                 <button onClick={logout} className="text-lg text-muted text-left">Logout</button>

@@ -12,6 +12,7 @@ export default function BookingPage() {
   const { booking, updateBooking, confirmBooking, confirmed } = useBooking();
   const [guide, setGuide] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchGuide = async () => {
@@ -58,8 +59,14 @@ export default function BookingPage() {
   const handleConfirm = async () => {
     if (!date || !name || !email) return;
     setProcessing(true);
-    await confirmBooking({ touristName: name, touristEmail: email, specialRequests, date, tourType, guests, totalPrice, guideName: guide.name, guideId: guide.id });
-    setProcessing(false);
+    setError(null);
+    try {
+      await confirmBooking({ touristName: name, touristEmail: email, specialRequests, date, tourType, guests, totalPrice, guideName: guide.name, guideId: guide.id });
+    } catch (err) {
+      setError(err.message || 'Failed to confirm booking. Please try again.');
+    } finally {
+      setProcessing(false);
+    }
   };
 
   const handleCopyRef = () => {
@@ -293,6 +300,12 @@ export default function BookingPage() {
                       <span className="text-gold font-heading text-2xl font-bold">${totalPrice}</span>
                     </div>
                   </div>
+
+                  {error && (
+                    <div className="bg-red-500/10 border border-red-500/30 rounded-btn px-4 py-3 mb-4">
+                      <p className="text-red-400 text-sm">{error}</p>
+                    </div>
+                  )}
 
                   <button
                     onClick={handleConfirm}
