@@ -85,24 +85,42 @@ export default function GuideRegistration() {
       let photoUrl = 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&q=80&w=200';
       let idDocumentUrl = '';
 
+      // Upload files with timeout
+      const uploadWithTimeout = async (file, path, name, timeout = 10000) => {
+        try {
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), timeout);
+          
+          const result = await uploadFile(file, path, name);
+          clearTimeout(timeoutId);
+          return result;
+        } catch (err) {
+          if (err.name === 'AbortError') {
+            console.warn(`Upload timed out for ${name}`);
+          }
+          throw err;
+        }
+      };
+
       try {
-        // Upload profile photo if exists
         if (form.photo && form.photo instanceof File) {
           setStatusText('Uploading profile photo...');
-          const uploadedUrl = await uploadFile(form.photo, 'profile_photos', `${uid}_profile`);
-          if (uploadedUrl) photoUrl = uploadedUrl;
+          await uploadWithTimeout(form.photo, 'profile_photos', `${uid}_profile`)
+            .then(url => { if (url) photoUrl = url; })
+            .catch(() => {});
         }
         
-        // Upload ID document if exists
         if (form.idDocument && form.idDocument instanceof File) {
           setStatusText('Uploading ID document...');
-          const uploadedUrl = await uploadFile(form.idDocument, 'id_documents', `${uid}_id`);
-          if (uploadedUrl) idDocumentUrl = uploadedUrl;
+          await uploadWithTimeout(form.idDocument, 'id_documents', `${uid}_id`)
+            .then(url => { if (url) idDocumentUrl = url; })
+            .catch(() => {});
         }
       } catch (uploadErr) {
         console.error("Upload error:", uploadErr);
-        // Continue with default URLs if upload fails
       }
+      
+      setStatusText('Finalizing application...');
 
       // Save application details to 'guide_applications' collection
       setStatusText('Finalizing application...');
