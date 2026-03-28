@@ -74,33 +74,38 @@ export default function GuideRegistration() {
       }
 
       setProcessing(true);
+      setError('');
       setStatusText('Creating account...');
-      console.log("Starting registration for:", form.email);
 
       // Create user auth with role 'pending_guide'
       const userCredential = await register(`${form.firstName} ${form.lastName}`, form.email, form.password, 'pending_guide');
       const uid = userCredential.user.uid;
-      console.log("Auth successful, UID:", uid);
 
       // Upload files to Firebase Storage
       let photoUrl = 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&q=80&w=200';
       let idDocumentUrl = '';
 
-      if (form.photo) {
-        setStatusText('Uploading profile photo...');
-        console.log("Uploading photo...");
-        photoUrl = await uploadFile(form.photo, 'profile_photos', `${uid}_profile`);
-      }
-      
-      if (form.idDocument) {
-        setStatusText('Uploading ID document...');
-        console.log("Uploading ID...");
-        idDocumentUrl = await uploadFile(form.idDocument, 'id_documents', `${uid}_id`);
+      try {
+        // Upload profile photo if exists
+        if (form.photo && form.photo instanceof File) {
+          setStatusText('Uploading profile photo...');
+          const uploadedUrl = await uploadFile(form.photo, 'profile_photos', `${uid}_profile`);
+          if (uploadedUrl) photoUrl = uploadedUrl;
+        }
+        
+        // Upload ID document if exists
+        if (form.idDocument && form.idDocument instanceof File) {
+          setStatusText('Uploading ID document...');
+          const uploadedUrl = await uploadFile(form.idDocument, 'id_documents', `${uid}_id`);
+          if (uploadedUrl) idDocumentUrl = uploadedUrl;
+        }
+      } catch (uploadErr) {
+        console.error("Upload error:", uploadErr);
+        // Continue with default URLs if upload fails
       }
 
       // Save application details to 'guide_applications' collection
       setStatusText('Finalizing application...');
-      console.log("Saving to Firestore...");
       await setDoc(doc(db, 'guide_applications', uid), {
         uid,
         name: `${form.firstName} ${form.lastName}`,
@@ -124,11 +129,10 @@ export default function GuideRegistration() {
         createdAt: serverTimestamp()
       });
 
-      console.log("Registration complete!");
       setSubmitted(true);
     } catch (err) {
       console.error("Registration failed:", err);
-      setError(err.message.replace('Firebase: ', ''));
+      setError(err.message?.replace('Firebase: ', '') || 'Registration failed. Please try again.');
     } finally {
       setProcessing(false);
       setStatusText('');
