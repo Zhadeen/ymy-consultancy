@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { MapPin, Languages, Filter, X, ChevronDown, SlidersHorizontal, BadgeCheck, Star } from 'lucide-react';
-import { CITIES, LANGUAGES } from '../data/mockData';
+import { CITIES, LANGUAGES, COUNTRIES, CITIES_BY_COUNTRY } from '../data/mockData';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import StarRating from '../components/common/StarRating';
@@ -12,6 +12,7 @@ export default function SearchPage() {
   const [showFilters, setShowFilters] = useState(false);
 
   const [city, setCity] = useState(searchParams.get('city') || '');
+  const [country, setCountry] = useState(searchParams.get('country') || '');
   const [language, setLanguage] = useState(searchParams.get('language') || '');
   const [maxPrice, setMaxPrice] = useState(300);
   const [minRating, setMinRating] = useState(0);
@@ -45,6 +46,7 @@ export default function SearchPage() {
 
   const filteredGuides = useMemo(() => {
     let guides = [...allGuides];
+    if (country) guides = guides.filter(g => g.country === country);
     if (city) guides = guides.filter(g => g.city === city);
     if (language) guides = guides.filter(g => (g.languages || []).includes(language));
     guides = guides.filter(g => (g.priceFullDay || 9999) <= maxPrice);
@@ -57,9 +59,10 @@ export default function SearchPage() {
       case 'bookings': guides.sort((a, b) => (b.totalBookings || 0) - (a.totalBookings || 0)); break;
     }
     return guides;
-  }, [allGuides, city, language, maxPrice, minRating, sortBy]);
+  }, [allGuides, country, city, language, maxPrice, minRating, sortBy]);
 
   const clearFilters = () => {
+    setCountry('');
     setCity('');
     setLanguage('');
     setMaxPrice(300);
@@ -67,7 +70,7 @@ export default function SearchPage() {
     setSearchParams({});
   };
 
-  const activeFilterCount = [city, language, maxPrice < 300, minRating > 0].filter(Boolean).length;
+  const activeFilterCount = [country, city, language, maxPrice < 300, minRating > 0].filter(Boolean).length;
 
   return (
     <main className="pt-20 min-h-screen bg-dark-800">
@@ -79,7 +82,7 @@ export default function SearchPage() {
           </h1>
           <p className="text-muted">
             {filteredGuides.length} {filteredGuides.length === 1 ? 'guide' : 'guides'} available
-            {city ? ` in ${city}` : ' worldwide'}
+            {country ? ` in ${country}` : city ? ` in ${city}` : ' worldwide'}
           </p>
         </div>
       </div>
@@ -98,12 +101,21 @@ export default function SearchPage() {
                 )}
               </div>
 
+              {/* Country */}
+              <div>
+                <label className="text-sm font-medium text-cream mb-2 block">Country</label>
+                <select value={country} onChange={e => { setCountry(e.target.value); setCity(''); }} className="input-dark text-sm" id="filter-country">
+                  <option value="">All Countries</option>
+                  {COUNTRIES.map(c => <option key={c.code} value={c.name}>{c.flag} {c.name}</option>)}
+                </select>
+              </div>
+
               {/* City */}
               <div>
                 <label className="text-sm font-medium text-cream mb-2 block">City</label>
-                <select value={city} onChange={e => setCity(e.target.value)} className="input-dark text-sm" id="filter-city">
-                  <option value="">All Cities</option>
-                  {CITIES.map(c => <option key={c} value={c}>{c}</option>)}
+                <select value={city} onChange={e => setCity(e.target.value)} className="input-dark text-sm" id="filter-city" disabled={!country}>
+                  <option value="">{country ? 'All Cities' : 'Select country first'}</option>
+                  {country && (CITIES_BY_COUNTRY[COUNTRIES.find(c => c.name === country)?.code] || []).map(c => <option key={c} value={c}>{c}</option>)}
                 </select>
               </div>
 
@@ -284,10 +296,17 @@ export default function SearchPage() {
             </div>
             <div className="space-y-6">
               <div>
+                <label className="text-sm font-medium text-cream mb-2 block">Country</label>
+                <select value={country} onChange={e => { setCountry(e.target.value); setCity(''); }} className="input-dark text-sm">
+                  <option value="">All Countries</option>
+                  {COUNTRIES.map(c => <option key={c.code} value={c.name}>{c.flag} {c.name}</option>)}
+                </select>
+              </div>
+              <div>
                 <label className="text-sm font-medium text-cream mb-2 block">City</label>
-                <select value={city} onChange={e => setCity(e.target.value)} className="input-dark text-sm">
-                  <option value="">All Cities</option>
-                  {CITIES.map(c => <option key={c} value={c}>{c}</option>)}
+                <select value={city} onChange={e => setCity(e.target.value)} className="input-dark text-sm" disabled={!country}>
+                  <option value="">{country ? 'All Cities' : 'Select country first'}</option>
+                  {country && (CITIES_BY_COUNTRY[COUNTRIES.find(c => c.name === country)?.code] || []).map(c => <option key={c} value={c}>{c}</option>)}
                 </select>
               </div>
               <div>
