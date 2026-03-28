@@ -83,6 +83,7 @@ export default function Footer() {
               {[
                 { label: 'Help Center', to: '/help' },
                 { label: 'Safety', to: '/safety' },
+                { label: 'Pricing', to: '/pricing' },
                 { label: 'Cancellation Policy', to: '/cancellation' },
                 { label: 'Terms of Service', to: '/terms' },
                 { label: 'Privacy Policy', to: '/privacy' },

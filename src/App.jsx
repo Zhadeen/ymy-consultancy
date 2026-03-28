@@ -20,6 +20,7 @@ import SafetyPage from './pages/SafetyPage';
 import CancellationPage from './pages/CancellationPage';
 import TermsPage from './pages/TermsPage';
 import PrivacyPage from './pages/PrivacyPage';
+import PricingPage from './pages/PricingPage';
 import { useAuth } from './context/AuthContext';
 import { Navigate } from 'react-router-dom';
 
@@ -85,6 +86,7 @@ export default function App() {
               <Route path="/cancellation" element={<CancellationPage />} />
               <Route path="/terms" element={<TermsPage />} />
               <Route path="/privacy" element={<PrivacyPage />} />
+              <Route path="/pricing" element={<PricingPage />} />
             </Route>
 
             {/* Chat - no footer */}

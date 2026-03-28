@@ -22,7 +22,7 @@ export default function Navbar() {
 
   const navLinks = [
     { to: '/search', label: 'Explore' },
-    { to: '/#how-it-works', label: 'How It Works' },
+    { to: '/pricing', label: 'Pricing' },
     { to: '/guide-register', label: 'Become a Guide' },
   ];
 
