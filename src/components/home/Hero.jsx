@@ -165,22 +165,7 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* Interactive Interactive Scroll Indicator */}
-      <motion.div
-        animate={{ x: mousePos.x, y: mousePos.y }}
-        transition={{ type: "spring", stiffness: 100, damping: 20, mass: 0.5 }}
-        onClick={scrollToNext}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 cursor-pointer z-20 group"
-      >
-        <div className="flex flex-col items-center gap-3">
-          <span className="text-[10px] text-cream/40 uppercase tracking-[0.3em] font-medium group-hover:text-gold transition-colors max-w-max ml-[0.3em]">
-            Scroll to explore
-          </span>
-          <div className="w-8 h-12 rounded-full border border-cream/20 flex flex-col items-center justify-start p-2 group-hover:border-gold/50 transition-colors backdrop-blur-sm bg-dark-900/30">
-            <div className="w-1.5 h-1.5 rounded-full bg-gold animate-[bounce_2s_infinite]" />
-          </div>
-        </div>
-      </motion.div>
+
     </section>
   );
 }
