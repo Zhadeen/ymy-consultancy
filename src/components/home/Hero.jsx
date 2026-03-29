@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, MapPin, Languages, Calendar, DollarSign } from 'lucide-react';
+import { Search, MapPin, Languages, Calendar, DollarSign, ChevronDown } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { CITIES, LANGUAGES } from '../../data/mockData';
 
 export default function Hero() {
@@ -9,6 +10,7 @@ export default function Hero() {
   const [language, setLanguage] = useState('');
   const [date, setDate] = useState('');
   const [priceRange, setPriceRange] = useState('');
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -20,9 +22,21 @@ export default function Hero() {
     navigate(`/search?${params.toString()}`);
   };
 
+  const handleMouseMove = (e) => {
+    // Creates a smooth parallax effect by moving slightly away from the cursor
+    const x = (window.innerWidth / 2 - e.clientX) / 20;
+    const y = (window.innerHeight / 2 - e.clientY) / 20;
+    setMousePos({ x, y });
+  };
+
+  const scrollToNext = () => {
+    window.scrollTo({ top: window.innerHeight, behavior: 'smooth' });
+  };
+
   return (
     <section
       id="hero"
+      onMouseMove={handleMouseMove}
       className="relative min-h-screen flex items-center justify-center overflow-hidden"
     >
       {/* Background image with overlay */}
@@ -151,12 +165,22 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* Scroll indicator */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
-        <div className="w-6 h-10 rounded-full border-2 border-cream/30 flex items-start justify-center p-1.5">
-          <div className="w-1.5 h-3 rounded-full bg-gold animate-pulse" />
+      {/* Interactive Interactive Scroll Indicator */}
+      <motion.div
+        animate={{ x: mousePos.x, y: mousePos.y }}
+        transition={{ type: "spring", stiffness: 100, damping: 20, mass: 0.5 }}
+        onClick={scrollToNext}
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 cursor-pointer z-20 group"
+      >
+        <div className="flex flex-col items-center gap-3">
+          <span className="text-[10px] text-cream/40 uppercase tracking-[0.3em] font-medium group-hover:text-gold transition-colors max-w-max ml-[0.3em]">
+            Scroll to explore
+          </span>
+          <div className="w-8 h-12 rounded-full border border-cream/20 flex flex-col items-center justify-start p-2 group-hover:border-gold/50 transition-colors backdrop-blur-sm bg-dark-900/30">
+            <div className="w-1.5 h-1.5 rounded-full bg-gold animate-[bounce_2s_infinite]" />
+          </div>
         </div>
-      </div>
+      </motion.div>
     </section>
   );
 }
