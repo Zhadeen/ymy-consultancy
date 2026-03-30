@@ -11,6 +11,7 @@ import {
 } from 'firebase/auth';
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { auth, db } from '../config/firebase';
+import LoadingSpinner from '../components/common/LoadingSpinner';
 
 const AuthContext = createContext(null);
 
@@ -22,31 +23,36 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      if (firebaseUser) {
-        // Fetch custom user doc from Firestore
-        const docRef = doc(db, 'users', firebaseUser.uid);
-        const docSnap = await getDoc(docRef);
-        
-        let role = 'tourist';
-        if (docSnap.exists()) {
-          role = docSnap.data().role;
+      try {
+        if (firebaseUser) {
+          // Fetch custom user doc from Firestore
+          const docRef = doc(db, 'users', firebaseUser.uid);
+          const docSnap = await getDoc(docRef);
+          
+          let role = 'tourist';
+          if (docSnap.exists()) {
+            role = docSnap.data().role;
+          }
+          
+          setUser({
+            uid: firebaseUser.uid,
+            name: firebaseUser.displayName || 'Traveler',
+            email: firebaseUser.email,
+            avatar: firebaseUser.photoURL || null,
+            role: role
+          });
+          setIsGuide(role === 'guide');
+          setIsAdmin(role === 'admin');
+        } else {
+          setUser(null);
+          setIsGuide(false);
+          setIsAdmin(false);
         }
-        
-        setUser({
-          uid: firebaseUser.uid,
-          name: firebaseUser.displayName || 'Traveler',
-          email: firebaseUser.email,
-          avatar: firebaseUser.photoURL || null,
-          role: role
-        });
-        setIsGuide(role === 'guide');
-        setIsAdmin(role === 'admin');
-      } else {
-        setUser(null);
-        setIsGuide(false);
-        setIsAdmin(false);
+      } catch (err) {
+        console.error("Auth initialization error:", err);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     });
 
     return unsubscribe;
@@ -104,7 +110,7 @@ export function AuthProvider({ children }) {
 
   return (
     <AuthContext.Provider value={{ user, isGuide, isAdmin, loading, login, loginWithGoogle, register, logout, resetPassword }}>
-      {!loading && children}
+      {loading ? <LoadingSpinner /> : children}
     </AuthContext.Provider>
   );
 }
