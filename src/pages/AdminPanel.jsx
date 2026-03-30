@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Users, Globe, Calendar, DollarSign, TrendingUp, CheckCircle, XCircle, Clock, ChevronDown, Search, BarChart3, ArrowUpRight, ArrowDownRight, Eye, Ban, Trash2 } from 'lucide-react';
-import { doc, getDoc, collection, getDocs, query, orderBy, setDoc, updateDoc, deleteDoc, writeBatch, serverTimestamp } from 'firebase/firestore';
+import { doc, collection, getDocs, query, orderBy, deleteDoc, writeBatch } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import ScrollReveal from '../components/common/ScrollReveal';
+import { useAuth } from '../context/AuthContext';
 
 const tabs = [
   { id: 'overview', label: 'Overview', icon: BarChart3 },
@@ -14,8 +15,9 @@ const tabs = [
 ];
 
 export default function AdminPanel() {
+  const { user: currentUser } = useAuth();
   const [activeTab, setActiveTab] = useState('overview');
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen] = useState(true);
   const [users, setUsers] = useState([]);
   const [guides, setGuides] = useState([]);
   const [bookings, setBookings] = useState([]);
@@ -130,9 +132,10 @@ export default function AdminPanel() {
   };
 
   const handleWipeData = async () => {
-    const collectionsToWipe = ['guides', 'bookings', 'guide_applications', 'reviews'];
+    const collectionsToWipe = ['guides', 'bookings', 'guide_applications', 'reviews', 'chats', 'users'];
     const confirmed = window.confirm(
-      "CRITICAL ACTION: This will delete ALL " + collectionsToWipe.join(', ') + ". This cannot be undone. Are you absolutely sure?"
+      "CRITICAL ACTION: This will delete ALL " + collectionsToWipe.join(', ') + 
+      " (except your own admin account). This cannot be undone. Are you absolutely sure?"
     );
     if (!confirmed) return;
     
@@ -143,15 +146,50 @@ export default function AdminPanel() {
     try {
       for (const collName of collectionsToWipe) {
         const snap = await getDocs(collection(db, collName));
-        const batch = writeBatch(db);
-        snap.docs.forEach(d => batch.delete(d.ref));
-        await batch.commit();
+        let batch = writeBatch(db);
+        let count = 0;
+
+        for (const d of snap.docs) {
+          // Safeguard: Don't delete the current admin user
+          if (collName === 'users' && d.id === currentUser?.uid) continue;
+
+          // Recursive part for chats/messages subcollection
+          if (collName === 'chats') {
+            try {
+              const messagesSnap = await getDocs(collection(db, 'chats', d.id, 'messages'));
+              for (const msgDoc of messagesSnap.docs) {
+                batch.delete(msgDoc.ref);
+                count++;
+                if (count >= 400) {
+                  await batch.commit();
+                  batch = writeBatch(db);
+                  count = 0;
+                }
+              }
+            } catch (chatErr) {
+              console.warn(`Could not clear messages for chat ${d.id}:`, chatErr);
+            }
+          }
+
+          batch.delete(d.ref);
+          count++;
+
+          if (count >= 400) {
+            await batch.commit();
+            batch = writeBatch(db);
+            count = 0;
+          }
+        }
+        
+        if (count > 0) {
+          await batch.commit();
+        }
       }
       alert("Database wiped successfully. You have a clean slate!");
       window.location.reload();
     } catch (err) {
       console.error("Wipe failed:", err);
-      alert("Wipe failed. Check console for details.");
+      alert("Wipe failed: " + err.message);
     } finally {
       setLoading(false);
     }
@@ -295,7 +333,7 @@ export default function AdminPanel() {
                       </tr>
                     </thead>
                     <tbody>
-                      {users.map((user, i) => (
+                      {users.map((user) => (
                         <tr key={user.id} className="border-b border-dark-700/50 hover:bg-dark-700/30 transition-colors">
                           <td className="px-5 py-4 text-cream text-sm font-medium">{user.name}</td>
                           <td className="px-5 py-4 text-muted text-sm">{user.email}</td>
@@ -343,7 +381,7 @@ export default function AdminPanel() {
                       </tr>
                     </thead>
                     <tbody>
-                      {guides.map((guide, i) => (
+                      {guides.map((guide) => (
                         <tr key={guide.id} className="border-b border-dark-700/50 hover:bg-dark-700/30 transition-colors">
                           <td className="px-5 py-4">
                             <div className="flex items-center gap-3">
