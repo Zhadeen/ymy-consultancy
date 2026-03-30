@@ -1,3 +1,5 @@
+import { useState, useEffect } from 'react';
+import { Users, Globe, Calendar, DollarSign, TrendingUp, CheckCircle, XCircle, Clock, ChevronDown, Search, BarChart3, ArrowUpRight, ArrowDownRight, Eye, Ban, Trash2 } from 'lucide-react';
 import { doc, getDoc, collection, getDocs, query, orderBy, setDoc, updateDoc, deleteDoc, writeBatch, serverTimestamp } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import ScrollReveal from '../components/common/ScrollReveal';
