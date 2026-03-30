@@ -21,6 +21,7 @@ import CancellationPage from './pages/CancellationPage';
 import TermsPage from './pages/TermsPage';
 import PrivacyPage from './pages/PrivacyPage';
 import PricingPage from './pages/PricingPage';
+import WhatsAppButton from './components/layout/WhatsAppButton';
 import { useAuth } from './context/AuthContext';
 import { Navigate } from 'react-router-dom';
 
@@ -62,6 +63,7 @@ export default function App() {
       <AuthProvider>
         <BookingProvider>
           <ScrollToTop />
+          <WhatsAppButton />
           <Routes>
             {/* Main layout with footer */}
             <Route element={<Layout />}>
