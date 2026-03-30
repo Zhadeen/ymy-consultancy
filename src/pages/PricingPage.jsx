@@ -39,18 +39,24 @@ export default function PricingPage() {
     setLoading(plan.id);
     
     try {
-      await setDoc(doc(db, 'subscriptions', user.uid), {
-        planId: plan.id,
-        planName: plan.name,
-        price: plan.price,
-        status: 'active',
-        startDate: new Date().toISOString(),
-        addons: [],
-        paymentStatus: 'pending',
-      }, { merge: true });
+      const response = await fetch('/api/create-subscription-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          priceId: plan.priceId,
+          guideId: user.uid,
+          guideEmail: user.email,
+          planId: plan.id,
+          planName: plan.name
+        })
+      });
 
-      alert(`Selected ${plan.name} - $${plan.price}/month!\n\nPayment integration ready. In production, this would redirect to Stripe checkout.`);
-      navigate('/dashboard');
+      const session = await response.json();
+      if (session.url) {
+        window.location.href = session.url;
+      } else {
+        throw new Error(session.message || 'Failed to initialize Stripe checkout.');
+      }
     } catch (err) {
       console.error('Subscription error:', err);
       alert('Error subscribing. Please try again.');

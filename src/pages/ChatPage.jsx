@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Send, Paperclip, Check, CheckCheck, ChevronLeft, Image as ImageIcon } from 'lucide-react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
-import { collection, doc, query, orderBy, onSnapshot, addDoc, serverTimestamp, getDoc } from 'firebase/firestore';
+import { collection, doc, query, orderBy, onSnapshot, addDoc, serverTimestamp, getDoc, setDoc } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import { useAuth } from '../context/AuthContext';
 
@@ -25,20 +25,37 @@ export default function ChatPage() {
   useEffect(() => {
     if (!user) return; // Wait for user to be available
 
-    const fetchGuide = async () => {
+    const fetchPeerInfo = async () => {
       try {
-        const docRef = doc(db, 'guides', guideId);
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          setGuide({ id: docSnap.id, ...docSnap.data() });
+        // Try to fetch existing chat document which has peer info
+        const chatDocRef = doc(db, 'chats', chatId);
+        const chatSnap = await getDoc(chatDocRef);
+        
+        if (chatSnap.exists()) {
+          const data = chatSnap.data();
+          const peerData = data[guideId];
+          if (peerData) {
+            setGuide({ id: guideId, name: peerData.name, photo: peerData.photo, city: peerData.city || 'YMY Platform' });
+            return;
+          }
+        }
+        
+        // Fallback: If no chat doc exists yet (first message scenario), try guides collection
+        const guideDocRef = doc(db, 'guides', guideId);
+        const guideSnap = await getDoc(guideDocRef);
+        if (guideSnap.exists()) {
+          setGuide({ id: guideSnap.id, ...guideSnap.data() });
+        } else {
+          // Absolute fallback if it's a new chat between a guide and tourist (where tourist is the guideId param)
+          setGuide({ id: guideId, name: 'Traveler', photo: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200', city: 'Guest' });
         }
       } catch (err) {
-        console.error("Error fetching guide for chat:", err);
+        console.error("Error fetching peer for chat:", err);
       } finally {
         setLoading(false);
       }
     };
-    fetchGuide();
+    fetchPeerInfo();
 
     // Listen to messages
     const q = query(
@@ -70,15 +87,13 @@ export default function ChatPage() {
         read: false,
       });
 
-      // Simulate a mock reply for demonstration purposes if desired
-      setTimeout(async () => {
-        await addDoc(collection(db, 'chats', chatId, 'messages'), {
-          text: "Thanks for your message! I'm currently reviewing your request.",
-          senderId: guideId,
-          timestamp: serverTimestamp(),
-          read: true,
-        });
-      }, 3000);
+      await setDoc(doc(db, 'chats', chatId), {
+        participants: [user.uid, guideId],
+        lastMessage: textToSend,
+        updatedAt: serverTimestamp(),
+        [user.uid]: { name: user.name || 'Tourist', photo: user.photo || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200' },
+        [guideId]: { name: guide.name, photo: guide.photo }
+      }, { merge: true });
 
     } catch (err) {
       console.error("Error sending message:", err);

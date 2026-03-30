@@ -28,7 +28,7 @@ export const SUBSCRIPTION_PLANS = [
     id: 'pro',
     name: 'Pro Guide',
     price: 29,
-    priceId: 'price_pro_monthly',
+    priceId: import.meta.env.VITE_STRIPE_GUIDE_PRICE_ID || 'price_pro_monthly',
     interval: 'month',
     popular: true,
     features: [

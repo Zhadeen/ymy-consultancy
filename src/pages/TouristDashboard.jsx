@@ -132,7 +132,7 @@ export default function TouristDashboard() {
           <div>
             <ScrollReveal>
               <h2 className="font-heading text-2xl font-bold text-cream mb-6">Saved Guides</h2>
-              <div className="space-y-3">
+              <div className="space-y-3 mb-10">
                 {savedGuides.length > 0 ? savedGuides.map((guide, i) => (
                   <ScrollReveal key={guide.id} delay={i * 60}>
                     <Link to={`/guide/${guide.id}`} className="card-dark p-4 flex items-center gap-3 group block">
@@ -150,6 +150,24 @@ export default function TouristDashboard() {
                 )) : (
                   <div className="card-dark p-6 text-center text-muted">No saved guides yet.</div>
                 )}
+              </div>
+            </ScrollReveal>
+
+            <ScrollReveal>
+              <h2 className="font-heading text-xl font-bold text-cream mb-6">Quick Actions</h2>
+              <div className="space-y-3">
+                {[
+                  { icon: MessageSquare, label: 'Chat Inbox', to: '/chat' },
+                  { icon: Settings, label: 'Account Settings', to: '#' },
+                ].map(action => (
+                  <Link key={action.label} to={action.to} className="card-dark p-4 flex items-center gap-3 group block">
+                    <div className="w-10 h-10 rounded-xl bg-dark-600 flex items-center justify-center flex-shrink-0">
+                      <action.icon size={18} className="text-gold" />
+                    </div>
+                    <span className="text-cream text-sm font-medium group-hover:text-gold transition-colors flex-1">{action.label}</span>
+                    <ChevronRight size={16} className="text-muted-dark group-hover:text-gold transition-colors" />
+                  </Link>
+                ))}
               </div>
             </ScrollReveal>
           </div>

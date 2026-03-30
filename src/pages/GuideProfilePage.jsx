@@ -215,13 +215,20 @@ export default function GuideProfilePage() {
 
               {/* Mobile CTA */}
               <div className="lg:hidden flex gap-3">
-                <button onClick={handleBook} className="btn-gold flex-1 flex items-center justify-center gap-2">
-                  <Calendar size={18} />
-                  Book This Guide
-                </button>
-                <button className="btn-ghost flex items-center gap-2 !px-4">
+                {guide.isSubscribed ? (
+                  <button onClick={handleBook} className="btn-gold flex-1 flex items-center justify-center gap-2">
+                    <Calendar size={18} />
+                    Book This Guide
+                  </button>
+                ) : (
+                  <button disabled className="btn-ghost flex-1 flex items-center justify-center gap-2 opacity-50 cursor-not-allowed" title="Guide subscription inactive">
+                    <Calendar size={18} />
+                    Unavailable
+                  </button>
+                )}
+                <Link to={`/chat/${guide.id}`} className="btn-ghost flex items-center gap-2 !px-4 hover:text-gold transition-colors">
                   <MessageSquare size={18} />
-                </button>
+                </Link>
               </div>
             </div>
           </div>
@@ -419,14 +426,22 @@ export default function GuideProfilePage() {
                   <span className="text-muted text-sm"> / day</span>
                 </div>
 
-                <button
-                  onClick={handleBook}
-                  id="book-guide-btn"
-                  className="btn-gold w-full flex items-center justify-center gap-2 text-lg !py-4 animate-pulse-gold"
-                >
-                  <Calendar size={20} />
-                  Book This Guide
-                </button>
+                {guide.isSubscribed ? (
+                  <button
+                    onClick={handleBook}
+                    id="book-guide-btn"
+                    className="btn-gold w-full flex items-center justify-center gap-2 text-lg !py-4 animate-pulse-gold min-h-[60px]"
+                  >
+                    <Calendar size={20} />
+                    Book This Guide
+                  </button>
+                ) : (
+                  <div className="bg-dark-600 border border-dark-500 rounded-xl p-4 text-center min-h-[60px] flex flex-col justify-center">
+                    <p className="text-muted text-sm flex items-center justify-center gap-2 font-medium">
+                      <Calendar size={16} /> Unavailable to Book
+                    </p>
+                  </div>
+                )}
 
                 <Link
                   to={`/chat/${guide.id}`}

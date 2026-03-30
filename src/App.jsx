@@ -9,6 +9,7 @@ import SearchPage from './pages/SearchPage';
 import GuideProfilePage from './pages/GuideProfilePage';
 import BookingPage from './pages/BookingPage';
 import ChatPage from './pages/ChatPage';
+import ChatInbox from './pages/ChatInbox';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import TouristDashboard from './pages/TouristDashboard';
@@ -23,6 +24,7 @@ import PrivacyPage from './pages/PrivacyPage';
 import PricingPage from './pages/PricingPage';
 import PaymentSuccess from './pages/PaymentSuccess';
 import PaymentCancel from './pages/PaymentCancel';
+import SubscriptionSuccess from './pages/SubscriptionSuccess';
 import FloatingContact from './components/common/FloatingContact';
 import { useAuth } from './context/AuthContext';
 import { Navigate } from 'react-router-dom';
@@ -93,10 +95,19 @@ export default function App() {
               <Route path="/pricing" element={<PricingPage />} />
               <Route path="/payment/success" element={<PaymentSuccess />} />
               <Route path="/payment/cancel" element={<PaymentCancel />} />
+              <Route path="/subscription/success" element={<SubscriptionSuccess />} />
             </Route>
 
             {/* Chat - no footer */}
             <Route element={<ChatLayout />}>
+              <Route 
+                path="/chat" 
+                element={
+                  <ProtectedRoute>
+                    <ChatInbox />
+                  </ProtectedRoute>
+                } 
+              />
               <Route path="/chat/:guideId" element={<ChatPage />} />
             </Route>
 

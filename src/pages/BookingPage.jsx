@@ -135,6 +135,19 @@ export default function BookingPage() {
     );
   }
 
+  if (guide && !guide.isSubscribed) {
+    return (
+      <main className="pt-20 min-h-screen flex items-center justify-center bg-dark-800 p-4">
+        <div className="card-dark max-w-md w-full p-8 text-center text-muted">
+          <Calendar size={48} className="text-dark-500 mx-auto mb-4" />
+          <h2 className="font-heading text-xl font-bold text-cream mb-2">Guide Unavailable</h2>
+          <p className="mb-6 text-sm">This guide is currently not accepting new bookings through the platform.</p>
+          <button onClick={() => navigate(-1)} className="btn-ghost w-full">Go Back to Profile</button>
+        </div>
+      </main>
+    );
+  }
+
   const priceMap = { half: guide.priceHalfDay, full: guide.priceFullDay, custom: (guide.priceCustom || 0) * 4 };
   const basePrice = priceMap[tourType] || guide.priceFullDay;
   const totalPrice = basePrice * guests;
