@@ -17,6 +17,7 @@ export default function GuideRegistration() {
   const [error, setError] = useState('');
   const [processing, setProcessing] = useState(false);
   const [statusText, setStatusText] = useState('');
+  const [uploadProgress, setUploadProgress] = useState(0);
   const { register } = useAuth();
   const navigate = useNavigate();
 
@@ -42,19 +43,31 @@ export default function GuideRegistration() {
     }));
   };
 
+  const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+
   const handlePhotoUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
+      if (file.size > MAX_FILE_SIZE) {
+        setError('Photo size must be less than 5MB.');
+        return;
+      }
       update('photo', file);
       update('photoPreview', URL.createObjectURL(file));
+      setError('');
     }
   };
 
   const handleIDUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
+      if (file.size > MAX_FILE_SIZE) {
+        setError('ID Document size must be less than 5MB.');
+        return;
+      }
       update('idDocument', file);
       update('idDocumentPreview', URL.createObjectURL(file));
+      setError('');
     }
   };
 
@@ -87,28 +100,20 @@ export default function GuideRegistration() {
 
       // Upload profile photo
       if (form.photo && form.photo instanceof File) {
-        setStatusText('Uploading profile photo...');
-        try {
-          const uploadedUrl = await uploadFile(form.photo, 'profile_photos', `${uid}_profile`);
-          if (uploadedUrl) {
-            photoUrl = uploadedUrl;
-          }
-        } catch (err) {
-          console.error("Photo upload error:", err);
-        }
+        setStatusText('Uploading profile photo');
+        setUploadProgress(0);
+        const uploadedUrl = await uploadFile(form.photo, 'profile_photos', `${uid}_profile`, (p) => setUploadProgress(p));
+        if (!uploadedUrl) throw new Error("Could not process profile photo. Please try a smaller image.");
+        photoUrl = uploadedUrl;
       }
       
       // Upload ID document
       if (form.idDocument && form.idDocument instanceof File) {
-        setStatusText('Uploading ID document...');
-        try {
-          const uploadedUrl = await uploadFile(form.idDocument, 'id_documents', `${uid}_id`);
-          if (uploadedUrl) {
-            idDocumentUrl = uploadedUrl;
-          }
-        } catch (err) {
-          console.error("ID upload error:", err);
-        }
+        setStatusText('Uploading ID document');
+        setUploadProgress(0);
+        const uploadedUrl = await uploadFile(form.idDocument, 'id_documents', `${uid}_id`, (p) => setUploadProgress(p));
+        if (!uploadedUrl) throw new Error("Could not process your ID document. Please try a smaller file.");
+        idDocumentUrl = uploadedUrl;
       }
       
       setStatusText('Finalizing application...');
@@ -145,6 +150,7 @@ export default function GuideRegistration() {
     } finally {
       setProcessing(false);
       setStatusText('');
+      setUploadProgress(0);
     }
   };
 
@@ -206,22 +212,22 @@ export default function GuideRegistration() {
               </div>
               <input type="email" placeholder="Email Address" value={form.email} onChange={e => update('email', e.target.value)} className="input-dark" />
               <input type="password" placeholder="Create Password (min 8 chars)" value={form.password} onChange={e => update('password', e.target.value)} className="input-dark" />
+              <select value={form.country} onChange={e => { const selected = COUNTRIES.find(c => c.name === e.target.value); update('country', e.target.value); update('countryCode', selected?.code || ''); update('phoneCode', selected?.phoneCode || ''); update('city', ''); }} className="input-dark">
+                <option value="">Select your country</option>
+                {COUNTRIES.map(c => <option key={c.code} value={c.name}>{c.flag} {c.name} ({c.code})</option>)}
+              </select>
+              {form.country && (
+                <select value={form.city} onChange={e => update('city', e.target.value)} className="input-dark">
+                  <option value="">Select your city</option>
+                  {availableCities.map(c => <option key={c} value={c}>{c}</option>)}
+                </select>
+              )}
               <div className="flex gap-2">
                 <div className="w-28 flex-shrink-0">
                   <input type="text" value={form.phoneCode} readOnly placeholder="+XXX" className="input-dark text-center" />
                 </div>
                 <input type="tel" placeholder="Your phone number" value={form.phone} onChange={e => update('phone', e.target.value)} className="input-dark flex-1" />
               </div>
-              <select value={form.country} onChange={e => { const selected = COUNTRIES.find(c => c.name === e.target.value); update('country', e.target.value); update('countryCode', selected?.code || ''); update('phoneCode', selected?.phoneCode || ''); update('city', ''); }} className="input-dark">
-                <option value="">Select your country</option>
-                {COUNTRIES.map(c => <option key={c.code} value={c.name}>{c.flag} {c.name} ({c.code})</option>)}
-              </select>
-              {form.country && (
-                <select value={form.city} onChange={e => update('city', e.target.value)} className="input-dark mt-4">
-                  <option value="">Select your city</option>
-                  {availableCities.map(c => <option key={c} value={c}>{c}</option>)}
-                </select>
-              )}
             </div>
           )}
 
@@ -415,7 +421,11 @@ export default function GuideRegistration() {
                 className="btn-gold flex items-center gap-2"
                 disabled={processing}
               >
-                {processing ? (statusText || 'Processing...') : 'Submit Application'} <CheckCircle2 size={16} />
+                {processing ? (
+                  <span className="flex items-center gap-2">
+                    {statusText} {uploadProgress > 0 && uploadProgress < 100 ? `(${uploadProgress}%)` : '...'}
+                  </span>
+                ) : 'Submit Application'} <CheckCircle2 size={16} />
               </button>
             )}
           </div>

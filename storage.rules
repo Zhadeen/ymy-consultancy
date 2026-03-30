@@ -1,0 +1,23 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    
+    // User directories: profile_photos and id_documents
+    // Rules allow authenticated users to upload their own files
+    match /profile_photos/{userId}_profile {
+      allow read: if true; // Publicly readable profile photos
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    match /id_documents/{userId}_id {
+      allow read: if request.auth != null && (request.auth.uid == userId || request.auth.token.role == 'admin');
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Default: Deny all but read if public
+    match /{allPaths=**} {
+      allow read: if true;
+      allow write: if false;
+    }
+  }
+}
