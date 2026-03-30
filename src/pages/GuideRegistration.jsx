@@ -216,7 +216,7 @@ export default function GuideRegistration() {
               <input type="password" placeholder="Create Password (min 8 chars)" value={form.password} onChange={e => update('password', e.target.value)} className="input-dark" />
               <select value={form.country} onChange={e => { const selected = COUNTRIES.find(c => c.name === e.target.value); update('country', e.target.value); update('countryCode', selected?.code || ''); update('phoneCode', selected?.phoneCode || ''); update('city', ''); }} className="input-dark">
                 <option value="">Select your country</option>
-                {COUNTRIES.map(c => <option key={c.code} value={c.name}>{c.flag} {c.name} ({c.code})</option>)}
+                {COUNTRIES.map(c => <option key={c.code} value={c.name}>{c.flag} {c.name}</option>)}
               </select>
               {form.country && (
                 <div className="mt-4">
@@ -390,7 +390,7 @@ export default function GuideRegistration() {
                 <div className="flex justify-between"><span className="text-muted">Phone</span><span className="text-cream">{form.phoneCode} {form.phone}</span></div>
                 <div className="flex justify-between"><span className="text-muted">ID Type</span><span className="text-cream">{form.idType}</span></div>
                 <div className="flex justify-between"><span className="text-muted">ID Document</span><span className={form.idDocument ? 'text-green-400' : 'text-red-400'}>{form.idDocument ? '✓ Uploaded' : '✗ Missing'}</span></div>
-                <div className="flex justify-between"><span className="text-muted">Country</span><span className="text-cream">{form.country} ({form.countryCode})</span></div>
+                <div className="flex justify-between"><span className="text-muted">Country</span><span className="text-cream">{form.country}</span></div>
                 <div className="flex justify-between"><span className="text-muted">City</span><span className="text-cream">{form.city}</span></div>
                 <div className="flex justify-between"><span className="text-muted">Languages</span><span className="text-cream">{form.languages.join(', ') || 'None selected'}</span></div>
                 <div className="flex justify-between font-medium pt-2 border-t border-dark-500"><span className="text-muted">Pricing</span><span className="text-gold">${form.priceHalfDay || '–'} / ${form.priceFullDay || '–'} / ${form.priceCustom || '–'}/hr</span></div>
