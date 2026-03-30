@@ -18,6 +18,7 @@ export default function GuideRegistration() {
   const [processing, setProcessing] = useState(false);
   const [statusText, setStatusText] = useState('');
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [showStuckHint, setShowStuckHint] = useState(false);
   const { register } = useAuth();
   const navigate = useNavigate();
 
@@ -151,6 +152,7 @@ export default function GuideRegistration() {
       setProcessing(false);
       setStatusText('');
       setUploadProgress(0);
+      setShowStuckHint(false);
     }
   };
 
@@ -217,12 +219,14 @@ export default function GuideRegistration() {
                 {COUNTRIES.map(c => <option key={c.code} value={c.name}>{c.flag} {c.name} ({c.code})</option>)}
               </select>
               {form.country && (
-                <select value={form.city} onChange={e => update('city', e.target.value)} className="input-dark">
-                  <option value="">Select your city</option>
-                  {availableCities.map(c => <option key={c} value={c}>{c}</option>)}
-                </select>
+                <div className="mt-4">
+                  <select value={form.city} onChange={e => update('city', e.target.value)} className="input-dark">
+                    <option value="">Select your city</option>
+                    {availableCities.map(c => <option key={c} value={c}>{c}</option>)}
+                  </select>
+                </div>
               )}
-              <div className="flex gap-2">
+              <div className="flex gap-2 mt-4">
                 <div className="w-28 flex-shrink-0">
                   <input type="text" value={form.phoneCode} readOnly placeholder="+XXX" className="input-dark text-center" />
                 </div>
@@ -416,17 +420,48 @@ export default function GuideRegistration() {
                 Next <ChevronRight size={16} />
               </button>
             ) : (
-              <button 
-                onClick={handleSubmit} 
-                className="btn-gold flex items-center gap-2"
-                disabled={processing}
-              >
-                {processing ? (
-                  <span className="flex items-center gap-2">
-                    {statusText} {uploadProgress > 0 && uploadProgress < 100 ? `(${uploadProgress}%)` : '...'}
-                  </span>
-                ) : 'Submit Application'} <CheckCircle2 size={16} />
-              </button>
+              <div className="flex flex-col items-stretch w-full sm:w-auto gap-4">
+                {processing && (
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-xs text-muted mb-1">
+                      <span>{statusText}...</span>
+                      <span>{uploadProgress}%</span>
+                    </div>
+                    <div className="h-1.5 w-full bg-dark-600 rounded-full overflow-hidden">
+                      <div 
+                        className="h-full bg-gold transition-all duration-300 ease-out"
+                        style={{ width: `${uploadProgress}%` }}
+                      />
+                    </div>
+                    {uploadProgress === 0 && (
+                      <p className="text-[10px] text-gold-200/60 animate-pulse text-center">
+                        Initializing secure upload...
+                      </p>
+                    )}
+                  </div>
+                )}
+                
+                <button 
+                  onClick={handleSubmit} 
+                  className="btn-gold flex items-center justify-center gap-2 w-full"
+                  disabled={processing}
+                >
+                  {processing ? (
+                    <span className="flex items-center gap-2">
+                      <div className="w-4 h-4 border-2 border-dark-900 border-t-transparent rounded-full animate-spin" />
+                      Processing...
+                    </span>
+                  ) : (
+                    <>Submit Application <CheckCircle2 size={16} /></>
+                  )}
+                </button>
+
+                {processing && uploadProgress === 0 && (
+                  <p className="text-xs text-muted-dark text-center italic">
+                    If this takes more than 30s, please ensure you've deployed the storage rules.
+                  </p>
+                )}
+              </div>
             )}
           </div>
         </div>
