@@ -107,6 +107,15 @@
   .gold-divider {
     @apply w-16 h-[2px] bg-gradient-to-r from-gold to-transparent;
   }
+
+  .nav-item {
+    @apply relative px-4 py-2 rounded-full transition-all duration-300 
+           hover:bg-gold/10 hover:text-gold active:scale-95 flex items-center gap-1.5;
+  }
+
+  .nav-item-active {
+    @apply bg-gold/10 text-gold font-semibold;
+  }
 }
 
 /* ===== UTILITY STYLES ===== */

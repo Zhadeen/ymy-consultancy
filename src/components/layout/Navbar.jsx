@@ -51,9 +51,9 @@ export default function Navbar() {
                 <Link
                   key={link.to}
                   to={link.to}
-                  className={`text-sm font-medium transition-colors duration-300 hover:text-gold ${
-                    isActive(link.to) ? 'text-gold' : 'text-cream/80'
-                  }`}
+                  className={`nav-item text-sm font-medium ${
+                    isActive(link.to) ? 'nav-item-active' : 'text-cream/80'
+                  } ${link.label === 'Become a Guide' ? 'border border-gold/20 hover:border-gold/50' : ''}`}
                 >
                   {link.label}
                 </Link>
@@ -82,7 +82,7 @@ export default function Navbar() {
                   </button>
                 </div>
               ) : (
-                <Link to="/login" className="text-sm text-cream/80 hover:text-gold transition-colors">
+                <Link to="/login" className="nav-item text-sm text-cream/80">
                   Sign In
                 </Link>
               )}
@@ -125,8 +125,8 @@ export default function Navbar() {
               <Link
                 key={link.to}
                 to={link.to}
-                className={`text-lg font-medium transition-colors ${
-                  isActive(link.to) ? 'text-gold' : 'text-cream'
+                className={`flex items-center px-4 py-3 rounded-xl transition-colors ${
+                  isActive(link.to) ? 'bg-gold/10 text-gold font-bold' : 'text-cream hover:bg-white/5'
                 }`}
               >
                 {link.label}
@@ -143,8 +143,8 @@ export default function Navbar() {
               </>
             ) : (
               <>
-                <Link to="/login" className="text-lg text-cream">Sign In</Link>
-                <Link to="/register" className="text-lg text-cream">Register</Link>
+                <Link to="/login" className="flex items-center px-4 py-3 rounded-xl text-cream hover:bg-white/5 transition-colors">Sign In</Link>
+                <Link to="/register" className="flex items-center px-4 py-3 rounded-xl text-cream hover:bg-white/5 transition-colors">Register</Link>
               </>
             )}
             <Link to="/search" className="btn-gold text-center mt-4">
