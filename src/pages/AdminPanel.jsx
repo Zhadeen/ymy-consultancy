@@ -1,6 +1,4 @@
-import { useState, useEffect } from 'react';
-import { Users, Globe, Calendar, DollarSign, TrendingUp, CheckCircle, XCircle, Clock, ChevronDown, Search, BarChart3, ArrowUpRight, ArrowDownRight, Eye, Ban, Trash2 } from 'lucide-react';
-import { collection, getDocs, query, orderBy } from 'firebase/firestore';
+import { doc, getDoc, collection, getDocs, query, orderBy, setDoc, updateDoc, deleteDoc, writeBatch, serverTimestamp } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import ScrollReveal from '../components/common/ScrollReveal';
 
@@ -10,6 +8,7 @@ const tabs = [
   { id: 'users', label: 'Users', icon: Users },
   { id: 'guides', label: 'Guides', icon: Globe },
   { id: 'bookings', label: 'Bookings', icon: Calendar },
+  { id: 'system', label: 'System', icon: Ban },
 ];
 
 export default function AdminPanel() {
@@ -119,13 +118,40 @@ export default function AdminPanel() {
     if (!window.confirm("Are you sure you want to reject this application?")) return;
     setActionLoading(app.id);
     try {
-      const { doc, deleteDoc } = await import('firebase/firestore');
       await deleteDoc(doc(db, 'guide_applications', app.id));
       setApplications(prev => prev.filter(a => a.id !== app.id));
     } catch (err) {
       console.error("Rejection failed:", err);
     } finally {
       setActionLoading(null);
+    }
+  };
+
+  const handleWipeData = async () => {
+    const collectionsToWipe = ['guides', 'bookings', 'guide_applications', 'reviews'];
+    const confirmed = window.confirm(
+      "CRITICAL ACTION: This will delete ALL " + collectionsToWipe.join(', ') + ". This cannot be undone. Are you absolutely sure?"
+    );
+    if (!confirmed) return;
+    
+    const doubleConfirmed = window.prompt("Type 'DELETE ALL' to confirm (caps sensitive):");
+    if (doubleConfirmed !== 'DELETE ALL') return;
+
+    setLoading(true);
+    try {
+      for (const collName of collectionsToWipe) {
+        const snap = await getDocs(collection(db, collName));
+        const batch = writeBatch(db);
+        snap.docs.forEach(d => batch.delete(d.ref));
+        await batch.commit();
+      }
+      alert("Database wiped successfully. You have a clean slate!");
+      window.location.reload();
+    } catch (err) {
+      console.error("Wipe failed:", err);
+      alert("Wipe failed. Check console for details.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -509,47 +535,45 @@ export default function AdminPanel() {
           </div>
         )}
 
-        {/* Bookings */}
-        {activeTab === 'bookings' && (
+        {/* System Tab */}
+        {activeTab === 'system' && (
           <div>
             <ScrollReveal>
-              <h1 className="font-heading text-3xl font-bold text-cream mb-6">Bookings</h1>
+              <h1 className="font-heading text-3xl font-bold text-cream mb-8">System Management</h1>
             </ScrollReveal>
 
-            <ScrollReveal delay={80}>
-              <div className="card-dark overflow-hidden">
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead>
-                      <tr className="border-b border-dark-600">
-                        <th className="text-left text-xs text-muted uppercase tracking-wider font-medium px-5 py-4">Reference</th>
-                        <th className="text-left text-xs text-muted uppercase tracking-wider font-medium px-5 py-4">Tourist</th>
-                        <th className="text-left text-xs text-muted uppercase tracking-wider font-medium px-5 py-4">Guide</th>
-                        <th className="text-left text-xs text-muted uppercase tracking-wider font-medium px-5 py-4">Date</th>
-                        <th className="text-left text-xs text-muted uppercase tracking-wider font-medium px-5 py-4">Status</th>
-                        <th className="text-left text-xs text-muted uppercase tracking-wider font-medium px-5 py-4">Amount</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {bookings.map((booking, i) => (
-                        <tr key={booking.id} className="border-b border-dark-700/50 hover:bg-dark-700/30 transition-colors">
-                          <td className="px-5 py-4 text-gold font-mono text-sm">{booking.reference}</td>
-                          <td className="px-5 py-4 text-cream text-sm">{booking.touristName}</td>
-                          <td className="px-5 py-4 text-muted text-sm">{booking.guideName}</td>
-                          <td className="px-5 py-4 text-muted text-sm">{new Date(booking.date).toLocaleDateString('en', { month: 'short', day: 'numeric' })}</td>
-                          <td className="px-5 py-4">
-                            <span className={`text-xs font-semibold px-2.5 py-1 rounded-full uppercase tracking-wider ${
-                              booking.status === 'completed' ? 'bg-green-500/10 text-green-400' :
-                              'bg-gold-100 text-gold'
-                            }`}>
-                              {booking.status}
-                            </span>
-                          </td>
-                          <td className="px-5 py-4 text-cream text-sm font-semibold">${booking.totalPrice}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+            <ScrollReveal delay={100}>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div className="card-dark p-8 border-red-500/20">
+                  <div className="w-12 h-12 rounded-xl bg-red-500/10 flex items-center justify-center mb-6">
+                    <Trash2 size={24} className="text-red-400" />
+                  </div>
+                  <h3 className="font-heading text-xl font-bold text-cream mb-2">Wipe Mock Data</h3>
+                  <p className="text-muted text-sm mb-6 leading-relaxed">
+                    Clear all guides, applications, bookings, and reviews from the database. 
+                    This is intended for transitioning from development to production.
+                    <br /><br />
+                    <strong className="text-red-400">WARNING: This action is permanent and cannot be reversed.</strong>
+                  </p>
+                  <button 
+                    onClick={handleWipeData}
+                    className="w-full py-4 border border-red-500/50 text-red-400 hover:bg-red-500/10 rounded-xl font-bold transition-all duration-300"
+                  >
+                    Wipe Database Clean
+                  </button>
+                </div>
+
+                <div className="card-dark p-8 opacity-50 cursor-not-allowed">
+                  <div className="w-12 h-12 rounded-xl bg-gold-100 flex items-center justify-center mb-6">
+                    <Globe size={24} className="text-gold" />
+                  </div>
+                  <h3 className="font-heading text-xl font-bold text-cream mb-2">Export Data (Coming Soon)</h3>
+                  <p className="text-muted text-sm mb-6 leading-relaxed">
+                    Download a full CSV export of all users and guides registered on the platform.
+                  </p>
+                  <button disabled className="w-full py-4 border border-dark-500 text-muted rounded-xl font-bold">
+                    Feature Locked
+                  </button>
                 </div>
               </div>
             </ScrollReveal>
