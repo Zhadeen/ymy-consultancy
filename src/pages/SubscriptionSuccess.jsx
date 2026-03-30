@@ -38,29 +38,42 @@ export default function SubscriptionSuccess() {
         }
 
         const metadata = data.metadata;
-        if (!metadata || metadata.type !== 'guide_subscription') {
+        const isTourist = metadata?.type === 'tourist_subscription';
+        const isGuide = metadata?.type === 'guide_subscription';
+
+        if (!isTourist && !isGuide) {
            throw new Error('Invalid subscription context.');
         }
 
-        const { guideId, planId, planName } = metadata;
+        const userId = isTourist ? metadata.userId : metadata.guideId;
+        const planId = metadata.planId || 'tourist_pass';
+        const planName = metadata.planName || 'Tourist Pass';
 
         // Process Database Updates
-        await setDoc(doc(db, 'subscriptions', guideId), {
+        await setDoc(doc(db, 'subscriptions', userId), {
           planId,
           planName,
           status: 'active',
           paymentStatus: 'paid',
           subscriptionId: data.subscription_id,
           stripeSessionId: sessionId,
+          type: metadata.type,
           updatedAt: new Date().toISOString()
         }, { merge: true });
 
-        // Update main guide document to unlock features
-        await updateDoc(doc(db, 'guides', guideId), {
+        // Update the primary user document to unlock features
+        await updateDoc(doc(db, 'users', userId), {
           isSubscribed: true
         });
 
-        setStatus('success');
+        // If guide, also update the guides collection
+        if (isGuide) {
+          await updateDoc(doc(db, 'guides', userId), {
+            isSubscribed: true
+          });
+        }
+
+        setStatus(isTourist ? 'success_tourist' : 'success_guide');
 
       } catch (err) {
         console.error('Subscription verification error:', err);
@@ -83,17 +96,25 @@ export default function SubscriptionSuccess() {
           </div>
         )}
 
-        {status === 'success' && (
+        {(status === 'success_guide' || status === 'success_tourist') && (
           <div className="flex flex-col items-center">
             <div className="w-16 h-16 rounded-full bg-green-500/10 flex items-center justify-center mb-6">
               <CheckCircle2 size={32} className="text-green-500" />
             </div>
-            <h2 className="font-heading text-2xl font-bold text-cream mb-4">You are now Live!</h2>
+            <h2 className="font-heading text-2xl font-bold text-cream mb-4">
+              {status === 'success_guide' ? 'You are now Live!' : 'Welcome to YMY!'}
+            </h2>
             <p className="text-muted mb-8 leading-relaxed">
-              Your subscription is active. Your profile is now eligible to receive bookings from tourists.
+              {status === 'success_guide' 
+                ? 'Your subscription is active. Your profile is now eligible to receive bookings from tourists.'
+                : 'Your Tourist Pass is active. You can now message and book any of our verified guides.'
+              }
             </p>
-            <button onClick={() => navigate('/guide-dashboard')} className="btn-gold w-full flex items-center justify-center gap-2">
-              Go to Dashboard <ArrowRight size={18} />
+            <button 
+              onClick={() => navigate(status === 'success_guide' ? '/guide-dashboard' : '/search')} 
+              className="btn-gold w-full flex items-center justify-center gap-2"
+            >
+              {status === 'success_guide' ? 'Go to Dashboard' : 'Find Your Guide'} <ArrowRight size={18} />
             </button>
           </div>
         )}

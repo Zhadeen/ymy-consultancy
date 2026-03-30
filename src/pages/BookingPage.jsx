@@ -4,12 +4,14 @@ import { Calendar, Users, Clock, ChevronLeft, CreditCard, CheckCircle2, MapPin, 
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import { useBooking } from '../context/BookingContext';
+import { useAuth } from '../context/AuthContext';
 import ScrollReveal from '../components/common/ScrollReveal';
 
 export default function BookingPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { booking, updateBooking, confirmBooking, confirmed } = useBooking();
+  const { user } = useAuth();
+  const { booking, updateBooking, createBookingRequest, confirmed } = useBooking();
   const [guide, setGuide] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -76,33 +78,23 @@ export default function BookingPage() {
     setProcessing(true);
     setError(null);
     try {
-      const response = await fetch('/api/create-checkout-session', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          guideName: guide.name,
-          guideId: guide.id,
-          totalPrice,
-          date,
-          tourType,
-          guests,
-          touristName: name,
-          touristEmail: email,
-          specialRequests,
-        }),
-      });
+      const bookingData = {
+        guideName: guide.name,
+        guideId: guide.id,
+        totalPrice,
+        date,
+        tourType,
+        guests,
+        touristName: name,
+        touristEmail: email,
+        touristId: user.uid,
+        specialRequests,
+      };
 
-      const session = await response.json();
-      if (session.url) {
-        window.location.href = session.url;
-      } else {
-        throw new Error(session.message || 'Failed to create checkout session.');
-      }
+      await createBookingRequest(bookingData);
     } catch (err) {
-      console.error("Booking Payment Error:", err);
-      setError(err.message || 'Failed to initiate payment. Please try again.');
+      console.error("Booking Request Error:", err);
+      setError(err.message || 'Failed to send request. Please try again.');
     } finally {
       setProcessing(false);
     }
@@ -148,6 +140,25 @@ export default function BookingPage() {
     );
   }
 
+  // Paywall for unsubscribed tourists
+  if (user && user.role === 'tourist' && !user.isSubscribed) {
+    return (
+      <main className="pt-20 min-h-screen flex items-center justify-center bg-dark-800 p-4">
+        <div className="card-dark max-w-md w-full p-8 text-center border-gold/30">
+          <CreditCard size={48} className="text-gold mx-auto mb-4" />
+          <h2 className="font-heading text-2xl font-bold text-cream mb-2">Unlock Booking</h2>
+          <p className="text-muted text-sm mb-8">
+            Subscribe for just $5/month to unlock unlimited booking requests and messaging with our verified guides.
+          </p>
+          <div className="flex flex-col gap-3">
+            <Link to="/tourist-pricing" className="btn-gold w-full">Get Tourist Pass - $5/mo</Link>
+            <button onClick={() => navigate(-1)} className="text-muted hover:text-cream text-sm">Cancel</button>
+          </div>
+        </div>
+      </main>
+    );
+  }
+
   const priceMap = { half: guide.priceHalfDay, full: guide.priceFullDay, custom: (guide.priceCustom || 0) * 4 };
   const basePrice = priceMap[tourType] || guide.priceFullDay;
   const totalPrice = basePrice * guests;
@@ -155,63 +166,37 @@ export default function BookingPage() {
   // Confirmation screen
   if (confirmed) {
     return (
-      <main className="pt-20 min-h-screen bg-dark-800 flex items-center justify-center px-4">
-        <ScrollReveal className="max-w-lg w-full">
-          <div className="card-dark p-8 sm:p-10 text-center border-gold-200">
-            <div className="w-20 h-20 rounded-full bg-green-500/10 flex items-center justify-center mx-auto mb-6">
-              <CheckCircle2 size={40} className="text-green-500" />
+      <main className="pt-20 min-h-screen bg-dark-800 flex items-center justify-center p-4">
+        <ScrollReveal>
+          <div className="card-dark max-w-lg w-full p-8 text-center border-gold/20">
+            <div className="w-16 h-16 rounded-full bg-green-500/10 flex items-center justify-center mx-auto mb-6">
+              <CheckCircle2 size={32} className="text-green-500" />
             </div>
+            <h1 className="font-heading text-3xl font-bold text-cream mb-2">Request Sent!</h1>
+            <p className="text-muted mb-8 text-sm">
+              Your booking request for <span className="text-cream font-medium">{confirmed.guideName}</span> on {new Date(confirmed.date).toLocaleDateString()} has been sent to the guide.
+            </p>
 
-            <h1 className="font-heading text-3xl font-bold text-cream mb-2">Booking Confirmed!</h1>
-            <p className="text-muted mb-8">Your adventure awaits. We've sent the details to your email.</p>
-
-            <div className="bg-dark-600 rounded-2xl p-6 mb-6 text-left space-y-4">
-              <div className="flex justify-between">
-                <span className="text-muted text-sm">Reference</span>
-                <button onClick={handleCopyRef} className="flex items-center gap-1.5 text-gold font-mono font-semibold text-sm hover:text-gold-light transition-colors">
-                  {confirmed.reference}
-                  <Copy size={14} />
-                  {copied && <span className="text-xs text-green-400">Copied!</span>}
-                </button>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted text-sm">Guide</span>
-                <span className="text-cream text-sm font-medium">{confirmed.guideName}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted text-sm">Date</span>
-                <span className="text-cream text-sm font-medium">{new Date(confirmed.date).toLocaleDateString('en', { weekday: 'long', month: 'long', day: 'numeric' })}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted text-sm">Type</span>
-                <span className="text-cream text-sm font-medium capitalize">{confirmed.tourType} Day</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted text-sm">Guests</span>
-                <span className="text-cream text-sm font-medium">{confirmed.guests}</span>
-              </div>
-              <div className="h-px bg-dark-500" />
-              <div className="flex justify-between">
-                <span className="text-cream font-semibold">Total Paid</span>
-                <span className="text-gold font-heading text-xl font-bold">${confirmed.totalPrice}</span>
+            <div className="bg-dark-900 rounded-xl p-6 mb-8 text-left border border-dark-600/50">
+              <h3 className="text-gold font-heading font-bold mb-3 flex items-center gap-2">
+                <CreditCard size={18} /> Direct Payment Instructions
+              </h3>
+              <p className="text-cream text-sm mb-4 leading-relaxed">
+                YMY Consultancy does not process tour payments. Please contact your guide via chat to arrange payment directly (Cash, Bank Transfer, etc.).
+              </p>
+              <div className="flex items-center justify-between text-xs p-3 bg-dark-800 rounded-lg">
+                <span className="text-muted-dark">Final Amount:</span>
+                <span className="text-gold font-bold text-lg">${totalPrice}</span>
               </div>
             </div>
 
-            <div className="bg-gold-100 rounded-2xl p-4 mb-6 text-left">
-              <p className="text-gold text-sm font-medium mb-2">📍 Guide Contact Info</p>
-              <div className="flex items-center gap-2 text-cream text-sm">
-                <Mail size={14} className="text-gold" />
-                <span>guide@ymyconsultancy.com</span>
-              </div>
-              <div className="flex items-center gap-2 text-cream text-sm mt-2">
-                <Phone size={14} className="text-gold" />
-                <span>+33 6 12 34 56 78</span>
-              </div>
-            </div>
-
-            <div className="flex gap-3">
-              <Link to={`/chat/${confirmed.guideId}`} className="btn-ghost flex-1">Message Guide</Link>
-              <Link to="/" className="btn-gold flex-1">Back to Home</Link>
+            <div className="flex flex-col gap-3">
+              <Link to={`/chat/${confirmed.guideId}`} className="btn-gold w-full flex items-center justify-center gap-2">
+                Chat with Guide
+              </Link>
+              <Link to="/tourist-dashboard" className="text-muted hover:text-cream text-sm font-medium">
+                Go to Dashboard
+              </Link>
             </div>
           </div>
         </ScrollReveal>

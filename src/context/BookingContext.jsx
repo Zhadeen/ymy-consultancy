@@ -21,15 +21,15 @@ export function BookingProvider({ children }) {
     setBooking(prev => ({ ...prev, ...updates }));
   };
 
-  const savePaidBooking = async (bookingData) => {
+  const createBookingRequest = async (bookingData) => {
     try {
       // Ensure numeric fields are numbers
       const finalBooking = {
         ...bookingData,
         guests: parseInt(bookingData.guests),
         totalPrice: parseFloat(bookingData.totalPrice),
-        status: 'confirmed',
-        confirmedAt: new Date().toISOString(),
+        status: 'pending',
+        createdAt: new Date().toISOString(),
       };
 
       const docRef = await addDoc(collection(db, 'bookings'), finalBooking);
@@ -37,7 +37,7 @@ export function BookingProvider({ children }) {
       setError(null);
       return finalBooking;
     } catch (err) {
-      console.error('Error saving paid booking to Firestore:', err);
+      console.error('Error creating booking request in Firestore:', err);
       setError(err.message);
       throw err;
     }
@@ -49,7 +49,7 @@ export function BookingProvider({ children }) {
   };
 
   return (
-    <BookingContext.Provider value={{ booking, confirmed, error, updateBooking, savePaidBooking, resetBooking }}>
+    <BookingContext.Provider value={{ booking, confirmed, error, updateBooking, createBookingRequest, resetBooking }}>
       {children}
     </BookingContext.Provider>
   );

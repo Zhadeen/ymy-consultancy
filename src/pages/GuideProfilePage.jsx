@@ -7,6 +7,7 @@ import StarRating from '../components/common/StarRating';
 import ScrollReveal from '../components/common/ScrollReveal';
 import { useBooking } from '../context/BookingContext';
 import { useAuth } from '../context/AuthContext';
+import TouristPricingModal from '../components/TouristPricingModal';
 
 export default function GuideProfilePage() {
   const { id } = useParams();
@@ -22,6 +23,7 @@ export default function GuideProfilePage() {
   const [newText, setNewText] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [showReviewForm, setShowReviewForm] = useState(false);
+  const [showPaywall, setShowPaywall] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -78,8 +80,20 @@ export default function GuideProfilePage() {
   }
 
   const handleBook = () => {
+    if (user?.role === 'tourist' && !user?.isSubscribed) {
+      setShowPaywall(true);
+      return;
+    }
     updateBooking({ guideId: guide.id, guideName: guide.name });
     navigate(`/booking/${guide.id}`);
+  };
+
+  const handleMessage = () => {
+    if (user?.role === 'tourist' && !user?.isSubscribed) {
+      setShowPaywall(true);
+      return;
+    }
+    navigate(`/chat/${guide.id}`);
   };
 
   const handleSubmitReview = async (e) => {
@@ -226,7 +240,7 @@ export default function GuideProfilePage() {
                     Unavailable
                   </button>
                 )}
-                <Link to={`/chat/${guide.id}`} className="btn-ghost flex items-center gap-2 !px-4 hover:text-gold transition-colors">
+                <Link to="#" onClick={(e) => { e.preventDefault(); handleMessage(); }} className="btn-ghost flex items-center gap-2 !px-4 hover:text-gold transition-colors">
                   <MessageSquare size={18} />
                 </Link>
               </div>
@@ -443,13 +457,13 @@ export default function GuideProfilePage() {
                   </div>
                 )}
 
-                <Link
-                  to={`/chat/${guide.id}`}
+                <button
+                  onClick={handleMessage}
                   className="btn-ghost w-full flex items-center justify-center gap-2 mt-3"
                 >
                   <MessageSquare size={18} />
                   Send Message
-                </Link>
+                </button>
 
                 <div className="mt-6 pt-6 border-t border-dark-600 space-y-3">
                   <div className="flex items-center justify-between text-sm">
@@ -470,6 +484,8 @@ export default function GuideProfilePage() {
           </aside>
         </div>
       </div>
+      
+      <TouristPricingModal isOpen={showPaywall} onClose={() => setShowPaywall(false)} />
     </main>
   );
 }
