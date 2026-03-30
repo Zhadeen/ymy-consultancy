@@ -19,7 +19,7 @@ export default function GuideRegistration() {
   const [statusText, setStatusText] = useState('');
   const [uploadProgress, setUploadProgress] = useState(0);
   const [showStuckHint, setShowStuckHint] = useState(false);
-  const { register } = useAuth();
+  const { register, login } = useAuth();
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
@@ -91,9 +91,26 @@ export default function GuideRegistration() {
       setError('');
       setStatusText('Creating account...');
 
-      // Create user auth with role 'pending_guide'
-      const userCredential = await register(`${form.firstName} ${form.lastName}`, form.email, form.password, 'pending_guide');
-      const uid = userCredential.user.uid;
+      // Create user auth or sign in if already exists
+      let user;
+      try {
+        const userCredential = await register(`${form.firstName} ${form.lastName}`, form.email, form.password, 'pending_guide');
+        user = userCredential.user;
+      } catch (err) {
+        if (err.code === 'auth/email-already-in-use' || err.message?.includes('email-already-in-use')) {
+          console.log("[Registration] Email already in use, attempting to sign in to complete application...");
+          try {
+            const userCredential = await login(form.email, form.password);
+            user = userCredential.user;
+          } catch (loginErr) {
+            throw new Error("This email is already registered. If you forgot your password, please reset it. Otherwise, use a different email.");
+          }
+        } else {
+          throw err;
+        }
+      }
+
+      const uid = user.uid;
 
       // Upload files to Firebase Storage
       let photoUrl = 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&q=80&w=200';
@@ -120,7 +137,6 @@ export default function GuideRegistration() {
       setStatusText('Finalizing application...');
 
       // Save application details to 'guide_applications' collection
-      setStatusText('Finalizing application...');
       await setDoc(doc(db, 'guide_applications', uid), {
         uid,
         name: `${form.firstName} ${form.lastName}`,
@@ -393,7 +409,16 @@ export default function GuideRegistration() {
                 <div className="flex justify-between"><span className="text-muted">Country</span><span className="text-cream">{form.country}</span></div>
                 <div className="flex justify-between"><span className="text-muted">City</span><span className="text-cream">{form.city}</span></div>
                 <div className="flex justify-between"><span className="text-muted">Languages</span><span className="text-cream">{form.languages.join(', ') || 'None selected'}</span></div>
-                <div className="flex justify-between font-medium pt-2 border-t border-dark-500"><span className="text-muted">Pricing</span><span className="text-gold">${form.priceHalfDay || '–'} / ${form.priceFullDay || '–'} / ${form.priceCustom || '–'}/hr</span></div>
+                <div className="flex justify-between font-medium pt-2 border-t border-dark-500">
+                  <span className="text-muted">Pricing</span>
+                  <span className="text-gold">
+                    {[
+                      form.priceHalfDay && `$${form.priceHalfDay}`,
+                      form.priceFullDay && `$${form.priceFullDay}`,
+                      form.priceCustom && `$${form.priceCustom}/hr`
+                    ].filter(Boolean).join(' / ') || '–'}
+                  </span>
+                </div>
               </div>
             </div>
           )}
