@@ -135,6 +135,13 @@ export default function GuideProfilePage() {
     return guide.availability[dateStr];
   };
 
+  const formatList = (item) => {
+    if (!item) return [];
+    if (Array.isArray(item)) return item;
+    if (typeof item === 'string') return item.split(',').map(s => s.trim()).filter(Boolean);
+    return [];
+  };
+
   return (
     <main className="pt-20 min-h-screen bg-dark-800">
       {/* Hero */}
@@ -192,13 +199,13 @@ export default function GuideProfilePage() {
 
               {/* Badges */}
               <div className="flex flex-wrap gap-3 mb-8">
-                {(guide.languages || []).map(lang => (
+                {formatList(guide.languages).map(lang => (
                   <span key={lang} className="bg-dark-700 border border-dark-500 rounded-full px-4 py-1.5 text-sm text-cream flex items-center gap-1.5">
                     <Languages size={14} className="text-gold" />
                     {lang}
                   </span>
                 ))}
-                {(guide.specialties || []).map(spec => (
+                {formatList(guide.specialties).map(spec => (
                   <span key={spec} className="bg-gold-100 border border-gold-200 rounded-full px-4 py-1.5 text-sm text-gold flex items-center gap-1.5">
                     <Award size={14} />
                     {spec}

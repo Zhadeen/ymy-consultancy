@@ -21,23 +21,23 @@ export function BookingProvider({ children }) {
     setBooking(prev => ({ ...prev, ...updates }));
   };
 
-  const confirmBooking = async (touristDetails) => {
-    const ref = `YMY-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 9999)).padStart(4, '0')}`;
-    const confirmation = {
-      ...booking,
-      ...touristDetails,
-      reference: ref,
-      status: 'confirmed',
-      confirmedAt: new Date().toISOString(),
-    };
-
+  const savePaidBooking = async (bookingData) => {
     try {
-      await addDoc(collection(db, 'bookings'), confirmation);
-      setConfirmed(confirmation);
+      // Ensure numeric fields are numbers
+      const finalBooking = {
+        ...bookingData,
+        guests: parseInt(bookingData.guests),
+        totalPrice: parseFloat(bookingData.totalPrice),
+        status: 'confirmed',
+        confirmedAt: new Date().toISOString(),
+      };
+
+      const docRef = await addDoc(collection(db, 'bookings'), finalBooking);
+      setConfirmed({ id: docRef.id, ...finalBooking });
       setError(null);
-      return confirmation;
+      return finalBooking;
     } catch (err) {
-      console.error('Error saving booking to Firestore:', err);
+      console.error('Error saving paid booking to Firestore:', err);
       setError(err.message);
       throw err;
     }
@@ -49,7 +49,7 @@ export function BookingProvider({ children }) {
   };
 
   return (
-    <BookingContext.Provider value={{ booking, confirmed, error, updateBooking, confirmBooking, resetBooking }}>
+    <BookingContext.Provider value={{ booking, confirmed, error, updateBooking, savePaidBooking, resetBooking }}>
       {children}
     </BookingContext.Provider>
   );

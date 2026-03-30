@@ -49,11 +49,26 @@ export default function BookingPage() {
   ];
 
   const availableDates = useMemo(() => {
-    if (!guide || !guide.availability) return [];
-    return Object.entries(guide.availability)
-      .filter(([, avail]) => avail)
-      .map(([dateStr]) => dateStr)
-      .sort();
+    if (!guide) return [];
+    
+    // If guide has specific availability set, use it
+    if (guide.availability && Object.keys(guide.availability).length > 0) {
+      return Object.entries(guide.availability)
+        .filter(([, avail]) => avail)
+        .map(([dateStr]) => dateStr)
+        .sort();
+    }
+    
+    // Fallback: If no availability explicitly set, assume available for the next 30 days
+    const fallbackDates = [];
+    const today = new Date();
+    for (let i = 1; i <= 30; i++) {
+      const d = new Date(today);
+      d.setDate(today.getDate() + i);
+      const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+      fallbackDates.push(dateStr);
+    }
+    return fallbackDates;
   }, [guide]);
 
   const handleConfirm = async () => {
@@ -61,9 +76,33 @@ export default function BookingPage() {
     setProcessing(true);
     setError(null);
     try {
-      await confirmBooking({ touristName: name, touristEmail: email, specialRequests, date, tourType, guests, totalPrice, guideName: guide.name, guideId: guide.id });
+      const response = await fetch('/api/create-checkout-session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          guideName: guide.name,
+          guideId: guide.id,
+          totalPrice,
+          date,
+          tourType,
+          guests,
+          touristName: name,
+          touristEmail: email,
+          specialRequests,
+        }),
+      });
+
+      const session = await response.json();
+      if (session.url) {
+        window.location.href = session.url;
+      } else {
+        throw new Error(session.message || 'Failed to create checkout session.');
+      }
     } catch (err) {
-      setError(err.message || 'Failed to confirm booking. Please try again.');
+      console.error("Booking Payment Error:", err);
+      setError(err.message || 'Failed to initiate payment. Please try again.');
     } finally {
       setProcessing(false);
     }

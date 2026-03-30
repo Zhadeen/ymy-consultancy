@@ -21,6 +21,8 @@ import CancellationPage from './pages/CancellationPage';
 import TermsPage from './pages/TermsPage';
 import PrivacyPage from './pages/PrivacyPage';
 import PricingPage from './pages/PricingPage';
+import PaymentSuccess from './pages/PaymentSuccess';
+import PaymentCancel from './pages/PaymentCancel';
 import FloatingContact from './components/common/FloatingContact';
 import { useAuth } from './context/AuthContext';
 import { Navigate } from 'react-router-dom';
@@ -89,6 +91,8 @@ export default function App() {
               <Route path="/terms" element={<TermsPage />} />
               <Route path="/privacy" element={<PrivacyPage />} />
               <Route path="/pricing" element={<PricingPage />} />
+              <Route path="/payment/success" element={<PaymentSuccess />} />
+              <Route path="/payment/cancel" element={<PaymentCancel />} />
             </Route>
 
             {/* Chat - no footer */}
