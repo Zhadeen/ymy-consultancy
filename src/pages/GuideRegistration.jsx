@@ -31,7 +31,6 @@ export default function GuideRegistration() {
   });
 
   const selectedCountry = COUNTRIES.find(c => c.name === form.country);
-  const availableCities = form.countryCode ? (CITIES_BY_COUNTRY[form.countryCode] || []) : [];
 
   const update = (field, value) => setForm(prev => ({ ...prev, [field]: value }));
 
@@ -236,10 +235,13 @@ export default function GuideRegistration() {
               </select>
               {form.country && (
                 <div className="mt-4">
-                  <select value={form.city} onChange={e => update('city', e.target.value)} className="input-dark">
-                    <option value="">Select your city</option>
-                    {availableCities.map(c => <option key={c} value={c}>{c}</option>)}
-                  </select>
+                  <input 
+                    type="text" 
+                    placeholder="City (e.g. Kyoto, New York)" 
+                    value={form.city} 
+                    onChange={e => update('city', e.target.value)} 
+                    className="input-dark" 
+                  />
                 </div>
               )}
               <div className="flex gap-2 mt-4">

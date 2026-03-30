@@ -47,7 +47,7 @@ export default function SearchPage() {
   const filteredGuides = useMemo(() => {
     let guides = [...allGuides];
     if (country) guides = guides.filter(g => g.country === country);
-    if (city) guides = guides.filter(g => g.city === city);
+    if (city) guides = guides.filter(g => (g.city || '').toLowerCase().includes(city.toLowerCase()));
     if (language) guides = guides.filter(g => (g.languages || []).includes(language));
     guides = guides.filter(g => (g.priceFullDay || 9999) <= maxPrice);
     guides = guides.filter(g => (g.rating || 0) >= minRating);
@@ -113,10 +113,14 @@ export default function SearchPage() {
               {/* City */}
               <div>
                 <label className="text-sm font-medium text-cream mb-2 block">City</label>
-                <select value={city} onChange={e => setCity(e.target.value)} className="input-dark text-sm" id="filter-city" disabled={!country}>
-                  <option value="">{country ? 'All Cities' : 'Select country first'}</option>
-                  {country && (CITIES_BY_COUNTRY[COUNTRIES.find(c => c.name === country)?.code] || []).map(c => <option key={c} value={c}>{c}</option>)}
-                </select>
+                <input 
+                  type="text" 
+                  placeholder="Type a city..." 
+                  value={city} 
+                  onChange={e => setCity(e.target.value)} 
+                  className="input-dark text-sm" 
+                  id="filter-city" 
+                />
               </div>
 
               {/* Language */}
@@ -304,10 +308,13 @@ export default function SearchPage() {
               </div>
               <div>
                 <label className="text-sm font-medium text-cream mb-2 block">City</label>
-                <select value={city} onChange={e => setCity(e.target.value)} className="input-dark text-sm" disabled={!country}>
-                  <option value="">{country ? 'All Cities' : 'Select country first'}</option>
-                  {country && (CITIES_BY_COUNTRY[COUNTRIES.find(c => c.name === country)?.code] || []).map(c => <option key={c} value={c}>{c}</option>)}
-                </select>
+                <input 
+                  type="text" 
+                  placeholder="Type a city..." 
+                  value={city} 
+                  onChange={e => setCity(e.target.value)} 
+                  className="input-dark text-sm" 
+                />
               </div>
               <div>
                 <label className="text-sm font-medium text-cream mb-2 block">Language</label>
