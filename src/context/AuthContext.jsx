@@ -7,7 +7,8 @@ import {
   updateProfile,
   signInWithPopup,
   GoogleAuthProvider,
-  sendPasswordResetEmail
+  sendPasswordResetEmail,
+  sendEmailVerification
 } from 'firebase/auth';
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { auth, db } from '../config/firebase';
@@ -40,6 +41,7 @@ export function AuthProvider({ children }) {
             email: firebaseUser.email,
             avatar: firebaseUser.photoURL || null,
             role: role,
+            emailVerified: firebaseUser.emailVerified,
             isSubscribed: docSnap.exists() ? !!docSnap.data().isSubscribed : false,
             createdAt: docSnap.exists() ? docSnap.data().createdAt : null
           });
@@ -90,7 +92,7 @@ export function AuthProvider({ children }) {
     });
 
     // Send email verification
-    // await sendEmailVerification(userCredential.user);
+    await sendEmailVerification(userCredential.user);
 
     await setDoc(doc(db, 'users', userCredential.user.uid), {
       name,

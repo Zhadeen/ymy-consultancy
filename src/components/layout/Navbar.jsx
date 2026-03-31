@@ -20,7 +20,12 @@ export default function Navbar() {
     setMobileOpen(false);
   }, [location]);
 
-  const navLinks = [
+  const isGuideUser = user?.role === 'guide';
+
+  const navLinks = isGuideUser ? [
+    { to: '/search', label: 'Explore' },
+    { to: '/pricing', label: 'Local Guides' },
+  ] : [
     { to: '/search', label: 'Explore' },
     { to: '/visitor-pricing', label: 'Visitors' },
     { to: '/pricing', label: 'Local Guides' },
@@ -88,7 +93,7 @@ export default function Navbar() {
                 </Link>
               )}
               <Link to="/search" className="btn-gold text-sm !px-5 !py-2.5">
-                Find a Local Guide
+                {isGuideUser ? 'View Marketplace' : 'Find a Local Guide'}
               </Link>
             </div>
 

@@ -1,8 +1,9 @@
 import { Link } from 'react-router-dom';
-import { Heart, Calendar, Star, MessageSquare, Settings, ChevronRight, MapPin, CheckCircle2, CreditCard } from 'lucide-react';
+import { Heart, Calendar, Star, MessageSquare, Settings, ChevronRight, MapPin, CheckCircle2, CreditCard, AlertCircle, Mail } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { collection, query, where, getDocs } from 'firebase/firestore';
-import { db } from '../config/firebase';
+import { sendEmailVerification } from 'firebase/auth';
+import { db, auth } from '../config/firebase';
 import { useAuth } from '../context/AuthContext';
 import StarRating from '../components/common/StarRating';
 import ScrollReveal from '../components/common/ScrollReveal';
@@ -71,6 +72,38 @@ export default function VisitorDashboard() {
             </div>
           </div>
         </ScrollReveal>
+
+        {/* Email Verification Banner */}
+        {user && !user.emailVerified && (
+          <ScrollReveal>
+            <div className="mb-8 p-4 rounded-2xl bg-yellow-500/10 border border-yellow-500/20 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+              <div className="flex items-center gap-3 flex-1">
+                <div className="w-10 h-10 rounded-full bg-yellow-500/20 flex items-center justify-center flex-shrink-0">
+                  <AlertCircle size={20} className="text-yellow-400" />
+                </div>
+                <div>
+                  <p className="text-yellow-300 font-semibold text-sm">Verify your email address</p>
+                  <p className="text-yellow-400/70 text-xs">Check your inbox for a verification link to unlock all features.</p>
+                </div>
+              </div>
+              <button 
+                onClick={async () => {
+                  try {
+                    if (auth.currentUser) {
+                      await sendEmailVerification(auth.currentUser);
+                      alert('Verification email sent! Check your inbox.');
+                    }
+                  } catch (err) {
+                    alert('Please wait a moment before requesting another verification email.');
+                  }
+                }}
+                className="px-4 py-2 bg-yellow-500/20 hover:bg-yellow-500/30 text-yellow-300 text-xs font-bold rounded-xl border border-yellow-500/30 transition-colors flex items-center gap-2 flex-shrink-0"
+              >
+                <Mail size={14} /> Resend Verification
+              </button>
+            </div>
+          </ScrollReveal>
+        )}
 
         {/* Quick Stats */}
         <ScrollReveal delay={80}>

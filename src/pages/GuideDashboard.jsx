@@ -46,6 +46,22 @@ export default function GuideDashboard() {
   const completedBookings = bookings.filter(b => b.status === 'completed');
   const totalEarnings = bookings.reduce((sum, b) => sum + (b.totalPrice || 0), 0);
 
+  // Compute monthly earnings
+  const now = new Date();
+  const thisMonthEarnings = bookings
+    .filter(b => {
+      const d = new Date(b.date || b.createdAt);
+      return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+    })
+    .reduce((sum, b) => sum + (b.totalPrice || 0), 0);
+  const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1);
+  const lastMonthEarnings = bookings
+    .filter(b => {
+      const d = new Date(b.date || b.createdAt);
+      return d.getMonth() === lastMonth.getMonth() && d.getFullYear() === lastMonth.getFullYear();
+    })
+    .reduce((sum, b) => sum + (b.totalPrice || 0), 0);
+
   return (
     <main className="pt-20 min-h-screen bg-dark-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -204,11 +220,11 @@ export default function GuideDashboard() {
                 <div className="space-y-3">
                   <div className="flex justify-between text-sm">
                     <span className="text-muted">This month</span>
-                    <span className="text-cream font-semibold">$1,240</span>
+                    <span className="text-cream font-semibold">${thisMonthEarnings.toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-muted">Last month</span>
-                    <span className="text-cream font-semibold">$980</span>
+                    <span className="text-cream font-semibold">${lastMonthEarnings.toLocaleString()}</span>
                   </div>
                   <div className="h-px bg-dark-600" />
                   <div className="flex justify-between">

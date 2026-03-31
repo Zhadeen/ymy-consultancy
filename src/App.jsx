@@ -38,6 +38,15 @@ function ProtectedRoute({ children, role }) {
   return children;
 }
 
+function DashboardRouter() {
+  const { user, loading } = useAuth();
+  if (loading) return null;
+  if (!user) return <Navigate to="/login" />;
+  if (user.role === 'admin') return <Navigate to="/admin" />;
+  if (user.role === 'guide') return <GuideDashboard />;
+  return <VisitorDashboard />;
+}
+
 function ScrollToTop() {
   const { pathname } = useLocation();
   useEffect(() => { window.scrollTo(0, 0); }, [pathname]);
@@ -79,17 +88,10 @@ export default function App() {
               <Route path="/booking/:id" element={<BookingPage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/register" element={<RegisterPage />} />
-              <Route path="/dashboard" element={<VisitorDashboard />} />
+              <Route path="/dashboard" element={<DashboardRouter />} />
+              <Route path="/guide-dashboard" element={<Navigate to="/dashboard" />} />
               <Route path="/settings" element={<AccountSettings />} />
               <Route path="/guide-register" element={<GuideRegistration />} />
-              <Route 
-                path="/guide-dashboard" 
-                element={
-                  <ProtectedRoute role="guide">
-                    <GuideDashboard />
-                  </ProtectedRoute>
-                } 
-              />
               <Route path="/help" element={<HelpCenterPage />} />
               <Route path="/safety" element={<SafetyPage />} />
               <Route path="/cancellation" element={<CancellationPage />} />
