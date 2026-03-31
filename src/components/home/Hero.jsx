@@ -65,13 +65,13 @@ export default function Hero() {
         {/* Headline */}
         <h1 className="font-heading text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold text-cream mb-6 animate-slide-up leading-[1.1]">
           Your World.{' '}
-          <span className="text-gradient-gold">Your Expert</span>
+          <span className="text-gradient-gold">Your Local Expert</span>
           {' '}Guide.
         </h1>
 
         {/* Subheadline */}
         <p className="text-lg sm:text-xl text-cream/70 max-w-2xl mx-auto mb-12 animate-slide-up font-light leading-relaxed" style={{ animationDelay: '150ms' }}>
-          Connect with professional local guides. No commission, no hidden fees. Subscribe once and pay your guide directly.
+          Connect with professional local guides. Pay simple booking fees. Get authentic local expertise.
         </p>
 
         {/* Search Bar */}
@@ -153,9 +153,9 @@ export default function Hero() {
         {/* Quick stats */}
         <div className="flex flex-wrap justify-center gap-8 mt-12 animate-fade-in" style={{ animationDelay: '500ms' }}>
           {[
-            { value: '500+', label: 'Expert Guides' },
+            { value: '500+', label: 'Local Guides' },
             { value: '50+', label: 'Cities' },
-            { value: '10K+', label: 'Happy Travelers' },
+            { value: '10K+', label: 'Happy Visitors' },
           ].map(stat => (
             <div key={stat.label} className="text-center">
               <div className="text-2xl font-heading font-bold text-gold">{stat.value}</div>

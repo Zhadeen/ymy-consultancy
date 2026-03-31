@@ -14,15 +14,15 @@ export default function PrivacyPage() {
           <div className="card-dark p-8 md:p-12 space-y-8 text-cream/90 leading-relaxed font-body">
             <div>
               <h2 className="text-xl font-heading font-semibold text-gold mb-3">Data Collection</h2>
-              <p>We receive and collect information you provide directly to us when setting up an account, communicating with a guide, or booking travel. This safely comprises name, email, encrypted passwords, payment details, and geolocation necessary for city-specific searches.</p>
+              <p>We receive and collect information you provide directly to us when setting up an account, communicating with a Local Guide, or booking an experience. This safely comprises name, email, encrypted passwords, payment details, and geolocation necessary for city-specific searches.</p>
             </div>
             <div>
               <h2 className="text-xl font-heading font-semibold text-gold mb-3">Cookies & Analytics</h2>
-              <p>YMY Consultancy utilizes local storage and first-party cookies to remember your authenticated session across multiple visits. We deploy anonymized analytics to measure site traffic trends and continuously improve user experience.</p>
+              <p>The YMY Local Guide Platform utilizes local storage and first-party cookies to remember your authenticated session across multiple visits. We deploy anonymized analytics to measure site traffic trends and continuously improve user experience.</p>
             </div>
             <div>
               <h2 className="text-xl font-heading font-semibold text-gold mb-3">Information Sharing</h2>
-              <p>We do not sell personal data to advertisers under any circumstances. Minimum necessary data is shared with your booked Local Guide to safely facilitate the rendezvous, and secure payment processing strings to Stripe.</p>
+              <p>We do not sell personal data to advertisers under any circumstances. Minimum necessary data is shared with your booked Local Guide to safely facilitate the experience, and secure payment processing strings to Stripe.</p>
             </div>
           </div>
         </ScrollReveal>

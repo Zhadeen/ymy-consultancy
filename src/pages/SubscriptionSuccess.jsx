@@ -46,8 +46,8 @@ export default function SubscriptionSuccess() {
         }
 
         const userId = isTourist ? metadata.userId : metadata.guideId;
-        const planId = metadata.planId || 'tourist_pass';
-        const planName = metadata.planName || 'Tourist Pass';
+        const planId = metadata.planId || 'visitor_access';
+        const planName = metadata.planName || 'Visitor Account';
 
         // Process Database Updates
         await setDoc(doc(db, 'subscriptions', userId), {
@@ -73,7 +73,7 @@ export default function SubscriptionSuccess() {
           });
         }
 
-        setStatus(isTourist ? 'success_tourist' : 'success_guide');
+        setStatus(isTourist ? 'success_visitor' : 'success_guide');
 
       } catch (err) {
         console.error('Subscription verification error:', err);
@@ -96,25 +96,25 @@ export default function SubscriptionSuccess() {
           </div>
         )}
 
-        {(status === 'success_guide' || status === 'success_tourist') && (
+        {(status === 'success_guide' || status === 'success_visitor') && (
           <div className="flex flex-col items-center">
             <div className="w-16 h-16 rounded-full bg-green-500/10 flex items-center justify-center mb-6">
               <CheckCircle2 size={32} className="text-green-500" />
             </div>
             <h2 className="font-heading text-2xl font-bold text-cream mb-4">
-              {status === 'success_guide' ? 'You are now Live!' : 'Welcome to YMY!'}
+              {status === 'success_guide' ? 'You are now a Local Guide!' : 'Welcome to YMY!'}
             </h2>
             <p className="text-muted mb-8 leading-relaxed">
               {status === 'success_guide' 
-                ? 'Your subscription is active. Your profile is now eligible to receive bookings from tourists.'
-                : 'Your Tourist Pass is active. You can now message and book any of our verified guides.'
+                ? 'Your subscription is active. Your profile is now eligible to receive bookings from Visitors.'
+                : 'Your Visitor account is verified. You can now message and book any of our verified Local Guides.'
               }
             </p>
             <button 
-              onClick={() => navigate(status === 'success_guide' ? '/guide-dashboard' : '/search')} 
+              onClick={() => navigate(status === 'success_guide' ? '/guide/dashboard' : '/search')} 
               className="btn-gold w-full flex items-center justify-center gap-2"
             >
-              {status === 'success_guide' ? 'Go to Dashboard' : 'Find Your Guide'} <ArrowRight size={18} />
+              {status === 'success_guide' ? 'Go to Dashboard' : 'Find Your Local Guide'} <ArrowRight size={18} />
             </button>
           </div>
         )}

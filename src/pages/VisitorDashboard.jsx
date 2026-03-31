@@ -7,7 +7,7 @@ import { useAuth } from '../context/AuthContext';
 import StarRating from '../components/common/StarRating';
 import ScrollReveal from '../components/common/ScrollReveal';
 
-export default function TouristDashboard() {
+export default function VisitorDashboard() {
   const { user } = useAuth();
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -51,19 +51,13 @@ export default function TouristDashboard() {
               <h1 className="font-heading text-3xl sm:text-4xl font-bold text-cream">
                 Welcome back, {user?.name || 'Traveler'} 👋
               </h1>
-              <p className="text-muted mt-1">Manage your bookings and discover new guides.</p>
+              <p className="text-muted mt-1">Manage your bookings and discover Local Guides.</p>
             </div>
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
               <div className="flex items-center gap-3">
-                {user?.isSubscribed ? (
-                  <span className="flex items-center gap-1 text-xs font-bold bg-green-500/10 text-green-400 px-3 py-1 rounded-full border border-green-500/20 uppercase tracking-wider">
-                    <CheckCircle2 size={12} /> Tourist Pass Active
-                  </span>
-                ) : (
-                  <Link to="/tourist-pricing" className="flex items-center gap-1 text-xs font-bold bg-gold/10 text-gold px-3 py-1 rounded-full border border-gold/20 uppercase tracking-wider hover:bg-gold/20 transition-colors">
-                    <CreditCard size={12} /> Free Member - Get Pass
-                  </Link>
-                )}
+                <span className="flex items-center gap-1 text-xs font-bold bg-gold/10 text-gold px-3 py-1 rounded-full border border-gold/20 uppercase tracking-wider">
+                  <CheckCircle2 size={12} /> Visitor Account
+                </span>
                 {user?.role === 'admin' && (
                   <Link to="/admin" className="btn-dark hidden sm:flex items-center gap-2 border-gold/50 text-gold">
                     Admin Panel
@@ -71,7 +65,7 @@ export default function TouristDashboard() {
                 )}
               </div>
               <Link to="/search" className="btn-gold hidden sm:flex items-center gap-2">
-                Find a Guide
+                Find a Local Guide
                 <ChevronRight size={16} />
               </Link>
             </div>
@@ -83,7 +77,7 @@ export default function TouristDashboard() {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-10">
             {[
               { color: 'text-gold', icon: Calendar, label: 'Bookings', value: bookings.length },
-              { color: 'text-pink-400', icon: Heart, label: 'Saved Guides', value: 0 },
+              { color: 'text-pink-400', icon: Heart, label: 'Saved Local Guides', value: 0 },
               { color: 'text-yellow-400', icon: Star, label: 'Reviews Given', value: 0 },
               { color: 'text-blue-400', icon: MessageSquare, label: 'Messages', value: 0 },
             ].map(stat => (
@@ -139,10 +133,10 @@ export default function TouristDashboard() {
             </ScrollReveal>
           </div>
 
-          {/* Saved Guides */}
+          {/* Saved Local Guides */}
           <div>
             <ScrollReveal>
-              <h2 className="font-heading text-2xl font-bold text-cream mb-6">Saved Guides</h2>
+              <h2 className="font-heading text-2xl font-bold text-cream mb-6">Saved Local Guides</h2>
               <div className="space-y-3 mb-10">
                 {savedGuides.length > 0 ? savedGuides.map((guide, i) => (
                   <ScrollReveal key={guide.id} delay={i * 60}>

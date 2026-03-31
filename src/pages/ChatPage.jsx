@@ -46,7 +46,7 @@ export default function ChatPage() {
         if (guideSnap.exists()) {
           setGuide({ id: guideSnap.id, ...guideSnap.data() });
         } else {
-          // Absolute fallback if it's a new chat between a guide and tourist (where tourist is the guideId param)
+          // Absolute fallback if it's a new chat between a Local Guide and Visitor (where visitor is the guideId param)
           setGuide({ id: guideId, name: 'Traveler', photo: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200', city: 'Guest' });
         }
       } catch (err) {
@@ -91,7 +91,7 @@ export default function ChatPage() {
         participants: [user.uid, guideId],
         lastMessage: textToSend,
         updatedAt: serverTimestamp(),
-        [user.uid]: { name: user.name || 'Tourist', photo: user.photo || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200' },
+        [user.uid]: { name: user.name || 'Visitor', photo: user.photo || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200' },
         [guideId]: { name: guide.name, photo: guide.photo }
       }, { merge: true });
 

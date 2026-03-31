@@ -78,10 +78,10 @@ export default function SearchPage() {
       <div className="bg-dark-900 border-b border-dark-600/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <h1 className="font-heading text-3xl sm:text-4xl font-bold text-cream mb-2">
-            Explore Guides
+            Find Your Local Guide
           </h1>
           <p className="text-muted">
-            {filteredGuides.length} {filteredGuides.length === 1 ? 'guide' : 'guides'} available
+            {filteredGuides.length} {filteredGuides.length === 1 ? 'Local Guide' : 'Local Guides'} available
             {country ? ` in ${country}` : city ? ` in ${city}` : ' worldwide'}
           </p>
         </div>
@@ -276,7 +276,7 @@ export default function SearchPage() {
             ) : (
               <div className="text-center py-20">
                 <div className="text-6xl mb-4">🔍</div>
-                <h3 className="font-heading text-2xl text-cream mb-2">No guides found</h3>
+                <h3 className="font-heading text-2xl text-cream mb-2">No Local Guides found</h3>
                 <p className="text-muted mb-6">Try adjusting your filters to see more results.</p>
                 <div className="flex flex-col gap-3 max-w-xs mx-auto">
                    <button onClick={clearFilters} className="btn-gold">Clear All Filters</button>

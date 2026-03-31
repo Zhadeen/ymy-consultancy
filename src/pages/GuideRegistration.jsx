@@ -180,7 +180,7 @@ export default function GuideRegistration() {
               <CheckCircle2 size={40} className="text-gold" />
             </div>
             <h1 className="font-heading text-3xl font-bold text-cream mb-3">Application Submitted!</h1>
-            <p className="text-muted mb-8">Thank you for applying to become a YMY guide. Our team will review your application within 24-48 hours.</p>
+            <p className="text-muted mb-8">Thank you for applying to become a YMY Local Guide. Our team will review your application within 24-48 hours.</p>
             <Link to="/" className="btn-gold inline-block">Back to Home</Link>
           </div>
         </ScrollReveal>
@@ -194,8 +194,8 @@ export default function GuideRegistration() {
         <ScrollReveal>
           <div className="text-center mb-10">
             <img src={logo} alt="YMY Consultancy Logo" className="h-16 w-auto object-contain mx-auto mb-4 drop-shadow-lg" />
-            <h1 className="font-heading text-3xl sm:text-4xl font-bold text-cream mb-2">Become a Guide</h1>
-            <p className="text-muted">Share your expertise. Earn on your schedule. Join a global community.</p>
+            <h1 className="font-heading text-3xl sm:text-4xl font-bold text-cream mb-2">Become a Local Guide</h1>
+            <p className="text-muted">Share your expertise. Earn on your schedule. Join a global community of verified Local Guides.</p>
           </div>
         </ScrollReveal>
 
@@ -275,7 +275,7 @@ export default function GuideRegistration() {
           {/* Step 2: ID Verification */}
           {step === 2 && (
             <div className="space-y-6">
-              <p className="text-muted text-sm">To ensure the safety of our tourists, we require a clear photo of your government-issued ID.</p>
+              <p className="text-muted text-sm">To ensure the safety of our visitors, we require a clear photo of your government-issued ID.</p>
               
               <div>
                 <label className="text-sm text-cream font-medium mb-3 block">Document Type</label>
@@ -318,7 +318,7 @@ export default function GuideRegistration() {
               <div className="bg-gold-50/10 border border-gold-200/20 rounded-xl p-4 flex gap-3">
                 <div className="text-gold mt-0.5">🛡️</div>
                 <p className="text-xs text-muted-dark leading-relaxed">
-                  Your ID is processed securely and is only visible to YMY administrators for verification purposes. It will never be shared with touristers or third parties.
+                  Your ID is processed securely and is only visible to YMY administrators for verification purposes. It will never be shared with Visitors or third parties.
                 </p>
               </div>
             </div>
@@ -329,7 +329,7 @@ export default function GuideRegistration() {
             <div className="space-y-6">
               <div>
                 <label className="text-sm text-cream font-medium mb-2 block">Bio</label>
-                <textarea rows={5} placeholder="Tell travelers about yourself, your expertise, and what makes your tours special..." value={form.bio} onChange={e => update('bio', e.target.value)} className="input-dark resize-none" />
+                <textarea rows={5} placeholder="Tell visitors about yourself, your expertise, and what makes your experiences special..." value={form.bio} onChange={e => update('bio', e.target.value)} className="input-dark resize-none" />
                 <p className="text-muted-dark text-xs mt-1">{form.bio.length}/500 characters</p>
               </div>
               <div>
@@ -360,7 +360,7 @@ export default function GuideRegistration() {
           {/* Step 4: Pricing */}
           {step === 4 && (
             <div className="space-y-6">
-              <p className="text-muted text-sm">Set your rates. You can change these anytime from your dashboard.</p>
+              <p className="text-muted text-sm">Set your rates. You can change these anytime from your dashboard. <strong>New Local Guides get 3 months free trial</strong> before subscribing.</p>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="card-dark p-5 text-center !bg-dark-600">
                   <div className="text-2xl mb-2">🌤️</div>

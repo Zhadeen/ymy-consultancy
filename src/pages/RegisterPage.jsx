@@ -36,7 +36,7 @@ export default function RegisterPage() {
     }
 
     try {
-      await register(name, email, password, 'tourist');
+      await register(name, email, password, 'visitor');
       navigate('/dashboard');
     } catch (err) {
       setError(err.message.replace('Firebase: ', ''));
@@ -60,7 +60,7 @@ export default function RegisterPage() {
             <img src={logo} alt="YMY Consultancy Logo" className="h-16 w-auto object-contain drop-shadow-lg" />
           </Link>
           <h1 className="font-heading text-3xl font-bold text-cream mb-2">Create Account</h1>
-          <p className="text-muted text-sm">Join thousands of travelers discovering the world</p>
+          <p className="text-sm">When you message a Local Guide or a visitor messages you, it will appear here.</p>
         </div>
 
         <div className="card-dark p-8">

@@ -14,15 +14,15 @@ export default function TermsPage() {
           <div className="card-dark p-8 md:p-12 space-y-8 text-cream/90 leading-relaxed font-body">
             <div>
               <h2 className="text-xl font-heading font-semibold text-gold mb-3">1. Acceptance of Terms</h2>
-              <p>By registering for, accessing, browsing, or using the YMY Consultancy Marketplace, you acknowledge that you have read, understood, and agree to be bound by the following terms and conditions.</p>
+              <p>By registering for, accessing, browsing, or using the YMY Local Guide Platform, you acknowledge that you have read, understood, and agree to be bound by the following terms and conditions.</p>
             </div>
             <div>
               <h2 className="text-xl font-heading font-semibold text-gold mb-3">2. Service Usage</h2>
-              <p>Our platform operates simply as a connective layer granting tourists access to freelance, expert guides. YMY Consultancy itself does not coordinate physical tours, transport logistics, or assume liability for circumstances experienced during a booking connection.</p>
+              <p>Our platform operates as a connective layer granting Visitors access to independent Local Guides. YMY Consultancy itself does not coordinate physical tours, transport logistics, or assume liability for circumstances experienced during a booking connection.</p>
             </div>
             <div>
-              <h2 className="text-xl font-heading font-semibold text-gold mb-3">3. Payments & Adjustments</h2>
-              <p>The platform initiates holding fees immediately upon a tourist completing checkout. These funds are paid out to Local Guides shortly after a completed tour experience. Refer to our specific cancellation policy if obligations change.</p>
+              <h2 className="text-xl font-heading font-semibold text-gold mb-3">3. Payments & Fees</h2>
+              <p>The platform retains 15% of each booking fee as a service charge. Payments are processed via Stripe. Local Guides receive 85% of the agreed amount. Full refunds are issued for cancellations made more than 24 hours before the scheduled appointment. Cancellations within 24 hours are non-refundable.</p>
             </div>
           </div>
         </ScrollReveal>

@@ -56,7 +56,7 @@ export default function GuideDashboard() {
               <img src={guide.photo} alt={guide.name} className="w-16 h-16 rounded-full object-cover border-2 border-gold" />
               <div>
                 <h1 className="font-heading text-2xl sm:text-3xl font-bold text-cream">
-                  Guide Dashboard
+                  Local Guide Dashboard
                 </h1>
                 <div className="flex items-center gap-3 mt-1 text-sm">
                   <span className="text-muted flex items-center gap-1">
@@ -87,7 +87,7 @@ export default function GuideDashboard() {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-10">
             {[
               { icon: DollarSign, label: 'Total Earnings', value: `$${totalEarnings.toLocaleString()}`, color: 'text-green-400', bg: 'bg-green-500/10' },
-              { icon: Calendar, label: 'Upcoming Tours', value: upcomingBookings.length, color: 'text-gold', bg: 'bg-gold-100' },
+              { icon: Calendar, label: 'Upcoming Experiences', value: upcomingBookings.length, color: 'text-gold', bg: 'bg-gold-100' },
               { icon: Star, label: 'Rating', value: guide.rating.toFixed(1), color: 'text-yellow-400', bg: 'bg-yellow-500/10' },
               { icon: Users, label: 'Total Guests', value: guide.totalBookings, color: 'text-blue-400', bg: 'bg-blue-500/10' },
             ].map(stat => (
@@ -128,7 +128,7 @@ export default function GuideDashboard() {
                     <div className="card-dark p-5">
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div>
-                          <h3 className="text-cream font-semibold">{booking.touristName}</h3>
+                          <h3 className="text-cream font-semibold">{booking.visitorName || booking.touristName}</h3>
                           <div className="flex items-center gap-4 text-muted text-sm mt-1">
                             <span className="flex items-center gap-1"><Calendar size={14} />{new Date(booking.date).toLocaleDateString('en', { month: 'short', day: 'numeric' })}</span>
                             <span className="flex items-center gap-1"><Clock size={14} />{booking.tourType}</span>

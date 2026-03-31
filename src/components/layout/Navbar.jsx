@@ -22,9 +22,9 @@ export default function Navbar() {
 
   const navLinks = [
     { to: '/search', label: 'Explore' },
-    { to: '/tourist-pricing', label: 'Tourist Pass' },
-    { to: '/pricing', label: 'Guide Plans' },
-    { to: '/guide-register', label: 'Become a Guide' },
+    { to: '/visitor-pricing', label: 'Visitor Plan' },
+    { to: '/pricing', label: 'Local Guide Plans' },
+    { to: '/guide-register', label: 'Join as Local Guide' },
   ];
 
   const isActive = (path) => location.pathname === path;
@@ -88,7 +88,7 @@ export default function Navbar() {
                 </Link>
               )}
               <Link to="/search" className="btn-gold text-sm !px-5 !py-2.5">
-                Find My Guide
+                Find a Local Guide
               </Link>
             </div>
 
@@ -149,7 +149,7 @@ export default function Navbar() {
               </>
             )}
             <Link to="/search" className="btn-gold text-center mt-4">
-              Find My Guide
+              Find a Local Guide
             </Link>
           </div>
         </div>

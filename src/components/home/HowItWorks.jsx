@@ -5,20 +5,20 @@ const steps = [
   {
     icon: Search,
     number: '01',
-    title: 'Search Experts',
-    description: 'Browse verified, local guides by city and specialty. View their unique portfolios and authentic traveler reviews.',
+    title: 'Find Your Guide',
+    description: 'Browse verified, professional Local Guides by city and specialty. View their unique portfolios and authentic reviews.',
   },
   {
     icon: Zap,
     number: '02',
-    title: 'Get Your Pass',
-    description: 'Unlock unlimited access for just $5/month. Message any guide and book your custom tours instantly.',
+    title: 'Book a Local Guide',
+    description: 'Select your date and tour type. Pay securely through our platform and receive instant confirmation.',
   },
   {
     icon: MessageSquare,
     number: '03',
-    title: 'Book & Pay Direct',
-    description: 'Coordinate tour details via chat and pay your guide directly. No commission fees, no hidden costs.',
+    title: 'Discover Together',
+    description: 'Connect with your Local Guide via chat to finalize details and experience the city like a true resident.',
   },
 ];
 

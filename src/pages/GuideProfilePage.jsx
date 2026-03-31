@@ -7,7 +7,7 @@ import StarRating from '../components/common/StarRating';
 import ScrollReveal from '../components/common/ScrollReveal';
 import { useBooking } from '../context/BookingContext';
 import { useAuth } from '../context/AuthContext';
-import TouristPricingModal from '../components/TouristPricingModal';
+import VisitorPricingModal from '../components/VisitorPricingModal';
 
 export default function GuideProfilePage() {
   const { id } = useParams();
@@ -72,7 +72,7 @@ export default function GuideProfilePage() {
     return (
       <main className="pt-20 min-h-screen flex items-center justify-center bg-dark-800">
         <div className="text-center">
-          <h2 className="font-heading text-3xl text-cream mb-4">Guide Not Found</h2>
+          <h2 className="font-heading text-3xl text-cream mb-4">Local Guide Not Found</h2>
           <Link to="/search" className="btn-gold">Back to Search</Link>
         </div>
       </main>
@@ -80,8 +80,9 @@ export default function GuideProfilePage() {
   }
 
   const handleBook = () => {
-    // Show paywall if not logged in OR if tourist is not subscribed
-    if (!user || user?.role === 'tourist' && !user?.isSubscribed) {
+    // Show paywall/login modal ONLY if not logged in. 
+    // Subscriptions are no longer required for visitors to book.
+    if (!user) {
       setShowPaywall(true);
       return;
     }
@@ -90,8 +91,7 @@ export default function GuideProfilePage() {
   };
 
   const handleMessage = () => {
-    // Show paywall if not logged in OR if tourist is not subscribed
-    if (!user || user?.role === 'tourist' && !user?.isSubscribed) {
+    if (!user) {
       setShowPaywall(true);
       return;
     }
@@ -105,8 +105,8 @@ export default function GuideProfilePage() {
     try {
       const reviewData = {
         guideId: id,
-        touristId: user.uid,
-        touristName: user.name,
+        visitorId: user.uid,
+        visitorName: user.name,
         rating: newRating,
         text: newText,
         createdAt: serverTimestamp(),
@@ -180,7 +180,7 @@ export default function GuideProfilePage() {
                 {guide.idVerified && (
                   <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-gold rounded-full px-4 py-1.5 flex items-center gap-1.5 shadow-gold-glow">
                     <BadgeCheck size={16} className="text-dark-900" />
-                    <span className="text-dark-900 text-sm font-bold">ID Verified Guide</span>
+                    <span className="text-dark-900 text-sm font-bold">Verified Local Guide</span>
                   </div>
                 )}
               </div>
@@ -202,7 +202,7 @@ export default function GuideProfilePage() {
                 </span>
                 <span className="flex items-center gap-1.5">
                   <Users size={16} />
-                  {guide.totalBookings} tours completed
+                  {guide.totalBookings} experiences completed
                 </span>
               </div>
 
@@ -344,7 +344,7 @@ export default function GuideProfilePage() {
                 <h2 className="font-heading text-2xl font-bold text-cream">
                   Reviews <span className="text-muted text-lg font-normal">({reviews.length})</span>
                 </h2>
-                {user && user.role === 'tourist' && !showReviewForm && (
+                {user && user.role === 'visitor' && !showReviewForm && (
                   <button 
                     onClick={() => setShowReviewForm(true)}
                     className="text-gold text-sm font-semibold hover:underline"
@@ -410,7 +410,7 @@ export default function GuideProfilePage() {
                     <div className="card-dark p-6">
                       <div className="flex items-start justify-between mb-3">
                         <div>
-                          <h4 className="text-cream font-semibold">{review.touristName}</h4>
+                          <h4 className="text-cream font-semibold">{review.visitorName}</h4>
                           <p className="text-muted-dark text-xs">
                             {review.createdAt?.toDate 
                               ? review.createdAt.toDate().toLocaleDateString('en', { month: 'long', year: 'numeric' })
@@ -474,7 +474,7 @@ export default function GuideProfilePage() {
                   </div>
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-muted">Cancellation</span>
-                    <span className="text-cream font-medium">Free up to 48h</span>
+                    <span className="text-cream font-medium">Free up to 24h</span>
                   </div>
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-muted">Languages</span>
@@ -487,7 +487,7 @@ export default function GuideProfilePage() {
         </div>
       </div>
       
-      <TouristPricingModal isOpen={showPaywall} onClose={() => setShowPaywall(false)} />
+      <VisitorPricingModal isOpen={showPaywall} onClose={() => setShowPaywall(false)} />
     </main>
   );
 }

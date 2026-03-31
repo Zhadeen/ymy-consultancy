@@ -100,7 +100,7 @@ export default function PaymentSuccess() {
 
           <div className="grid md:grid-cols-2 gap-8 mb-10 text-left">
             <div className="bg-dark-600/50 rounded-2xl p-6 space-y-4 border border-dark-500">
-              <h3 className="text-gold text-sm font-semibold uppercase tracking-wider mb-2">Tour Details</h3>
+              <h3 className="text-gold text-sm font-semibold uppercase tracking-wider mb-2">Experience Details</h3>
               <div className="flex justify-between items-center">
                 <span className="text-muted text-sm font-medium">Reference</span>
                 <button onClick={handleCopyRef} className="flex items-center gap-1.5 text-gold font-mono font-bold text-sm bg-gold/5 px-2 py-1 rounded hover:bg-gold/10 transition-colors">
@@ -143,19 +143,19 @@ export default function PaymentSuccess() {
                   </li>
                   <li className="flex gap-3">
                     <span className="text-gold">3.</span>
-                    Prepare for an unforgettable experience in Paris!
+                    Prepare for an unforgettable experience!
                   </li>
                 </ul>
               </div>
 
               <div className="bg-dark-600/50 rounded-2xl p-5 border border-dark-500">
-                <p className="text-gold text-xs font-bold uppercase tracking-widest mb-3">📍 Guide Contact</p>
+                <p className="text-gold text-xs font-bold uppercase tracking-widest mb-3">📍 Local Guide Contact</p>
                 <div className="space-y-2">
                   <div className="flex items-center gap-3 text-cream text-sm">
                     <div className="w-8 h-8 rounded-full bg-dark-500 flex items-center justify-center text-gold">
                       <Mail size={14} />
                     </div>
-                    <span>{confirmed.touristEmail}</span>
+                    <span>{confirmed.visitorEmail}</span>
                   </div>
                   <div className="flex items-center gap-3 text-cream text-sm">
                     <div className="w-8 h-8 rounded-full bg-dark-500 flex items-center justify-center text-gold">
@@ -169,7 +169,7 @@ export default function PaymentSuccess() {
           </div>
 
           <div className="flex flex-col sm:flex-row gap-4">
-            <Link to={`/chat/${confirmed.guideId}`} className="btn-ghost flex-1 py-4">Message Guide</Link>
+            <Link to={`/chat/${confirmed.guideId}`} className="btn-ghost flex-1 py-4">Message Local Guide</Link>
             <Link to="/" onClick={resetBooking} className="btn-gold flex-1 py-4">Return Home</Link>
           </div>
           

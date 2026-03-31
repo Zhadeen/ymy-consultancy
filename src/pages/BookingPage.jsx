@@ -79,6 +79,15 @@ export default function BookingPage() {
     return fallbackDates;
   }, [guide]);
 
+  const priceMap = useMemo(() => ({
+    half: guide?.priceHalfDay || 0,
+    full: guide?.priceFullDay || 0,
+    custom: (guide?.priceCustom || 0) * 4
+  }), [guide]);
+
+  const basePrice = priceMap[tourType] || 0;
+  const totalPrice = basePrice * guests;
+
   const handleConfirm = async () => {
     if (!date || !name || !email) return;
     setProcessing(true);
@@ -87,30 +96,34 @@ export default function BookingPage() {
       const bookingData = {
         guideName: guide.name,
         guideId: guide.id,
+        guidePhoto: guide.photo,
         totalPrice,
         date,
         tourType,
         guests,
-        touristName: name,
-        touristEmail: email,
-        touristId: user.uid,
+        visitorName: name,
+        visitorEmail: email,
+        visitorId: user.uid,
         specialRequests,
       };
 
-      await createBookingRequest(bookingData);
+      const response = await fetch('/api/create-checkout-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ bookingData, userId: user.uid }),
+      });
+
+      const session = await response.json();
+      if (session.url) {
+        window.location.href = session.url;
+      } else {
+        throw new Error(session.message || 'Failed to initialize payment.');
+      }
     } catch (err) {
-      console.error("Booking Request Error:", err);
-      setError(err.message || 'Failed to send request. Please try again.');
+      console.error("Booking Error:", err);
+      setError(err.message || 'Failed to process booking. Please try again.');
     } finally {
       setProcessing(false);
-    }
-  };
-
-  const handleCopyRef = () => {
-    if (confirmed?.reference) {
-      navigator.clipboard.writeText(confirmed.reference);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
     }
   };
 
@@ -126,82 +139,41 @@ export default function BookingPage() {
     return (
       <main className="pt-20 min-h-screen flex items-center justify-center bg-dark-800">
         <div className="text-center">
-          <h2 className="font-heading text-3xl text-cream mb-4">Guide Not Found</h2>
+          <h2 className="font-heading text-3xl text-cream mb-4">Local Guide Not Found</h2>
           <Link to="/search" className="btn-gold">Back to Search</Link>
         </div>
       </main>
     );
   }
 
-  if (guide && !guide.isSubscribed) {
-    return (
-      <main className="pt-20 min-h-screen flex items-center justify-center bg-dark-800 p-4">
-        <div className="card-dark max-w-md w-full p-8 text-center text-muted">
-          <Calendar size={48} className="text-dark-500 mx-auto mb-4" />
-          <h2 className="font-heading text-xl font-bold text-cream mb-2">Guide Unavailable</h2>
-          <p className="mb-6 text-sm">This guide is currently not accepting new bookings through the platform.</p>
-          <button onClick={() => navigate(-1)} className="btn-ghost w-full">Go Back to Profile</button>
-        </div>
-      </main>
-    );
-  }
-
-  // Paywall for unsubscribed tourists
-  if (user && user.role === 'tourist' && !user.isSubscribed) {
-    return (
-      <main className="pt-20 min-h-screen flex items-center justify-center bg-dark-800 p-4">
-        <div className="card-dark max-w-md w-full p-8 text-center border-gold/30">
-          <CreditCard size={48} className="text-gold mx-auto mb-4" />
-          <h2 className="font-heading text-2xl font-bold text-cream mb-2">Unlock Booking</h2>
-          <p className="text-muted text-sm mb-8">
-            Subscribe for just $5/month to unlock unlimited booking requests and messaging with our verified guides.
-          </p>
-          <div className="flex flex-col gap-3">
-            <Link to="/tourist-pricing" className="btn-gold w-full">Get Tourist Pass - $5/mo</Link>
-            <button onClick={() => navigate(-1)} className="text-muted hover:text-cream text-sm">Cancel</button>
-          </div>
-        </div>
-      </main>
-    );
-  }
-
-  const priceMap = { half: guide.priceHalfDay, full: guide.priceFullDay, custom: (guide.priceCustom || 0) * 4 };
-  const basePrice = priceMap[tourType] || guide.priceFullDay;
-  const totalPrice = basePrice * guests;
-
-  // Confirmation screen
   if (confirmed) {
     return (
       <main className="pt-20 min-h-screen bg-dark-800 flex items-center justify-center p-4">
         <ScrollReveal>
-          <div className="card-dark max-w-lg w-full p-8 text-center border-gold/20">
+          <div className="card-dark max-w-lg w-full p-8 text-center border-gold-200">
             <div className="w-16 h-16 rounded-full bg-green-500/10 flex items-center justify-center mx-auto mb-6">
               <CheckCircle2 size={32} className="text-green-500" />
             </div>
-            <h1 className="font-heading text-3xl font-bold text-cream mb-2">Request Sent!</h1>
+            <h1 className="font-heading text-3xl font-bold text-cream mb-2">Booking Confirmed!</h1>
             <p className="text-muted mb-8 text-sm">
-              Your booking request for <span className="text-cream font-medium">{confirmed.guideName}</span> on {new Date(confirmed.date).toLocaleDateString()} has been sent to the guide.
+              Your booking with <span className="text-cream font-medium">{confirmed.guideName}</span> on {new Date(confirmed.date).toLocaleDateString()} has been successfully processed.
             </p>
 
             <div className="bg-dark-900 rounded-xl p-6 mb-8 text-left border border-dark-600/50">
               <h3 className="text-gold font-heading font-bold mb-3 flex items-center gap-2">
-                <CreditCard size={18} /> Direct Payment Instructions
+                <CheckCircle2 size={18} /> Payment Received
               </h3>
               <p className="text-cream text-sm mb-4 leading-relaxed">
-                YMY Consultancy does not process tour payments. Please contact your guide via chat to arrange payment directly (Cash, Bank Transfer, etc.).
+                Your payment of <span className="text-gold font-bold">${totalPrice}</span> was successful. The Local Guide has been notified.
               </p>
-              <div className="flex items-center justify-between text-xs p-3 bg-dark-800 rounded-lg">
-                <span className="text-muted-dark">Final Amount:</span>
-                <span className="text-gold font-bold text-lg">${totalPrice}</span>
-              </div>
             </div>
 
             <div className="flex flex-col gap-3">
               <Link to={`/chat/${confirmed.guideId}`} className="btn-gold w-full flex items-center justify-center gap-2">
-                Chat with Guide
+                Chat with Local Guide
               </Link>
-              <Link to="/tourist-dashboard" className="text-muted hover:text-cream text-sm font-medium">
-                Go to Dashboard
+              <Link to="/dashboard" className="text-muted hover:text-cream text-sm font-medium">
+                Go to Visitor Dashboard
               </Link>
             </div>
           </div>
@@ -223,7 +195,7 @@ export default function BookingPage() {
           <div className="flex-1 space-y-8">
             <ScrollReveal>
               <h1 className="font-heading text-3xl sm:text-4xl font-bold text-cream mb-2">
-                Book Your Tour
+                Book Your Local Guide Experience
               </h1>
               <div className="flex items-center gap-3 text-muted">
                 <img src={guide.photo} alt={guide.name} className="w-10 h-10 rounded-full object-cover border border-dark-500" />
@@ -367,7 +339,7 @@ export default function BookingPage() {
                   </button>
 
                   <p className="text-muted-dark text-xs text-center mt-4">
-                    Free cancellation up to 48 hours before your tour
+                    Full refund if cancelled more than 24 hours before the tour
                   </p>
                 </div>
               </ScrollReveal>

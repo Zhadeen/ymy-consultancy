@@ -13,16 +13,16 @@ export default function CancellationPage() {
         <ScrollReveal delay={100}>
           <div className="card-dark p-8 md:p-12 space-y-8 text-cream/90 leading-relaxed font-body">
             <div>
-              <h2 className="text-xl font-heading font-semibold text-gold mb-3">Standard Tour Guidelines</h2>
-              <p>Because plans can change unexpectedly, reservations via YMY Consultancy can generally be canceled without penalty up to 48 hours before the scheduled start time for a 100% full refund to your original payment method.</p>
+              <h2 className="text-xl font-heading font-semibold text-gold mb-3">Standard Experience Guidelines</h2>
+              <p>Because plans can change unexpectedly, reservations via the YMY Local Guide Platform can be canceled without penalty up to 24 hours before the scheduled start time for a 100% full refund to your original payment method. The 15% platform service fee is included in this refund.</p>
             </div>
             <div>
               <h2 className="text-xl font-heading font-semibold text-gold mb-3">Late Cancellations</h2>
-              <p>For cancellations made within 24–48 hours before the scheduled start time, a 50% refund will be issued. Cancellations submitted less than 24 hours prior or 'no-shows' will incur an un-refundable 100% cancelation fee paid to your guide.</p>
+              <p>Cancellations made less than 24 hours prior to the scheduled start time or "no-shows" are non-refundable. This policy ensures our Local Guides are fairly compensated for their reserved time and preparation.</p>
             </div>
             <div>
-              <h2 className="text-xl font-heading font-semibold text-gold mb-3">Guide Cancellations</h2>
-              <p>In the rare event a confirmed expert guide must cancel a tour, tourists will always receive an immediate 100% refund alongside platform credit towards an alternative booking.</p>
+              <h2 className="text-xl font-heading font-semibold text-gold mb-3">Local Guide Cancellations</h2>
+              <p>In the rare event a confirmed Local Guide must cancel an experience, Visitors will always receive an immediate 100% refund of the full amount paid, including all fees.</p>
             </div>
           </div>
         </ScrollReveal>

@@ -29,7 +29,7 @@ export function AuthProvider({ children }) {
           const docRef = doc(db, 'users', firebaseUser.uid);
           const docSnap = await getDoc(docRef);
           
-          let role = 'tourist';
+          let role = 'visitor';
           if (docSnap.exists()) {
             role = docSnap.data().role;
           }
@@ -74,14 +74,14 @@ export function AuthProvider({ children }) {
       await setDoc(docRef, {
         name: result.user.displayName || 'Traveler',
         email: result.user.email,
-        role: 'tourist',
+        role: 'visitor',
         createdAt: serverTimestamp()
       });
     }
     return result;
   };
 
-  const register = async (name, email, password, role = 'tourist') => {
+  const register = async (name, email, password, role = 'visitor') => {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     
     await updateProfile(userCredential.user, {

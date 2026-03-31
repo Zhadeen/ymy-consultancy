@@ -21,14 +21,34 @@ export function BookingProvider({ children }) {
     setBooking(prev => ({ ...prev, ...updates }));
   };
 
+  const generateReference = () => {
+    return 'YMY-' + Math.random().toString(36).substr(2, 6).toUpperCase();
+  };
+
   const createBookingRequest = async (bookingData) => {
+    // In the new marketplace model, this step sends the visitor to Stripe.
+    // We update the local state to prepare for payment.
+    setBooking(prev => ({ ...prev, ...bookingData }));
+  };
+
+  const savePaidBooking = async (metadata) => {
     try {
-      // Ensure numeric fields are numbers
+      const reference = generateReference();
       const finalBooking = {
-        ...bookingData,
-        guests: parseInt(bookingData.guests),
-        totalPrice: parseFloat(bookingData.totalPrice),
-        status: 'pending',
+        guideId: metadata.guideId,
+        guideName: metadata.guideName,
+        guidePhoto: metadata.guidePhoto || '',
+        visitorId: metadata.touristId, // Keep underlying field name for now but use visitor in logic if needed
+        visitorName: metadata.touristName,
+        visitorEmail: metadata.touristEmail,
+        date: metadata.date,
+        tourType: metadata.tourType,
+        guests: parseInt(metadata.guests),
+        totalPrice: parseFloat(metadata.totalPrice),
+        specialRequests: metadata.specialRequests || '',
+        reference,
+        status: 'upcoming',
+        paymentStatus: 'paid',
         createdAt: new Date().toISOString(),
       };
 
@@ -37,7 +57,7 @@ export function BookingProvider({ children }) {
       setError(null);
       return finalBooking;
     } catch (err) {
-      console.error('Error creating booking request in Firestore:', err);
+      console.error('Error saving paid booking:', err);
       setError(err.message);
       throw err;
     }
@@ -49,11 +69,12 @@ export function BookingProvider({ children }) {
   };
 
   return (
-    <BookingContext.Provider value={{ booking, confirmed, error, updateBooking, createBookingRequest, resetBooking }}>
+    <BookingContext.Provider value={{ booking, confirmed, error, updateBooking, createBookingRequest, savePaidBooking, resetBooking }}>
       {children}
     </BookingContext.Provider>
   );
 }
+
 
 export const useBooking = () => {
   const context = useContext(BookingContext);

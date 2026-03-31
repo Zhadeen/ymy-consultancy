@@ -12,7 +12,7 @@ import ChatPage from './pages/ChatPage';
 import ChatInbox from './pages/ChatInbox';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
-import TouristDashboard from './pages/TouristDashboard';
+import VisitorDashboard from './pages/VisitorDashboard';
 import GuideRegistration from './pages/GuideRegistration';
 import GuideDashboard from './pages/GuideDashboard';
 import AdminPanel from './pages/AdminPanel';
@@ -25,7 +25,7 @@ import PricingPage from './pages/PricingPage';
 import PaymentSuccess from './pages/PaymentSuccess';
 import PaymentCancel from './pages/PaymentCancel';
 import SubscriptionSuccess from './pages/SubscriptionSuccess';
-import TouristPricingPage from './pages/TouristPricingPage';
+import VisitorPricingPage from './pages/VisitorPricingPage';
 import FloatingContact from './components/common/FloatingContact';
 import { useAuth } from './context/AuthContext';
 import { Navigate } from 'react-router-dom';
@@ -78,7 +78,7 @@ export default function App() {
               <Route path="/booking/:id" element={<BookingPage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/register" element={<RegisterPage />} />
-              <Route path="/dashboard" element={<TouristDashboard />} />
+              <Route path="/dashboard" element={<VisitorDashboard />} />
               <Route path="/guide-register" element={<GuideRegistration />} />
               <Route 
                 path="/guide-dashboard" 
@@ -97,7 +97,7 @@ export default function App() {
               <Route path="/payment/success" element={<PaymentSuccess />} />
               <Route path="/payment/cancel" element={<PaymentCancel />} />
               <Route path="/subscription/success" element={<SubscriptionSuccess />} />
-              <Route path="/tourist-pricing" element={<TouristPricingPage />} />
+              <Route path="/visitor-pricing" element={<VisitorPricingPage />} />
             </Route>
 
             {/* Chat - no footer */}

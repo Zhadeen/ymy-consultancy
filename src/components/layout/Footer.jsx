@@ -27,7 +27,7 @@ export default function Footer() {
               <img src={logo} alt="YMY Consultancy Logo" className="h-12 w-auto object-contain" />
             </Link>
             <p className="text-muted text-sm leading-relaxed mb-6">
-              Premium tour guide experiences worldwide. Connecting curious travelers with verified local experts since 2024.
+              Premium local guide experiences worldwide. Connecting curious visitors with verified local experts since 2024.
             </p>
             <div className="flex gap-3">
               {[ 
@@ -65,9 +65,9 @@ export default function Footer() {
             <h4 className="font-heading text-cream font-semibold mb-4">Quick Links</h4>
             <div className="flex flex-col gap-3">
               {[
-                { to: '/search', label: 'Find a Guide' },
+                { to: '/search', label: 'Find a Local Guide' },
                 { to: '/#how-it-works', label: 'How It Works' },
-                { to: '/guide-register', label: 'Become a Guide' },
+                { to: '/guide-register', label: 'Become a Local Guide' },
                 { to: '/login', label: 'Sign In' },
               ].map(link => (
                 <Link key={link.to} to={link.to} className="text-muted text-sm hover:text-gold transition-colors duration-300">
