@@ -6,8 +6,8 @@ import { Link } from 'react-router-dom';
 import ScrollReveal from '../components/common/ScrollReveal';
 import { doc, updateDoc, getDoc, collection, query, where, getDocs } from 'firebase/firestore';
 import { updatePassword, reauthenticateWithCredential, EmailAuthProvider } from 'firebase/auth';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { db, auth, storage } from '../config/firebase';
+import { db, auth } from '../config/firebase';
+import { uploadFile } from '../utils/firebaseHelpers';
 
 export default function AccountSettings() {
   const { user, updateUserLocal } = useAuth();
@@ -99,21 +99,33 @@ export default function AccountSettings() {
   const handlePhotoUpload = async (e) => {
     const file = e.target.files?.[0];
     if (!file || !user) return;
+
+    // Basic client-side validation
+    const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+    if (file.size > MAX_FILE_SIZE) {
+      showMessage('error', 'Photo size must be less than 5MB.');
+      return;
+    }
+
     setPhotoUploading(true);
     try {
-      const storageRef = ref(storage, `profile-photos/${user.uid}/${Date.now()}_${file.name}`);
-      await uploadBytes(storageRef, file);
-      const downloadURL = await getDownloadURL(storageRef);
+      const fileName = `${user.uid}_${Date.now()}`;
+      // Use the robust uploadFile helper which includes timeouts and better error handling
+      const downloadURL = await uploadFile(file, 'profile_photos', fileName);
       
+      if (!downloadURL) {
+        throw new Error("Failed to receive a valid download URL from Firebase.");
+      }
+
       await updateDoc(doc(db, 'users', user.uid), { photo: downloadURL });
       if (guideId) {
         await updateDoc(doc(db, 'guides', guideId), { photo: downloadURL });
       }
       updateUserLocal?.({ ...user, photo: downloadURL });
-      showMessage('success', 'Profile photo updated!');
+      showMessage('success', 'Profile photo updated successfully!');
     } catch (err) {
       console.error('Photo upload error:', err);
-      showMessage('error', 'Failed to upload photo. Please try again.');
+      showMessage('error', err.message || 'Failed to upload photo. Please ensure your internet connection is stable.');
     } finally {
       setPhotoUploading(false);
     }
@@ -135,10 +147,11 @@ export default function AccountSettings() {
       const credential = EmailAuthProvider.credential(auth.currentUser.email, currentPassword);
       await reauthenticateWithCredential(auth.currentUser, credential);
       await updatePassword(auth.currentUser, newPassword);
+      showMessage('success', 'Password changed successfully!');
+      // Reset fields but keep security tab active
       setCurrentPassword('');
       setNewPassword('');
       setConfirmNewPassword('');
-      showMessage('success', 'Password changed successfully!');
     } catch (err) {
       console.error('Password change error:', err);
       if (err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
@@ -228,6 +241,53 @@ export default function AccountSettings() {
           </div>
         )}
 
+        {/* Profile Header (Always visible) */}
+        <ScrollReveal delay={50} className="mb-8">
+          <div className="card-dark p-6 sm:p-8 flex flex-col sm:flex-row items-center gap-6">
+            <div className="relative group">
+              <div className="w-24 h-24 rounded-full bg-dark-700 border-2 border-gold overflow-hidden">
+                {photoUploading ? (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gold" />
+                  </div>
+                ) : (
+                  <img 
+                    src={user?.photo || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200'} 
+                    alt="Profile" 
+                    className="w-full h-full object-cover"
+                  />
+                )}
+              </div>
+              <button 
+                type="button" 
+                onClick={() => fileInputRef.current?.click()}
+                className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-gold text-dark-900 flex items-center justify-center border-2 border-dark-900 group-hover:scale-110 transition-transform shadow-lg"
+                title="Change profile photo"
+              >
+                <Camera size={14} />
+              </button>
+              <input 
+                ref={fileInputRef}
+                type="file" 
+                accept="image/*" 
+                onChange={handlePhotoUpload}
+                className="hidden"
+              />
+            </div>
+            <div className="text-center sm:text-left flex-1">
+              <h3 className="text-2xl font-bold text-cream">{user?.name}</h3>
+              <p className="text-gold text-sm font-medium flex items-center gap-2 justify-center sm:justify-start mt-1">
+                {isGuide ? (
+                  <> <Award size={14} /> Local Guide Account</>
+                ) : (
+                  <> <User size={14} /> Visitor Account</>
+                )}
+              </p>
+              <p className="text-muted-dark text-xs mt-2">Member since {user?.createdAt?.toDate ? new Date(user.createdAt.toDate()).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : 'recently'}</p>
+            </div>
+          </div>
+        </ScrollReveal>
+
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Sidebar Tabs */}
           <ScrollReveal delay={80}>
@@ -250,48 +310,10 @@ export default function AccountSettings() {
 
           {/* Main Content */}
           <div className="lg:col-span-3">
-            {/* ===== PROFILE TAB ===== */}
             {activeTab === 'profile' && (
               <ScrollReveal>
                 <div className="card-dark p-6 sm:p-8">
-                  <form onSubmit={handleSaveProfile} className="space-y-8">
-                    <div className="flex flex-col sm:flex-row items-center gap-6 pb-8 border-b border-dark-600">
-                      <div className="relative group">
-                        <div className="w-24 h-24 rounded-full bg-dark-700 border-2 border-gold overflow-hidden">
-                          {photoUploading ? (
-                            <div className="w-full h-full flex items-center justify-center">
-                              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gold" />
-                            </div>
-                          ) : (
-                            <img 
-                              src={user?.photo || guideData?.photo || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200'} 
-                              alt="Profile" 
-                              className="w-full h-full object-cover"
-                            />
-                          )}
-                        </div>
-                        <button 
-                          type="button" 
-                          onClick={() => fileInputRef.current?.click()}
-                          className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-gold text-dark-900 flex items-center justify-center border-2 border-dark-900 group-hover:scale-110 transition-transform"
-                        >
-                          <Camera size={14} />
-                        </button>
-                        <input 
-                          ref={fileInputRef}
-                          type="file" 
-                          accept="image/*" 
-                          onChange={handlePhotoUpload}
-                          className="hidden"
-                        />
-                      </div>
-                      <div className="text-center sm:text-left">
-                        <h3 className="text-xl font-bold text-cream">{user?.name}</h3>
-                        <p className="text-muted text-sm">{isGuide ? 'Local Guide' : 'Visitor Account'}</p>
-                        <p className="text-muted-dark text-xs mt-1">Click the camera icon to change your photo</p>
-                      </div>
-                    </div>
-
+                  <form onSubmit={handleSaveProfile} className="space-y-6">
                     <div className="grid grid-cols-1 gap-6">
                       <div>
                         <label className="block text-sm font-medium text-muted mb-2">Display Name</label>
