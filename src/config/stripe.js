@@ -6,59 +6,21 @@ export const stripePromise = loadStripe(stripePublicKey);
 
 export const SUBSCRIPTION_PLANS = [
   {
-    id: 'free',
-    name: 'Free',
-    price: 0,
-    priceId: null,
-    interval: 'month',
-    features: [
-      'Basic profile',
-      '1 booking per month',
-      'Standard listing',
-      'Email support',
-    ],
-    notIncluded: [
-      'Featured placement',
-      'Analytics dashboard',
-      'Priority support',
-      'Verified badge',
-    ],
-  },
-  {
     id: 'pro',
-    name: 'Pro Guide',
+    name: 'Pro Local Guide',
     price: 29,
     priceId: import.meta.env.VITE_STRIPE_GUIDE_PRICE_ID || 'price_pro_monthly',
     interval: 'month',
     popular: true,
     features: [
       'Unlimited bookings',
-      'Featured listings',
-      'Analytics dashboard',
-      'Verified badge',
-      'Priority support',
-      'Custom bio links',
-      'Photo gallery (20)',
-    ],
-    notIncluded: [
-      'Video intro',
-      'Top placement',
-    ],
-  },
-  {
-    id: 'premium',
-    name: 'Premium',
-    price: 59,
-    priceId: 'price_premium_monthly',
-    interval: 'month',
-    features: [
-      'Everything in Pro',
+      'Verified Local Guide badge',
       'Top placement in search',
-      'Video intro',
-      'Exclusive deals',
-      'Dedicated account manager',
-      'Photo gallery (50)',
-      'API access',
+      'Advanced analytics dashboard',
+      'Photo gallery (50 photos)',
+      'Custom bio & social links',
+      'Priority 24/7 support',
+      'Early access to new features'
     ],
     notIncluded: [],
   },
@@ -89,4 +51,4 @@ export const GUIDE_ADDONS = [
   },
 ];
 
-export const PLATFORM_FEE_PERCENT = 10;
+export const PLATFORM_FEE_PERCENT = 15;

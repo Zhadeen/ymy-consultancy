@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Check, X, Star, Crown, Zap, CreditCard } from 'lucide-react';
+import { Check, X, Star, Crown, Zap, CreditCard, Percent, ShieldCheck, Target, TrendingUp } from 'lucide-react';
 import { SUBSCRIPTION_PLANS, GUIDE_ADDONS } from '../config/stripe';
 import ScrollReveal from '../components/common/ScrollReveal';
 import { useAuth } from '../context/AuthContext';
@@ -70,71 +70,111 @@ export default function PricingPage() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <ScrollReveal>
           <div className="text-center mb-16">
-            <h1 className="font-heading text-4xl sm:text-5xl font-bold text-cream mb-4">
-              Choose Your Plan
+            <h1 className="font-heading text-4xl sm:text-5xl font-bold text-cream mb-6">
+              Launch Your Local Guide Business <br className="hidden sm:block" /> with <span className="text-gold underline decoration-gold/30">Zero Upfront Costs</span>
             </h1>
-            <p className="text-muted text-lg max-w-2xl mx-auto">
-              Start free and upgrade when you're ready. Grow your tourism business with YMY.
+            <p className="text-muted text-lg max-w-2xl mx-auto leading-relaxed">
+              Start for free. Grow your profile. Earn 85% on every booking you complete. <br />
+              <strong>All new Local Guides get their first 90 days completely free.</strong>
             </p>
           </div>
         </ScrollReveal>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-          {SUBSCRIPTION_PLANS.map((plan, i) => (
-            <ScrollReveal key={plan.id} delay={i * 100}>
-              <div className={`card-dark p-8 relative ${
-                plan.popular ? 'border-gold ring-2 ring-gold/30' : ''
-              }`}>
-                {plan.popular && (
-                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gold text-dark-900 px-4 py-1 rounded-full text-sm font-bold flex items-center gap-1">
-                    <Star size={14} /> Most Popular
+        {/* 85/15 Split Section */}
+        <ScrollReveal delay={100}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-20">
+            <div className="card-dark p-8 flex items-start gap-5 border-gold bg-gold/5">
+              <div className="w-14 h-14 rounded-2xl bg-gold-100 flex items-center justify-center flex-shrink-0">
+                <Percent size={28} className="text-gold" />
+              </div>
+              <div>
+                <h3 className="font-heading text-2xl font-bold text-cream mb-2">Our Marketplace Model</h3>
+                <p className="text-muted text-sm leading-relaxed">
+                  We only succeed when you succeed. We take a small **15% platform commission** on each booking to handle payments, marketing, and 24/7 support. You keep **85%** of your earnings.
+                </p>
+              </div>
+            </div>
+            
+            <div className="card-dark p-8 flex items-start gap-5 border-blue-500/20 bg-blue-500/5">
+              <div className="w-14 h-14 rounded-2xl bg-blue-500/10 flex items-center justify-center flex-shrink-0">
+                <ShieldCheck size={28} className="text-blue-400" />
+              </div>
+              <div>
+                <h3 className="font-heading text-2xl font-bold text-cream mb-2">90-Day Free Trial</h3>
+                <p className="text-muted text-sm leading-relaxed">
+                  Join for free with no listing fees for the first **3 months**. This gives you plenty of time to build your reviews and establish your presence before the monthly subscription begins.
+                </p>
+              </div>
+            </div>
+          </div>
+        </ScrollReveal>
+
+        <div className="flex justify-center mb-24">
+          <div className="max-w-md w-full">
+            {SUBSCRIPTION_PLANS.map((plan, i) => (
+              <ScrollReveal key={plan.id} delay={i * 100}>
+                <div className="card-dark p-10 relative border-gold ring-4 ring-gold/10">
+                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gold text-dark-900 px-6 py-1.5 rounded-full text-sm font-bold flex items-center gap-2 shadow-gold-glow">
+                    <Star size={16} /> Most Popular Selection
                   </div>
-                )}
-                
-                <div className="text-center mb-6">
-                  <h3 className="font-heading text-2xl font-bold text-cream mb-2">{plan.name}</h3>
-                  <div className="flex items-baseline justify-center gap-1">
-                    <span className="text-4xl font-bold text-gold">${plan.price}</span>
-                    <span className="text-muted">/{plan.interval}</span>
+                  
+                  <div className="text-center mb-8">
+                    <h3 className="font-heading text-3xl font-bold text-cream mb-3">{plan.name}</h3>
+                    <div className="flex items-baseline justify-center gap-1.5">
+                      <span className="text-5xl font-bold text-gold">${plan.price}</span>
+                      <span className="text-muted text-lg">/{plan.interval}</span>
+                    </div>
+                    <p className="text-muted-dark text-xs mt-3 bg-dark-600 inline-block px-3 py-1 rounded-full border border-dark-500">
+                      Billing starts after your 90-day free trial.
+                    </p>
                   </div>
+
+                  <ul className="space-y-4 mb-10">
+                    {plan.features.map((feature, j) => (
+                      <li key={j} className="flex items-start gap-4 text-sm sm:text-base">
+                        <Check size={20} className="text-green-400 flex-shrink-0 mt-0.5" />
+                        <span className="text-cream/90">{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  <button
+                    onClick={() => handleSubscribe(plan)}
+                    disabled={loading === plan.id || currentPlan === plan.id}
+                    className="btn-gold w-full !py-4 text-lg font-bold shadow-gold-glow"
+                  >
+                    {currentPlan === plan.id ? (
+                      'Current Active Plan'
+                    ) : loading === plan.id ? (
+                      'Processing...'
+                    ) : (
+                      `Start Free Listing Period`
+                    )}
+                  </button>
+                  
+                  <p className="text-center text-[11px] text-muted-dark mt-4">
+                    Zero risk. Cancel anytime during your 90-day trial.
+                  </p>
                 </div>
+              </ScrollReveal>
+            ))}
+          </div>
+        </div>
 
-                <ul className="space-y-3 mb-8">
-                  {plan.features.map((feature, j) => (
-                    <li key={j} className="flex items-start gap-3 text-sm">
-                      <Check size={18} className="text-green-400 flex-shrink-0 mt-0.5" />
-                      <span className="text-cream">{feature}</span>
-                    </li>
-                  ))}
-                  {plan.notIncluded?.map((feature, j) => (
-                    <li key={j} className="flex items-start gap-3 text-sm opacity-50">
-                      <X size={18} className="text-muted flex-shrink-0 mt-0.5" />
-                      <span className="text-muted">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-
-                <button
-                  onClick={() => handleSubscribe(plan)}
-                  disabled={loading === plan.id || currentPlan === plan.id}
-                  className={`w-full py-3 px-6 rounded-xl font-semibold transition-all ${
-                    currentPlan === plan.id
-                      ? 'bg-green-500/20 text-green-400 border border-green-500/30 cursor-default'
-                      : plan.popular
-                        ? 'btn-gold'
-                        : 'border border-gold text-gold hover:bg-gold hover:text-dark-900'
-                  }`}
-                >
-                  {currentPlan === plan.id ? (
-                    'Current Plan'
-                  ) : loading === plan.id ? (
-                    'Processing...'
-                  ) : plan.id === 'free' ? (
-                    'Get Started Free'
-                  ) : (
-                    `Subscribe - $${plan.price}/mo`
-                  )}
-                </button>
+        {/* Why Choice YMY */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-24">
+          {[
+            { icon: <TrendingUp className="text-gold" />, title: "SEO Optimized", desc: "Your profile is automatically optimized for search engines to bring you more bookings." },
+            { icon: <Target className="text-gold" />, title: "Targeted Marketing", desc: "We spend on ads to bring visitors looking for your specific area of expertise." },
+            { icon: <Zap className="text-gold" />, title: "Fast Payouts", desc: "Receive your earnings daily to your connected bank account via Stripe Connect." }
+          ].map((item, i) => (
+            <ScrollReveal key={i} delay={i * 100}>
+              <div className="text-center p-6">
+                <div className="w-12 h-12 rounded-xl bg-gold/10 flex items-center justify-center mx-auto mb-4 border border-gold/20">
+                  {item.icon}
+                </div>
+                <h4 className="text-cream font-bold mb-2">{item.title}</h4>
+                <p className="text-muted text-xs leading-relaxed">{item.desc}</p>
               </div>
             </ScrollReveal>
           ))}
