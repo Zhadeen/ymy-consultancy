@@ -62,21 +62,29 @@ export default function BookingPage() {
   const availableDates = useMemo(() => {
     if (!guide) return [];
     
-    // If guide has specific availability set, use it
+    const today = new Date();
+    const todayStr = today.toISOString().split('T')[0];
+    
+    // Default to a 12-hour notice buffer (only show dates from tomorrow onwards/late today)
+    const minDate = new Date(today.getTime() + 12 * 60 * 60 * 1000).toISOString().split('T')[0];
+
+    // If guide has specific availability set, use it but filter out past dates
     if (guide.availability && Object.keys(guide.availability).length > 0) {
       return Object.entries(guide.availability)
-        .filter(([, avail]) => avail)
+        .filter(([dateStr, avail]) => avail && dateStr >= minDate)
         .map(([dateStr]) => dateStr)
         .sort();
     }
     
-    // Fallback: If no availability explicitly set, assume available for the next 30 days
+    // Fallback: If no availability explicitly set, assume available for the next 30 days starting from tomorrow
     const fallbackDates = [];
-    const today = new Date();
-    for (let i = 1; i <= 30; i++) {
-      const d = new Date(today);
-      d.setDate(today.getDate() + i);
-      const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    const tomorrow = new Date(today);
+    tomorrow.setDate(today.getDate() + 1);
+    
+    for (let i = 0; i < 30; i++) {
+      const d = new Date(tomorrow);
+      d.setDate(tomorrow.getDate() + i);
+      const dateStr = d.toISOString().split('T')[0];
       fallbackDates.push(dateStr);
     }
     return fallbackDates;
@@ -206,7 +214,10 @@ export default function BookingPage() {
                 <img src={guide.photo} alt={guide.name} className="w-10 h-10 rounded-full object-cover border border-dark-500" />
                 <div>
                   <span className="text-cream font-medium">{guide.name}</span>
-                  <span className="flex items-center gap-1 text-xs"><MapPin size={12} />{guide.city}</span>
+                  <div className="flex items-center gap-3 text-xs mt-0.5">
+                    <span className="flex items-center gap-1"><MapPin size={12} />{guide.city}</span>
+                    <span className="flex items-center gap-1 text-gold"><Clock size={12} /> {new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })} (Local Time)</span>
+                  </div>
                 </div>
               </div>
             </ScrollReveal>

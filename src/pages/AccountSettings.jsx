@@ -520,18 +520,21 @@ export default function AccountSettings() {
                       <div key={`empty-${i}`} />
                     ))}
                     {Array.from({ length: daysInMonth }, (_, i) => {
-                      const day = i + 1;
-                      const dateStr = `${calMonth.year}-${String(calMonth.month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                      const isAvail = availability[dateStr];
+                      const date = new Date(calMonth.year, calMonth.month, day);
+                      const isPast = date < new Date(new Date().setHours(0,0,0,0));
+                      
                       return (
                         <button
                           key={day}
                           type="button"
-                          onClick={() => toggleDay(dateStr)}
-                          className={`text-center py-3 rounded-lg text-sm font-medium transition-all cursor-pointer ${
-                            isAvail
-                              ? 'bg-gold text-dark-900 font-bold shadow-lg'
-                              : 'bg-dark-700 text-muted hover:bg-dark-600'
+                          onClick={() => !isPast && toggleDay(dateStr)}
+                          disabled={isPast}
+                          className={`text-center py-3 rounded-lg text-sm font-medium transition-all ${
+                            isPast 
+                              ? 'bg-transparent text-muted-dark opacity-30 cursor-not-allowed' 
+                              : isAvail
+                                ? 'bg-gold text-dark-900 font-bold shadow-lg'
+                                : 'bg-dark-700 text-muted hover:bg-dark-600 cursor-pointer'
                           }`}
                         >
                           {day}

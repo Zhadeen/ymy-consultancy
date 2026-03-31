@@ -199,6 +199,10 @@ export default function GuideProfilePage() {
                   <MapPin size={16} />
                   {guide.country}, {guide.city}
                 </span>
+                <span className="flex items-center gap-1.5 text-gold font-medium bg-gold/5 px-2 py-0.5 rounded-lg border border-gold/10">
+                  <Clock size={16} />
+                  {new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })} Local Time
+                </span>
                 <span className="flex items-center gap-1.5">
                   <Clock size={16} />
                   {guide.experience} years experience
