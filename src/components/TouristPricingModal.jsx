@@ -12,7 +12,7 @@ export default function TouristPricingModal({ isOpen, onClose }) {
 
   const handleSubscribe = async () => {
     if (!user) {
-      navigate('/login?redirect=current');
+      navigate(`/login?redirect=${encodeURIComponent(window.location.pathname)}`);
       return;
     }
 
@@ -86,14 +86,14 @@ export default function TouristPricingModal({ isOpen, onClose }) {
           <button
             onClick={handleSubscribe}
             disabled={loading}
-            className="btn-gold w-full flex items-center justify-center gap-2 py-4 text-lg font-bold shadow-lg shadow-gold/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
+            className="btn-gold w-full flex items-center justify-center gap-2 py-4 text-lg font-bold shadow-lg shadow-gold/20 hover:scale-[1.02] active:scale-[0.11] transition-all"
           >
             {loading ? (
               <div className="w-6 h-6 border-2 border-dark-900/30 border-t-dark-900 rounded-full animate-spin" />
             ) : (
               <>
                 <CreditCard size={20} />
-                Subscribe Now
+                {user ? 'Subscribe Now' : 'Sign In to Unlock'}
               </>
             )}
           </button>

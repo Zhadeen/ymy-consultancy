@@ -80,7 +80,8 @@ export default function GuideProfilePage() {
   }
 
   const handleBook = () => {
-    if (user?.role === 'tourist' && !user?.isSubscribed) {
+    // Show paywall if not logged in OR if tourist is not subscribed
+    if (!user || user?.role === 'tourist' && !user?.isSubscribed) {
       setShowPaywall(true);
       return;
     }
@@ -89,7 +90,8 @@ export default function GuideProfilePage() {
   };
 
   const handleMessage = () => {
-    if (user?.role === 'tourist' && !user?.isSubscribed) {
+    // Show paywall if not logged in OR if tourist is not subscribed
+    if (!user || user?.role === 'tourist' && !user?.isSubscribed) {
       setShowPaywall(true);
       return;
     }

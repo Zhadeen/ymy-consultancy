@@ -59,7 +59,7 @@ export default function Hero() {
         {/* Badge */}
         <div className="inline-flex items-center gap-2 bg-dark-700/60 backdrop-blur-md border border-gold-200 rounded-full px-5 py-2 mb-8 animate-fade-in">
           <div className="w-2 h-2 rounded-full bg-gold animate-pulse-gold" />
-          <span className="text-sm text-cream/90 font-medium">Trusted by 10,000+ travelers worldwide</span>
+          <span className="text-sm text-cream/90 font-medium">Verified Local Experts • No Commission • Book Direct</span>
         </div>
 
         {/* Headline */}
@@ -71,7 +71,7 @@ export default function Hero() {
 
         {/* Subheadline */}
         <p className="text-lg sm:text-xl text-cream/70 max-w-2xl mx-auto mb-12 animate-slide-up font-light leading-relaxed" style={{ animationDelay: '150ms' }}>
-          Book verified, professional tour guides in minutes. Authentic experiences, local expertise, zero hassle.
+          Connect with professional local guides. No commission, no hidden fees. Subscribe once and pay your guide directly.
         </p>
 
         {/* Search Bar */}

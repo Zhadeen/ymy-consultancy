@@ -33,6 +33,12 @@ export default function BookingPage() {
     fetchGuide();
   }, [id]);
 
+  useEffect(() => {
+    if (!loading && !user) {
+      navigate(`/login?redirect=/booking/${id}`);
+    }
+  }, [user, loading, navigate, id]);
+
   const [date, setDate] = useState('');
   const [tourType, setTourType] = useState('full');
   const [guests, setGuests] = useState(1);

@@ -22,7 +22,8 @@ export default function Navbar() {
 
   const navLinks = [
     { to: '/search', label: 'Explore' },
-    { to: '/pricing', label: 'Pricing' },
+    { to: '/tourist-pricing', label: 'Tourist Pass' },
+    { to: '/pricing', label: 'Guide Plans' },
     { to: '/guide-register', label: 'Become a Guide' },
   ];
 

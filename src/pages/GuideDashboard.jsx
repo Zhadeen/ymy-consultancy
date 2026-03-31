@@ -4,7 +4,7 @@ import { collection, query, where, getDocs, doc, getDoc } from 'firebase/firesto
 import { db } from '../config/firebase';
 import { useAuth } from '../context/AuthContext';
 import ScrollReveal from '../components/common/ScrollReveal';
-import { MapPin, Edit3, DollarSign, Calendar, Star, Users, Clock, MessageSquare, Settings, TrendingUp, ChevronRight } from 'lucide-react';
+import { MapPin, Edit3, DollarSign, Calendar, Star, Users, Clock, MessageSquare, Settings, TrendingUp, ChevronRight, CheckCircle2, AlertCircle } from 'lucide-react';
 
 export default function GuideDashboard() {
   const { user } = useAuth();
@@ -58,9 +58,21 @@ export default function GuideDashboard() {
                 <h1 className="font-heading text-2xl sm:text-3xl font-bold text-cream">
                   Guide Dashboard
                 </h1>
-                <p className="text-muted flex items-center gap-1">
-                  <MapPin size={14} /> {guide.country}, {guide.city}
-                </p>
+                <div className="flex items-center gap-3 mt-1 text-sm">
+                  <span className="text-muted flex items-center gap-1">
+                    <MapPin size={14} /> {guide.country}, {guide.city}
+                  </span>
+                  <div className="w-1 h-1 rounded-full bg-dark-500" />
+                  {user?.isSubscribed ? (
+                    <span className="text-green-400 font-bold flex items-center gap-1 uppercase tracking-widest text-[10px] bg-green-500/10 px-2 py-0.5 rounded border border-green-500/20">
+                      <CheckCircle2 size={10} /> Subscription Active
+                    </span>
+                  ) : (
+                    <Link to="/pricing" className="text-red-400 font-bold flex items-center gap-1 uppercase tracking-widest text-[10px] bg-red-500/10 px-2 py-0.5 rounded border border-red-500/20 hover:bg-red-500/20 transition-colors">
+                      <AlertCircle size={10} /> Inactive • Not Bookable
+                    </Link>
+                  )}
+                </div>
               </div>
             </div>
             <Link to={`/guide/${guide.id}`} className="btn-ghost flex items-center gap-2 text-sm">

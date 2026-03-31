@@ -1,24 +1,24 @@
-import { Search, Calendar, Compass } from 'lucide-react';
+import { Search, CreditCard, MessageSquare, Zap } from 'lucide-react';
 import ScrollReveal from '../common/ScrollReveal';
 
 const steps = [
   {
     icon: Search,
     number: '01',
-    title: 'Search & Discover',
-    description: 'Browse verified guides by city, language, and specialty. Read reviews, view portfolios, and find your perfect match.',
+    title: 'Search Experts',
+    description: 'Browse verified, local guides by city and specialty. View their unique portfolios and authentic traveler reviews.',
   },
   {
-    icon: Calendar,
+    icon: Zap,
     number: '02',
-    title: 'Book Instantly',
-    description: 'Choose your date, tour type, and confirm in seconds. Secure payment, instant confirmation, zero hassle.',
+    title: 'Get Your Pass',
+    description: 'Unlock unlimited access for just $5/month. Message any guide and book your custom tours instantly.',
   },
   {
-    icon: Compass,
+    icon: MessageSquare,
     number: '03',
-    title: 'Explore & Enjoy',
-    description: 'Meet your guide and experience the destination like a local. Authentic stories, hidden gems, unforgettable memories.',
+    title: 'Book & Pay Direct',
+    description: 'Coordinate tour details via chat and pay your guide directly. No commission fees, no hidden costs.',
   },
 ];
 

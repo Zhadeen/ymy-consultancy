@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Heart, Calendar, Star, MessageSquare, Settings, ChevronRight, MapPin } from 'lucide-react';
+import { Heart, Calendar, Star, MessageSquare, Settings, ChevronRight, MapPin, CheckCircle2, CreditCard } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../config/firebase';
@@ -53,12 +53,23 @@ export default function TouristDashboard() {
               </h1>
               <p className="text-muted mt-1">Manage your bookings and discover new guides.</p>
             </div>
-            <div className="flex items-center gap-3">
-              {user?.role === 'admin' && (
-                <Link to="/admin" className="btn-dark hidden sm:flex items-center gap-2 border-gold/50 text-gold">
-                  Admin Panel
-                </Link>
-              )}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+              <div className="flex items-center gap-3">
+                {user?.isSubscribed ? (
+                  <span className="flex items-center gap-1 text-xs font-bold bg-green-500/10 text-green-400 px-3 py-1 rounded-full border border-green-500/20 uppercase tracking-wider">
+                    <CheckCircle2 size={12} /> Tourist Pass Active
+                  </span>
+                ) : (
+                  <Link to="/tourist-pricing" className="flex items-center gap-1 text-xs font-bold bg-gold/10 text-gold px-3 py-1 rounded-full border border-gold/20 uppercase tracking-wider hover:bg-gold/20 transition-colors">
+                    <CreditCard size={12} /> Free Member - Get Pass
+                  </Link>
+                )}
+                {user?.role === 'admin' && (
+                  <Link to="/admin" className="btn-dark hidden sm:flex items-center gap-2 border-gold/50 text-gold">
+                    Admin Panel
+                  </Link>
+                )}
+              </div>
               <Link to="/search" className="btn-gold hidden sm:flex items-center gap-2">
                 Find a Guide
                 <ChevronRight size={16} />
