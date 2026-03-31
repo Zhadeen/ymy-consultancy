@@ -36,7 +36,7 @@ export default function TouristPricingModal({ isOpen, onClose }) {
       }
     } catch (err) {
       console.error('Tourist Subscription error:', err);
-      alert('Error initializing subscription. Please try again.');
+      alert(err.message || 'Error initializing subscription. Please try again.');
     } finally {
       setLoading(false);
     }
