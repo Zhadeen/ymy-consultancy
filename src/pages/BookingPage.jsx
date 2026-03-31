@@ -1,8 +1,9 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { Calendar, Users, Clock, ChevronLeft, CreditCard, CheckCircle2, MapPin, Copy, Mail, Phone } from 'lucide-react';
+import { Calendar, Users, Clock, ChevronLeft, CreditCard, CheckCircle2, MapPin, Copy, Mail, Phone, Info, Star } from 'lucide-react';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../config/firebase';
+import { VISIT_PURPOSES, LOCAL_EXPERIENCES } from '../data/mockData';
 import { useBooking } from '../context/BookingContext';
 import { useAuth } from '../context/AuthContext';
 import ScrollReveal from '../components/common/ScrollReveal';
@@ -44,6 +45,8 @@ export default function BookingPage() {
   const [guests, setGuests] = useState(1);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [visitPurpose, setVisitPurpose] = useState('');
+  const [localExperience, setLocalExperience] = useState('');
   const [specialRequests, setSpecialRequests] = useState('');
   const [processing, setProcessing] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -104,6 +107,8 @@ export default function BookingPage() {
         visitorName: name,
         visitorEmail: email,
         visitorId: user.uid,
+        visitPurpose,
+        localExperience,
         specialRequests,
       };
 
@@ -265,6 +270,50 @@ export default function BookingPage() {
               </label>
             </ScrollReveal>
 
+            {/* Visit Purpose */}
+            <ScrollReveal delay={280}>
+              <div className="space-y-6">
+                <div>
+                  <span className="text-cream font-semibold mb-3 flex items-center gap-2">
+                    <Info size={18} className="text-gold" />
+                    Why are you visiting?
+                  </span>
+                  <select 
+                    value={visitPurpose} 
+                    onChange={e => setVisitPurpose(e.target.value)} 
+                    className="input-dark mt-2" 
+                    id="visit-purpose"
+                  >
+                    <option value="">Select your primary purpose</option>
+                    {VISIT_PURPOSES.map(p => (
+                      <option key={p} value={p}>{p}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <span className="text-cream font-semibold mb-3 flex items-center gap-2">
+                    <Star size={18} className="text-gold" />
+                    Add a local experience? (Optional)
+                  </span>
+                  <select 
+                    value={localExperience} 
+                    onChange={e => setLocalExperience(e.target.value)} 
+                    className="input-dark mt-2" 
+                    id="local-experience"
+                  >
+                    <option value="">No local experience needed</option>
+                    {LOCAL_EXPERIENCES.map(e => (
+                      <option key={e} value={e}>{e}</option>
+                    ))}
+                  </select>
+                  <p className="text-muted-dark text-[11px] mt-1 italic">
+                    Guides can better prepare your itinerary if they know your interests.
+                  </p>
+                </div>
+              </div>
+            </ScrollReveal>
+
             {/* Details */}
             <ScrollReveal delay={320}>
               <h2 className="text-cream font-semibold mb-4 flex items-center gap-2">
@@ -324,7 +373,7 @@ export default function BookingPage() {
 
                   <button
                     onClick={handleConfirm}
-                    disabled={!date || !name || !email || processing}
+                    disabled={!date || !name || !email || !visitPurpose || processing}
                     className="btn-gold w-full !py-4 text-lg flex items-center justify-center gap-2"
                     id="confirm-booking-btn"
                   >

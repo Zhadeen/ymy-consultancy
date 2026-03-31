@@ -307,3 +307,27 @@ export const mockAdminStats = {
   pendingGuides: 0,
   activeBookings: 0,
 };
+export const VISIT_PURPOSES = [
+  'Business meeting',
+  'Conference or trade fair',
+  'Audition or casting',
+  'Sports event',
+  'Medical treatment',
+  'University or research visit',
+  'Wedding or family event',
+  'Honeymoon',
+  'Religious pilgrimage',
+  'Relocation scouting',
+  'Just passing through'
+];
+
+export const LOCAL_EXPERIENCES = [
+  'Sightseeing and landmarks',
+  'Food and local cuisine',
+  'Nightlife and entertainment',
+  'Shopping and markets',
+  'Nature and outdoor activities',
+  'Cultural and historical sites',
+  'Photography spots',
+  'Hidden gems and local favourites'
+];

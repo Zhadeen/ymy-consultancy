@@ -45,6 +45,8 @@ export function BookingProvider({ children }) {
         tourType: metadata.tourType,
         guests: parseInt(metadata.guests),
         totalPrice: parseFloat(metadata.totalPrice),
+        visitPurpose: metadata.visitPurpose || '',
+        localExperience: metadata.localExperience || '',
         specialRequests: metadata.specialRequests || '',
         reference,
         status: 'upcoming',

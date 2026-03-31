@@ -46,7 +46,9 @@ export default async function handler(req, res) {
         bookingDate: date,
         type: 'booking_payment',
         guests,
-        tourType
+        tourType,
+        visitPurpose: bookingData.visitPurpose || '',
+        localExperience: bookingData.localExperience || ''
       },
       // Note: In a real Stripe Connect Destination Charge, you would add:
       // payment_intent_data: {
