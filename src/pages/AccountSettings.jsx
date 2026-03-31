@@ -109,9 +109,13 @@ export default function AccountSettings() {
 
     setPhotoUploading(true);
     try {
-      const fileName = `${user.uid}_${Date.now()}`;
+      // Structure the path so the UID is a folder. This is standard for Firebase security rules.
+      // Final path: profile_photos/{uid}/{timestamp}
+      const storagePath = `profile_photos/${user.uid}`;
+      const fileName = `${Date.now()}`; 
+      
       // Use the robust uploadFile helper which includes timeouts and better error handling
-      const downloadURL = await uploadFile(file, 'profile_photos', fileName);
+      const downloadURL = await uploadFile(file, storagePath, fileName);
       
       if (!downloadURL) {
         throw new Error("Failed to receive a valid download URL from Firebase.");

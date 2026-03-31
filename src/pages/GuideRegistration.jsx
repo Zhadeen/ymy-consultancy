@@ -119,7 +119,8 @@ export default function GuideRegistration() {
       if (form.photo && form.photo instanceof File) {
         setStatusText('Uploading profile photo');
         setUploadProgress(0);
-        const uploadedUrl = await uploadFile(form.photo, 'profile_photos', `${uid}_profile`, (p) => setUploadProgress(p));
+        // Using folder-based path for better security rules: profile_photos/UID/profile
+        const uploadedUrl = await uploadFile(form.photo, `profile_photos/${uid}`, 'profile', (p) => setUploadProgress(p));
         if (!uploadedUrl) throw new Error("Could not process profile photo. Please try a smaller image.");
         photoUrl = uploadedUrl;
       }
@@ -128,7 +129,8 @@ export default function GuideRegistration() {
       if (form.idDocument && form.idDocument instanceof File) {
         setStatusText('Uploading ID document');
         setUploadProgress(0);
-        const uploadedUrl = await uploadFile(form.idDocument, 'id_documents', `${uid}_id`, (p) => setUploadProgress(p));
+        // Using folder-based path for better security rules: id_documents/UID/id
+        const uploadedUrl = await uploadFile(form.idDocument, `id_documents/${uid}`, 'id', (p) => setUploadProgress(p));
         if (!uploadedUrl) throw new Error("Could not process your ID document. Please try a smaller file.");
         idDocumentUrl = uploadedUrl;
       }
