@@ -37,9 +37,9 @@ export function AuthProvider({ children }) {
           
           setUser({
             uid: firebaseUser.uid,
-            name: firebaseUser.displayName || 'Traveler',
+            name: docSnap.exists() ? (docSnap.data().name || firebaseUser.displayName || 'Traveler') : (firebaseUser.displayName || 'Traveler'),
             email: firebaseUser.email,
-            avatar: firebaseUser.photoURL || null,
+            photo: docSnap.exists() ? (docSnap.data().photo || firebaseUser.photoURL || null) : (firebaseUser.photoURL || null),
             role: role,
             emailVerified: firebaseUser.emailVerified,
             isSubscribed: docSnap.exists() ? !!docSnap.data().isSubscribed : false,
