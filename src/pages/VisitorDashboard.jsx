@@ -19,7 +19,7 @@ export default function VisitorDashboard() {
     }
     const fetchBookings = async () => {
       try {
-        const q = query(collection(db, 'bookings'), where('touristEmail', '==', user.email));
+        const q = query(collection(db, 'bookings'), where('visitorEmail', '==', user.email));
         const snap = await getDocs(q);
         setBookings(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
       } catch (err) {

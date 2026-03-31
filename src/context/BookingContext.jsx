@@ -31,6 +31,38 @@ export function BookingProvider({ children }) {
     setBooking(prev => ({ ...prev, ...bookingData }));
   };
 
+  const sendAutomatedBookingMessage = async (metadata) => {
+    try {
+      const { userId, guideId, visitorName, guideName, tourType, bookingDate, guidePhoto } = metadata;
+      if (!userId || !guideId) return;
+
+      const chatId = [userId, guideId].sort().join('_');
+      const text = `Hi ${guideName}! I just booked you for a ${tourType} experience on ${new Date(bookingDate).toLocaleDateString()}. Looking forward to meeting you!`;
+
+      // 1. Add the message to the subcollection
+      await addDoc(collection(db, 'chats', chatId, 'messages'), {
+        text,
+        senderId: userId,
+        timestamp: new Date(),
+        read: false,
+        isSystem: true // Mark as automated
+      });
+
+      // 2. Update the chat main document (metadata)
+      await setDoc(doc(db, 'chats', chatId), {
+        participants: [userId, guideId],
+        lastMessage: text,
+        updatedAt: new Date(),
+        [userId]: { name: visitorName, photo: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200' },
+        [guideId]: { name: guideName, photo: guidePhoto || '' }
+      }, { merge: true });
+
+      console.log(`[Notification] Automated message sent for chatId: ${chatId}`);
+    } catch (err) {
+      console.error('Error sending automated booking message:', err);
+    }
+  };
+
   const savePaidBooking = async (metadata) => {
     try {
       const reference = generateReference();
@@ -55,6 +87,10 @@ export function BookingProvider({ children }) {
       };
 
       const docRef = await addDoc(collection(db, 'bookings'), finalBooking);
+      
+      // Trigger automated notification to guide
+      await sendAutomatedBookingMessage(metadata);
+
       setConfirmed({ id: docRef.id, ...finalBooking });
       setError(null);
       return finalBooking;
