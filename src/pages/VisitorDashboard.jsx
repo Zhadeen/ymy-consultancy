@@ -19,7 +19,7 @@ export default function VisitorDashboard() {
     }
     const fetchBookings = async () => {
       try {
-        const q = query(collection(db, 'bookings'), where('visitorEmail', '==', user.email));
+        const q = query(collection(db, 'bookings'), where('visitorId', '==', user.uid));
         const snap = await getDocs(q);
         setBookings(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
       } catch (err) {
@@ -163,7 +163,7 @@ export default function VisitorDashboard() {
               <div className="space-y-3">
                 {[
                   { icon: MessageSquare, label: 'Chat Inbox', to: '/chat' },
-                  { icon: Settings, label: 'Account Settings', to: '#' },
+                  { icon: Settings, label: 'Account Settings', to: '/settings' },
                 ].map(action => (
                   <Link key={action.label} to={action.to} className="card-dark p-4 flex items-center gap-3 group block">
                     <div className="w-10 h-10 rounded-xl bg-dark-600 flex items-center justify-center flex-shrink-0">

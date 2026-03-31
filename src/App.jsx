@@ -13,6 +13,7 @@ import ChatInbox from './pages/ChatInbox';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import VisitorDashboard from './pages/VisitorDashboard';
+import AccountSettings from './pages/AccountSettings';
 import GuideRegistration from './pages/GuideRegistration';
 import GuideDashboard from './pages/GuideDashboard';
 import AdminPanel from './pages/AdminPanel';
@@ -79,6 +80,7 @@ export default function App() {
               <Route path="/login" element={<LoginPage />} />
               <Route path="/register" element={<RegisterPage />} />
               <Route path="/dashboard" element={<VisitorDashboard />} />
+              <Route path="/settings" element={<AccountSettings />} />
               <Route path="/guide-register" element={<GuideRegistration />} />
               <Route 
                 path="/guide-dashboard" 

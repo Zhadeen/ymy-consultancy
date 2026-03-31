@@ -110,8 +110,12 @@ export function AuthProvider({ children }) {
     return signOut(auth);
   };
 
+  const updateUserLocal = (newData) => {
+    setUser(newData);
+  };
+
   return (
-    <AuthContext.Provider value={{ user, isGuide, isAdmin, loading, login, loginWithGoogle, register, logout, resetPassword }}>
+    <AuthContext.Provider value={{ user, isGuide, isAdmin, loading, login, loginWithGoogle, register, logout, resetPassword, updateUserLocal }}>
       {loading ? <LoadingSpinner /> : children}
     </AuthContext.Provider>
   );

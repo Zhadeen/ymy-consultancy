@@ -181,7 +181,7 @@ export default function GuideDashboard() {
                   { icon: Calendar, label: 'Manage Availability', to: '#' },
                   { icon: DollarSign, label: 'Update Pricing', to: '#' },
                   { icon: MessageSquare, label: 'Chat Inbox', to: '/chat' },
-                  { icon: Settings, label: 'Account Settings', to: '#' },
+                  { icon: Settings, label: 'Account Settings', to: '/settings' },
                 ].map(action => (
                   <Link key={action.label} to={action.to} className="card-dark p-4 flex items-center gap-3 group block">
                     <div className="w-10 h-10 rounded-xl bg-dark-600 flex items-center justify-center">
