@@ -40,7 +40,8 @@ export function AuthProvider({ children }) {
             email: firebaseUser.email,
             avatar: firebaseUser.photoURL || null,
             role: role,
-            isSubscribed: docSnap.exists() ? !!docSnap.data().isSubscribed : false
+            isSubscribed: docSnap.exists() ? !!docSnap.data().isSubscribed : false,
+            createdAt: docSnap.exists() ? docSnap.data().createdAt : null
           });
           setIsGuide(role === 'guide');
           setIsAdmin(role === 'admin');

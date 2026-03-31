@@ -231,17 +231,27 @@ export default function GuideProfilePage() {
 
               {/* Mobile CTA */}
               <div className="lg:hidden flex gap-3">
-                {guide.isSubscribed ? (
-                  <button onClick={handleBook} className="btn-gold flex-1 flex items-center justify-center gap-2">
-                    <Calendar size={18} />
-                    Book This Guide
-                  </button>
-                ) : (
-                  <button disabled className="btn-ghost flex-1 flex items-center justify-center gap-2 opacity-50 cursor-not-allowed" title="Guide subscription inactive">
-                    <Calendar size={18} />
-                    Unavailable
-                  </button>
-                )}
+                {(() => {
+                  const createdAt = guide.createdAt?.toDate ? guide.createdAt.toDate() : new Date(guide.createdAt || Date.now());
+                  const trialEnd = new Date(createdAt.getTime() + 90 * 24 * 60 * 60 * 1000);
+                  const isTrialActive = trialEnd > new Date();
+                  
+                  if (guide.isSubscribed || isTrialActive) {
+                    return (
+                      <button onClick={handleBook} className="btn-gold flex-1 flex items-center justify-center gap-2">
+                        <Calendar size={18} />
+                        Book This Guide
+                      </button>
+                    );
+                  }
+                  
+                  return (
+                    <button disabled className="btn-ghost flex-1 flex items-center justify-center gap-2 opacity-50 cursor-not-allowed" title="Guide subscription inactive">
+                      <Calendar size={18} />
+                      Unavailable
+                    </button>
+                  );
+                })()}
                 <Link to="#" onClick={(e) => { e.preventDefault(); handleMessage(); }} className="btn-ghost flex items-center gap-2 !px-4 hover:text-gold transition-colors">
                   <MessageSquare size={18} />
                 </Link>
@@ -442,22 +452,32 @@ export default function GuideProfilePage() {
                   <span className="text-muted text-sm"> / day</span>
                 </div>
 
-                {guide.isSubscribed ? (
-                  <button
-                    onClick={handleBook}
-                    id="book-guide-btn"
-                    className="btn-gold w-full flex items-center justify-center gap-2 text-lg !py-4 animate-pulse-gold min-h-[60px]"
-                  >
-                    <Calendar size={20} />
-                    Book This Guide
-                  </button>
-                ) : (
-                  <div className="bg-dark-600 border border-dark-500 rounded-xl p-4 text-center min-h-[60px] flex flex-col justify-center">
-                    <p className="text-muted text-sm flex items-center justify-center gap-2 font-medium">
-                      <Calendar size={16} /> Unavailable to Book
-                    </p>
-                  </div>
-                )}
+                {(() => {
+                  const createdAt = guide.createdAt?.toDate ? guide.createdAt.toDate() : new Date(guide.createdAt || Date.now());
+                  const trialEnd = new Date(createdAt.getTime() + 90 * 24 * 60 * 60 * 1000);
+                  const isTrialActive = trialEnd > new Date();
+                  
+                  if (guide.isSubscribed || isTrialActive) {
+                    return (
+                      <button
+                        onClick={handleBook}
+                        id="book-guide-btn"
+                        className="btn-gold w-full flex items-center justify-center gap-2 text-lg !py-4 animate-pulse-gold min-h-[60px]"
+                      >
+                        <Calendar size={20} />
+                        Book This Guide
+                      </button>
+                    );
+                  }
+                  
+                  return (
+                    <div className="bg-dark-600 border border-dark-500 rounded-xl p-4 text-center min-h-[60px] flex flex-col justify-center">
+                      <p className="text-muted text-sm flex items-center justify-center gap-2 font-medium">
+                        <Calendar size={16} /> Unavailable to Book
+                      </p>
+                    </div>
+                  );
+                })()}
 
                 <button
                   onClick={handleMessage}

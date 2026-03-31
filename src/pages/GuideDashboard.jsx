@@ -63,15 +63,35 @@ export default function GuideDashboard() {
                     <MapPin size={14} /> {guide.country}, {guide.city}
                   </span>
                   <div className="w-1 h-1 rounded-full bg-dark-500" />
-                  {user?.isSubscribed ? (
-                    <span className="text-green-400 font-bold flex items-center gap-1 uppercase tracking-widest text-[10px] bg-green-500/10 px-2 py-0.5 rounded border border-green-500/20">
-                      <CheckCircle2 size={10} /> Subscription Active
-                    </span>
-                  ) : (
-                    <Link to="/pricing" className="text-red-400 font-bold flex items-center gap-1 uppercase tracking-widest text-[10px] bg-red-500/10 px-2 py-0.5 rounded border border-red-500/20 hover:bg-red-500/20 transition-colors">
-                      <AlertCircle size={10} /> Inactive • Not Bookable
-                    </Link>
-                  )}
+                  {(() => {
+                    if (user?.isSubscribed) {
+                      return (
+                        <span className="text-green-400 font-bold flex items-center gap-1 uppercase tracking-widest text-[10px] bg-green-500/10 px-2 py-0.5 rounded border border-green-500/20">
+                          <CheckCircle2 size={10} /> Subscription Active
+                        </span>
+                      );
+                    }
+                    
+                    // Check for 90-day trial
+                    const createdAt = user?.createdAt?.toDate ? user.createdAt.toDate() : new Date(user?.createdAt || Date.now());
+                    const trialDays = 90;
+                    const trialEnd = new Date(createdAt.getTime() + trialDays * 24 * 60 * 60 * 1000);
+                    const isTrialActive = trialEnd > new Date();
+
+                    if (isTrialActive) {
+                      return (
+                        <span className="text-gold font-bold flex items-center gap-1 uppercase tracking-widest text-[10px] bg-gold-100 px-2 py-0.5 rounded border border-gold-200">
+                          <CheckCircle2 size={10} /> 90-Day Trial Active
+                        </span>
+                      );
+                    }
+
+                    return (
+                      <Link to="/pricing" className="text-red-400 font-bold flex items-center gap-1 uppercase tracking-widest text-[10px] bg-red-500/10 px-2 py-0.5 rounded border border-red-500/20 hover:bg-red-500/20 transition-colors">
+                        <AlertCircle size={10} /> Inactive • Not Bookable
+                      </Link>
+                    );
+                  })()}
                 </div>
               </div>
             </div>
