@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { MapPin, Languages, Calendar, Clock, BadgeCheck, Award, MessageSquare, ChevronLeft, ChevronRight, Star, Users } from 'lucide-react';
+import { MapPin, Languages, Calendar, Clock, BadgeCheck, Award, MessageSquare, ChevronLeft, ChevronRight, Star, Users, User } from 'lucide-react';
 import { doc, getDoc, collection, query, where, getDocs, orderBy, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import StarRating from '../components/common/StarRating';
@@ -79,9 +79,11 @@ export default function GuideProfilePage() {
     );
   }
 
+  // Detect if the logged-in user is viewing their OWN guide profile
+  const isOwnProfile = user && guide && user.uid === guide.uid;
+
   const handleBook = () => {
-    // Show paywall/login modal ONLY if not logged in. 
-    // Subscriptions are no longer required for visitors to book.
+    if (isOwnProfile) return; // Guard: can't book yourself
     if (!user) {
       setShowPaywall(true);
       return;
@@ -91,6 +93,7 @@ export default function GuideProfilePage() {
   };
 
   const handleMessage = () => {
+    if (isOwnProfile) return; // Guard: can't message yourself
     if (!user) {
       setShowPaywall(true);
       return;
@@ -231,30 +234,34 @@ export default function GuideProfilePage() {
 
               {/* Mobile CTA */}
               <div className="lg:hidden flex gap-3">
-                {(() => {
-                  const createdAt = guide.createdAt?.toDate ? guide.createdAt.toDate() : new Date(guide.createdAt || Date.now());
-                  const trialEnd = new Date(createdAt.getTime() + 90 * 24 * 60 * 60 * 1000);
-                  const isTrialActive = trialEnd > new Date();
-                  
-                  if (guide.isSubscribed || isTrialActive) {
-                    return (
-                      <button onClick={handleBook} className="btn-gold flex-1 flex items-center justify-center gap-2">
-                        <Calendar size={18} />
-                        Book This Guide
-                      </button>
-                    );
-                  }
-                  
-                  return (
-                    <button disabled className="btn-ghost flex-1 flex items-center justify-center gap-2 opacity-50 cursor-not-allowed" title="Guide subscription inactive">
-                      <Calendar size={18} />
-                      Unavailable
-                    </button>
-                  );
-                })()}
-                <Link to="#" onClick={(e) => { e.preventDefault(); handleMessage(); }} className="btn-ghost flex items-center gap-2 !px-4 hover:text-gold transition-colors">
-                  <MessageSquare size={18} />
-                </Link>
+                {isOwnProfile ? (
+                  <Link to="/settings?tab=guide" className="btn-gold flex-1 flex items-center justify-center gap-2">
+                    Edit My Profile
+                  </Link>
+                ) : (
+                  <>
+                    {(() => {
+                      const createdAt = guide.createdAt?.toDate ? guide.createdAt.toDate() : new Date(guide.createdAt || Date.now());
+                      const trialEnd = new Date(createdAt.getTime() + 90 * 24 * 60 * 60 * 1000);
+                      const isTrialActive = trialEnd > new Date();
+                      if (guide.isSubscribed || isTrialActive) {
+                        return (
+                          <button onClick={handleBook} className="btn-gold flex-1 flex items-center justify-center gap-2">
+                            <Calendar size={18} /> Book This Guide
+                          </button>
+                        );
+                      }
+                      return (
+                        <button disabled className="btn-ghost flex-1 flex items-center justify-center gap-2 opacity-50 cursor-not-allowed">
+                          <Calendar size={18} /> Unavailable
+                        </button>
+                      );
+                    })()}
+                    <Link to="#" onClick={(e) => { e.preventDefault(); handleMessage(); }} className="btn-ghost flex items-center gap-2 !px-4 hover:text-gold transition-colors">
+                      <MessageSquare size={18} />
+                    </Link>
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -447,60 +454,69 @@ export default function GuideProfilePage() {
           <aside className="hidden lg:block w-80 flex-shrink-0">
             <div className="sticky top-28">
               <div className="card-dark p-6 border-gold-200">
-                <div className="text-center mb-6">
-                  <span className="text-3xl font-heading font-bold text-gold">${guide.priceFullDay}</span>
-                  <span className="text-muted text-sm"> / day</span>
-                </div>
-
-                {(() => {
-                  const createdAt = guide.createdAt?.toDate ? guide.createdAt.toDate() : new Date(guide.createdAt || Date.now());
-                  const trialEnd = new Date(createdAt.getTime() + 90 * 24 * 60 * 60 * 1000);
-                  const isTrialActive = trialEnd > new Date();
-                  
-                  if (guide.isSubscribed || isTrialActive) {
-                    return (
-                      <button
-                        onClick={handleBook}
-                        id="book-guide-btn"
-                        className="btn-gold w-full flex items-center justify-center gap-2 text-lg !py-4 animate-pulse-gold min-h-[60px]"
-                      >
-                        <Calendar size={20} />
-                        Book This Guide
-                      </button>
-                    );
-                  }
-                  
-                  return (
-                    <div className="bg-dark-600 border border-dark-500 rounded-xl p-4 text-center min-h-[60px] flex flex-col justify-center">
-                      <p className="text-muted text-sm flex items-center justify-center gap-2 font-medium">
-                        <Calendar size={16} /> Unavailable to Book
-                      </p>
+                {isOwnProfile ? (
+                  <>
+                    <div className="text-center mb-4">
+                      <div className="w-12 h-12 rounded-full bg-gold-100 flex items-center justify-center mx-auto mb-3">
+                        <User size={24} className="text-gold" />
+                      </div>
+                      <p className="text-cream font-semibold text-sm">This is your public profile</p>
+                      <p className="text-muted-dark text-xs mt-1">This is how visitors see you.</p>
                     </div>
-                  );
-                })()}
+                    <Link to="/settings?tab=guide" className="btn-gold w-full flex items-center justify-center gap-2 !py-3">
+                      Edit My Profile
+                    </Link>
+                    <Link to="/settings?tab=availability" className="btn-ghost w-full flex items-center justify-center gap-2 mt-3">
+                      <Calendar size={18} /> Manage Availability
+                    </Link>
+                  </>
+                ) : (
+                  <>
+                    <div className="text-center mb-6">
+                      <span className="text-3xl font-heading font-bold text-gold">${guide.priceFullDay}</span>
+                      <span className="text-muted text-sm"> / day</span>
+                    </div>
 
-                <button
-                  onClick={handleMessage}
-                  className="btn-ghost w-full flex items-center justify-center gap-2 mt-3"
-                >
-                  <MessageSquare size={18} />
-                  Send Message
-                </button>
+                    {(() => {
+                      const createdAt = guide.createdAt?.toDate ? guide.createdAt.toDate() : new Date(guide.createdAt || Date.now());
+                      const trialEnd = new Date(createdAt.getTime() + 90 * 24 * 60 * 60 * 1000);
+                      const isTrialActive = trialEnd > new Date();
+                      if (guide.isSubscribed || isTrialActive) {
+                        return (
+                          <button onClick={handleBook} id="book-guide-btn" className="btn-gold w-full flex items-center justify-center gap-2 text-lg !py-4 animate-pulse-gold min-h-[60px]">
+                            <Calendar size={20} /> Book This Guide
+                          </button>
+                        );
+                      }
+                      return (
+                        <div className="bg-dark-600 border border-dark-500 rounded-xl p-4 text-center min-h-[60px] flex flex-col justify-center">
+                          <p className="text-muted text-sm flex items-center justify-center gap-2 font-medium">
+                            <Calendar size={16} /> Unavailable to Book
+                          </p>
+                        </div>
+                      );
+                    })()}
 
-                <div className="mt-6 pt-6 border-t border-dark-600 space-y-3">
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted">Response time</span>
-                    <span className="text-cream font-medium">Under 1 hour</span>
-                  </div>
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted">Cancellation</span>
-                    <span className="text-cream font-medium">Free up to 24h</span>
-                  </div>
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted">Languages</span>
-                    <span className="text-cream font-medium">{(guide.languages || []).length}</span>
-                  </div>
-                </div>
+                    <button onClick={handleMessage} className="btn-ghost w-full flex items-center justify-center gap-2 mt-3">
+                      <MessageSquare size={18} /> Send Message
+                    </button>
+
+                    <div className="mt-6 pt-6 border-t border-dark-600 space-y-3">
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-muted">Response time</span>
+                        <span className="text-cream font-medium">Under 1 hour</span>
+                      </div>
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-muted">Cancellation</span>
+                        <span className="text-cream font-medium">Free up to 24h</span>
+                      </div>
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-muted">Languages</span>
+                        <span className="text-cream font-medium">{(guide.languages || []).length}</span>
+                      </div>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           </aside>

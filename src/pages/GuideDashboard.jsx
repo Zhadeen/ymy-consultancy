@@ -111,7 +111,7 @@ export default function GuideDashboard() {
                 </div>
               </div>
             </div>
-            <Link to={`/guide/${guide.id}`} className="btn-ghost flex items-center gap-2 text-sm">
+            <Link to="/settings?tab=guide" className="btn-ghost flex items-center gap-2 text-sm">
               <Edit3 size={14} />
               Edit Profile
             </Link>
@@ -194,8 +194,8 @@ export default function GuideDashboard() {
               <h2 className="font-heading text-xl font-bold text-cream mb-6">Quick Actions</h2>
               <div className="space-y-3">
                 {[
-                  { icon: Calendar, label: 'Manage Availability', to: '#' },
-                  { icon: DollarSign, label: 'Update Pricing', to: '#' },
+                  { icon: Calendar, label: 'Manage Availability', to: '/settings?tab=availability' },
+                  { icon: DollarSign, label: 'Update Pricing', to: '/settings?tab=guide' },
                   { icon: MessageSquare, label: 'Chat Inbox', to: '/chat' },
                   { icon: Settings, label: 'Account Settings', to: '/settings' },
                 ].map(action => (
