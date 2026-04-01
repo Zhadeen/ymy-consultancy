@@ -39,9 +39,15 @@ export default function Hero() {
       onMouseMove={handleMouseMove}
       className="relative min-h-screen flex items-center justify-center overflow-hidden"
     >
-      {/* Volumetric deep black background for Hero */}
+      {/* Background image with overlay */}
       <div className="absolute inset-0">
-        <div className="absolute inset-0 bg-gradient-to-b from-dark-900 via-transparent to-dark-900" />
+        <img
+          src="https://images.unsplash.com/photo-1488085061387-422e29b40080?w=1920&q=80"
+          alt="Travel destination"
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-dark-900/80 via-dark-900/60 to-dark-900" />
+        <div className="absolute inset-0 bg-gradient-to-r from-dark-900/40 to-transparent" />
       </div>
 
       {/* Floating decorative elements */}
