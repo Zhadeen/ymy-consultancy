@@ -122,16 +122,19 @@ export default function VisitorDashboard() {
               { color: 'text-gold', icon: Calendar, label: 'Bookings', value: bookings.length },
               { color: 'text-pink-400', icon: Heart, label: 'Saved Local Guides', value: savedGuides.length, href: '#saved-guides' },
               { color: 'text-yellow-400', icon: Star, label: 'Reviews Given', value: 0 },
-              { color: 'text-blue-400', icon: MessageSquare, label: 'Messages', value: unreadCount, href: '/messages' },
+              { color: 'text-blue-400', icon: MessageSquare, label: 'Messages', value: unreadCount, href: '/chat' },
             ].map(stat => (
               <ScrollReveal key={stat.label}>
                 {stat.href ? (
                   stat.href.startsWith('#') ? (
-                    <a href={stat.href} className="card-dark p-5 text-center flex flex-col items-center justify-center hover:bg-dark-700/50 transition-colors cursor-pointer group h-full">
+                    <div 
+                      onClick={() => document.getElementById(stat.href.substring(1))?.scrollIntoView({ behavior: 'smooth' })}
+                      className="card-dark p-5 text-center flex flex-col items-center justify-center hover:bg-dark-700/50 transition-colors cursor-pointer group h-full"
+                    >
                       <stat.icon size={24} className={`${stat.color} mx-auto mb-2 group-hover:scale-110 transition-transform`} />
                       <div className="text-2xl font-heading font-bold text-cream">{stat.value}</div>
                       <div className="text-xs text-muted mt-1">{stat.label}</div>
-                    </a>
+                    </div>
                   ) : (
                     <Link to={stat.href} className="card-dark p-5 text-center flex flex-col items-center justify-center hover:bg-dark-700/50 transition-colors cursor-pointer group h-full">
                       <stat.icon size={24} className={`${stat.color} mx-auto mb-2 group-hover:scale-110 transition-transform`} />
