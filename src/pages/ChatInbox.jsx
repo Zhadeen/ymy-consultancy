@@ -36,7 +36,8 @@ export default function ChatInbox() {
           peerName: peerData.name,
           peerPhoto: peerData.photo,
           lastMessage: data.lastMessage,
-          updatedAt: data.updatedAt?.toDate() || new Date()
+          updatedAt: data.updatedAt?.toDate() || new Date(),
+          unreadCount: data.unreadCount?.[user.uid] || 0
         };
       });
       setChats(activeChats);
@@ -93,9 +94,16 @@ export default function ChatInbox() {
                     <div className="flex-1 min-w-0">
                       <div className="flex justify-between items-baseline mb-1">
                         <h3 className="text-cream font-semibold truncate text-lg pr-4">{chat.peerName}</h3>
-                        <span className="text-xs text-muted-dark whitespace-nowrap flex-shrink-0">
-                          {chat.updatedAt.toLocaleDateString([], { month: 'short', day: 'numeric' })}
-                        </span>
+                        <div className="flex flex-col items-end gap-1">
+                          <span className="text-xs text-muted-dark whitespace-nowrap flex-shrink-0">
+                            {chat.updatedAt.toLocaleDateString([], { month: 'short', day: 'numeric' })}
+                          </span>
+                          {chat.unreadCount > 0 && (
+                            <span className="bg-red-500 text-white font-bold text-[10px] px-2 py-0.5 rounded-full">
+                              {chat.unreadCount} NEW
+                            </span>
+                          )}
+                        </div>
                       </div>
                       <p className="text-muted text-sm truncate">{chat.lastMessage}</p>
                     </div>

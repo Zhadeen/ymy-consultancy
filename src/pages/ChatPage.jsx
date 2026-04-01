@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Send, Paperclip, Check, CheckCheck, ChevronLeft, Image as ImageIcon } from 'lucide-react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
-import { collection, doc, query, orderBy, onSnapshot, addDoc, serverTimestamp, getDoc, setDoc } from 'firebase/firestore';
+import { collection, doc, query, orderBy, onSnapshot, addDoc, serverTimestamp, getDoc, setDoc, increment } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import { useAuth } from '../context/AuthContext';
 
@@ -70,6 +70,15 @@ export default function ChatPage() {
         timestamp: doc.data().timestamp ? doc.data().timestamp.toDate().toISOString() : new Date().toISOString()
       }));
       setMessages(msgs);
+
+      // Reset unread count for the current user when actively viewing this chat
+      if (chatId && user) {
+        setDoc(doc(db, 'chats', chatId), {
+          unreadCount: {
+            [user.uid]: 0
+          }
+        }, { merge: true }).catch(err => console.error("Error resetting unread count:", err));
+      }
     });
 
     return () => unsubscribe();
@@ -91,6 +100,9 @@ export default function ChatPage() {
         participants: [user.uid, guideId],
         lastMessage: textToSend,
         updatedAt: serverTimestamp(),
+        unreadCount: {
+          [guideId]: increment(1)
+        },
         [user.uid]: { name: user.name || 'Visitor', photo: user.photo || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200' },
         [guideId]: { name: guide.name, photo: guide.photo }
       }, { merge: true });

@@ -5,6 +5,7 @@ import { db } from '../config/firebase';
 import { useAuth } from '../context/AuthContext';
 import ScrollReveal from '../components/common/ScrollReveal';
 import { MapPin, Edit3, DollarSign, Calendar, Star, Users, Clock, MessageSquare, Settings, TrendingUp, ChevronRight, CheckCircle2, AlertCircle } from 'lucide-react';
+import { useUnreadCount } from '../hooks/useUnreadCount';
 
 export default function GuideDashboard() {
   const { user } = useAuth();
@@ -12,6 +13,7 @@ export default function GuideDashboard() {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('upcoming');
+  const unreadCount = useUnreadCount();
 
   useEffect(() => {
     if (!user) return;
@@ -204,6 +206,11 @@ export default function GuideDashboard() {
                       <action.icon size={18} className="text-gold" />
                     </div>
                     <span className="text-cream text-sm font-medium group-hover:text-gold transition-colors flex-1">{action.label}</span>
+                    {action.label === 'Chat Inbox' && unreadCount > 0 && (
+                      <span className="bg-red-500 text-white font-bold text-[10px] px-2 py-0.5 rounded-full mr-2">
+                        {unreadCount}
+                      </span>
+                    )}
                     <ChevronRight size={16} className="text-muted-dark group-hover:text-gold transition-colors" />
                   </Link>
                 ))}
