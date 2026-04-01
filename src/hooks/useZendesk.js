@@ -34,13 +34,15 @@ export function useZendesk() {
         }, 100);
 
         // Ensure when the user closes the chat, the launcher is explicitly hidden again
-        window.zE('webWidget:on', 'close', () => {
-          window.zE('webWidget', 'hide');
-        });
+        try {
+          window.zE('webWidget:on', 'close', () => {
+            window.zE('webWidget', 'hide');
+          });
+        } catch (e) {}
         
         try {
           window.zE('messenger:on', 'close', () => {
-            window.zE('messenger', 'hide');
+             window.zE('messenger', 'hide');
           });
         } catch(e) {}
       }
