@@ -56,7 +56,10 @@ export default function GuideDashboard() {
   const activeStatuses = ['pending', 'accepted', 'on_the_way', 'arrived', 'in_progress', 'upcoming', 'confirmed'];
   const upcomingBookings = bookings.filter(b => activeStatuses.includes(b.status));
   const completedBookings = bookings.filter(b => b.status === 'completed' || b.status === 'declined');
-  const totalEarnings = bookings.reduce((sum, b) => sum + (b.totalPrice || 0), 0);
+  
+  const paidStatuses = ['on_the_way', 'arrived', 'in_progress', 'completed'];
+  const totalEarnings = bookings.filter(b => paidStatuses.includes(b.status)).reduce((sum, b) => sum + (b.totalPrice || 0), 0);
+  const totalGuests = bookings.filter(b => b.status === 'completed').reduce((sum, b) => sum + (Number(b.guests) || 1), 0);
 
   // Compute monthly earnings
   const now = new Date();
@@ -137,7 +140,7 @@ export default function GuideDashboard() {
               { icon: DollarSign, label: 'Total Earnings', value: `$${totalEarnings.toLocaleString()}`, color: 'text-green-400', bg: 'bg-green-500/10' },
               { icon: Calendar, label: 'Upcoming Experiences', value: upcomingBookings.length, color: 'text-gold', bg: 'bg-gold-100' },
               { icon: Star, label: 'Rating', value: guide.rating.toFixed(1), color: 'text-yellow-400', bg: 'bg-yellow-500/10' },
-              { icon: Users, label: 'Total Guests', value: guide.totalBookings, color: 'text-blue-400', bg: 'bg-blue-500/10' },
+              { icon: Users, label: 'Total Guests Hosted', value: totalGuests, color: 'text-blue-400', bg: 'bg-blue-500/10' },
             ].map(stat => (
               <div key={stat.label} className="card-dark p-5">
                 <div className={`w-10 h-10 rounded-xl ${stat.bg} flex items-center justify-center mb-3`}>
