@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X, ChevronDown } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import logo from '../../assets/logo.png';
@@ -9,6 +9,16 @@ export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { user, logout } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      if (logout) await logout();
+      navigate('/');
+    } catch (err) {
+      console.error('Logout error:', err);
+    }
+  };
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -83,7 +93,7 @@ export default function Navbar() {
                   <Link to="/dashboard" className="text-sm text-cream/80 hover:text-gold transition-colors">
                     Dashboard
                   </Link>
-                  <button onClick={logout} className="text-sm text-muted hover:text-cream transition-colors">
+                  <button onClick={handleLogout} className="text-sm text-muted hover:text-cream transition-colors">
                     Logout
                   </button>
                 </div>
@@ -145,7 +155,7 @@ export default function Navbar() {
                 {user?.role === 'admin' && (
                   <Link to="/admin" className="text-lg text-gold font-bold">Admin Panel</Link>
                 )}
-                <button onClick={logout} className="text-lg text-muted text-left">Logout</button>
+                <button onClick={handleLogout} className="text-lg text-muted text-left">Logout</button>
               </>
             ) : (
               <>
