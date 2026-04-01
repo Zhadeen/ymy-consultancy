@@ -120,15 +120,33 @@ export default function VisitorDashboard() {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-10">
             {[
               { color: 'text-gold', icon: Calendar, label: 'Bookings', value: bookings.length },
-              { color: 'text-pink-400', icon: Heart, label: 'Saved Local Guides', value: 0 },
+              { color: 'text-pink-400', icon: Heart, label: 'Saved Local Guides', value: savedGuides.length, href: '#saved-guides' },
               { color: 'text-yellow-400', icon: Star, label: 'Reviews Given', value: 0 },
-              { color: 'text-blue-400', icon: MessageSquare, label: 'Messages', value: 0 },
+              { color: 'text-blue-400', icon: MessageSquare, label: 'Messages', value: unreadCount, href: '/messages' },
             ].map(stat => (
-              <div key={stat.label} className="card-dark p-5 text-center">
-                <stat.icon size={24} className={`${stat.color} mx-auto mb-2`} />
-                <div className="text-2xl font-heading font-bold text-cream">{stat.value}</div>
-                <div className="text-xs text-muted mt-1">{stat.label}</div>
-              </div>
+              <ScrollReveal key={stat.label}>
+                {stat.href ? (
+                  stat.href.startsWith('#') ? (
+                    <a href={stat.href} className="card-dark p-5 text-center flex flex-col items-center justify-center hover:bg-dark-700/50 transition-colors cursor-pointer group h-full">
+                      <stat.icon size={24} className={`${stat.color} mx-auto mb-2 group-hover:scale-110 transition-transform`} />
+                      <div className="text-2xl font-heading font-bold text-cream">{stat.value}</div>
+                      <div className="text-xs text-muted mt-1">{stat.label}</div>
+                    </a>
+                  ) : (
+                    <Link to={stat.href} className="card-dark p-5 text-center flex flex-col items-center justify-center hover:bg-dark-700/50 transition-colors cursor-pointer group h-full">
+                      <stat.icon size={24} className={`${stat.color} mx-auto mb-2 group-hover:scale-110 transition-transform`} />
+                      <div className="text-2xl font-heading font-bold text-cream">{stat.value}</div>
+                      <div className="text-xs text-muted mt-1">{stat.label}</div>
+                    </Link>
+                  )
+                ) : (
+                  <div className="card-dark p-5 text-center flex flex-col items-center justify-center h-full">
+                    <stat.icon size={24} className={`${stat.color} mx-auto mb-2`} />
+                    <div className="text-2xl font-heading font-bold text-cream">{stat.value}</div>
+                    <div className="text-xs text-muted mt-1">{stat.label}</div>
+                  </div>
+                )}
+              </ScrollReveal>
             ))}
           </div>
         </ScrollReveal>
@@ -141,33 +159,35 @@ export default function VisitorDashboard() {
               <div className="space-y-4">
                 {bookings.map((booking, i) => (
                   <ScrollReveal key={booking.id} delay={i * 60}>
-                    <div className="card-dark p-5 flex flex-col sm:flex-row sm:items-center gap-4">
-                      <div className="flex items-center gap-4 flex-1 min-w-0">
-                        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 ${
-                          booking.status === 'completed' ? 'bg-green-500/10' :
-                          booking.status === 'upcoming' ? 'bg-gold-100' : 'bg-blue-500/10'
-                        }`}>
-                          <Calendar size={20} className={
-                            booking.status === 'completed' ? 'text-green-500' :
-                            booking.status === 'upcoming' ? 'text-gold' : 'text-blue-400'
-                          } />
+                    <div className="card-dark flex flex-col p-5 overflow-hidden">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div className="flex items-center gap-4 flex-1 min-w-0">
+                          <div className={`w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 ${
+                            booking.status === 'completed' ? 'bg-green-500/10' :
+                            booking.status === 'upcoming' ? 'bg-gold-100' : 'bg-blue-500/10'
+                          }`}>
+                            <Calendar size={20} className={
+                              booking.status === 'completed' ? 'text-green-500' :
+                              booking.status === 'upcoming' ? 'text-gold' : 'text-blue-400'
+                            } />
+                          </div>
+                          <div className="min-w-0">
+                            <h3 className="text-cream font-semibold truncate">{booking.guideName}</h3>
+                            <p className="text-muted text-sm">
+                              {new Date(booking.date).toLocaleDateString('en', { month: 'short', day: 'numeric', year: 'numeric' })}
+                              {' · '}{booking.tourType}
+                            </p>
+                          </div>
                         </div>
-                        <div className="min-w-0">
-                          <h3 className="text-cream font-semibold truncate">{booking.guideName}</h3>
-                          <p className="text-muted text-sm">
-                            {new Date(booking.date).toLocaleDateString('en', { month: 'short', day: 'numeric', year: 'numeric' })}
-                            {' · '}{booking.tourType}
-                          </p>
+                        <div className="flex items-center sm:justify-end gap-4 flex-shrink-0">
+                          <span className={`text-xs font-semibold px-3 py-1.5 rounded-full uppercase tracking-wider ${
+                            booking.status === 'completed' ? 'bg-green-500/10 text-green-400' :
+                            'bg-gold-100 text-gold'
+                          }`}>
+                            {booking.status.replace('_', ' ')}
+                          </span>
+                          <span className="text-gold font-heading font-bold">${booking.totalPrice}</span>
                         </div>
-                      </div>
-                      <div className="flex items-center gap-4">
-                        <span className={`text-xs font-semibold px-3 py-1.5 rounded-full uppercase tracking-wider ${
-                          booking.status === 'completed' ? 'bg-green-500/10 text-green-400' :
-                          'bg-gold-100 text-gold'
-                        }`}>
-                          {booking.status}
-                        </span>
-                        <span className="text-gold font-heading font-bold">${booking.totalPrice}</span>
                       </div>
                       <SessionTracker booking={booking} role="visitor" />
                     </div>
@@ -178,7 +198,7 @@ export default function VisitorDashboard() {
           </div>
 
           {/* Saved Local Guides */}
-          <div>
+          <div id="saved-guides">
             <ScrollReveal>
               <h2 className="font-heading text-2xl font-bold text-cream mb-6">Saved Local Guides</h2>
               <div className="space-y-3 mb-10">
