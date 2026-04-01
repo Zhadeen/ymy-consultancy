@@ -114,6 +114,7 @@ export default function BookingPage() {
       const bookingData = {
         guideName: guide.name,
         guideId: guide.id,
+        guideUid: guide.uid,
         guidePhoto: guide.photo,
         totalPrice,
         date,
@@ -189,7 +190,7 @@ export default function BookingPage() {
             </div>
 
             <div className="flex flex-col gap-3">
-              <Link to={`/chat/${confirmed.guideId}`} className="btn-gold w-full flex items-center justify-center gap-2">
+              <Link to={`/chat/${confirmed.guideUid}`} className="btn-gold w-full flex items-center justify-center gap-2">
                 Chat with Local Guide
               </Link>
               <Link to="/dashboard" className="text-muted hover:text-cream text-sm font-medium">

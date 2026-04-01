@@ -173,7 +173,7 @@ export default function GuideDashboard() {
                         </div>
                         <div className="flex items-center gap-3">
                           <span className="text-gold font-heading font-bold text-lg">${booking.totalPrice}</span>
-                          <Link to="/chat" className="btn-ghost !py-2 !px-3 text-sm">
+                          <Link to={`/chat/${booking.visitorId}`} className="btn-ghost !py-2 !px-3 text-sm">
                             <MessageSquare size={14} />
                           </Link>
                         </div>

@@ -40,11 +40,11 @@ export default function ChatPage() {
           }
         }
         
-        // Fallback: If no chat doc exists yet (first message scenario), try guides collection
-        const guideDocRef = doc(db, 'guides', guideId);
-        const guideSnap = await getDoc(guideDocRef);
-        if (guideSnap.exists()) {
-          setGuide({ id: guideSnap.id, ...guideSnap.data() });
+        // Fallback: If no chat doc exists yet (first message scenario), try users collection
+        const userDocRef = doc(db, 'users', guideId);
+        const userSnap = await getDoc(userDocRef);
+        if (userSnap.exists()) {
+          setGuide({ id: userSnap.id, ...userSnap.data() });
         } else {
           // Absolute fallback if it's a new chat between a Local Guide and Visitor (where visitor is the guideId param)
           setGuide({ id: guideId, name: 'Traveler', photo: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200', city: 'Guest' });

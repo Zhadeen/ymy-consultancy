@@ -99,7 +99,7 @@ export default function GuideProfilePage() {
       setShowPaywall(true);
       return;
     }
-    navigate(`/chat/${guide.id}`);
+    navigate(`/chat/${guide.uid}`);
   };
 
   const handleSubmitReview = async (e) => {
