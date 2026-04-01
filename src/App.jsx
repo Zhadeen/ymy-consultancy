@@ -81,6 +81,11 @@ export default function App() {
       <AuthProvider>
         <BookingProvider>
           <ScrollToTop />
+          {/* Global Ambient Background Effects */}
+          <div className="tech-grid" />
+          <div className="bg-ambient-glow" />
+          <div className="bg-ambient-glow-white pointer-events-none" />
+          
           <FloatingContact />
           <Routes>
             {/* Main layout with footer */}
