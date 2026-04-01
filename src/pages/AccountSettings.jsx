@@ -520,8 +520,11 @@ export default function AccountSettings() {
                       <div key={`empty-${i}`} />
                     ))}
                     {Array.from({ length: daysInMonth }, (_, i) => {
+                      const day = i + 1;
                       const date = new Date(calMonth.year, calMonth.month, day);
                       const isPast = date < new Date(new Date().setHours(0,0,0,0));
+                      const dateStr = `${calMonth.year}-${String(calMonth.month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                      const isAvail = availability[dateStr];
                       
                       return (
                         <button

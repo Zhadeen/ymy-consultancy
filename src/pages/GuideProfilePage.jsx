@@ -8,6 +8,7 @@ import ScrollReveal from '../components/common/ScrollReveal';
 import { useBooking } from '../context/BookingContext';
 import { useAuth } from '../context/AuthContext';
 import VisitorPricingModal from '../components/VisitorPricingModal';
+import { getGuideLocalTime } from '../utils/timeUtils';
 
 export default function GuideProfilePage() {
   const { id } = useParams();
@@ -201,7 +202,7 @@ export default function GuideProfilePage() {
                 </span>
                 <span className="flex items-center gap-1.5 text-gold font-medium bg-gold/5 px-2 py-0.5 rounded-lg border border-gold/10">
                   <Clock size={16} />
-                  {new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })} Local Time
+                  {getGuideLocalTime(guide.country)} (Local Time)
                 </span>
                 <span className="flex items-center gap-1.5">
                   <Clock size={16} />

@@ -7,6 +7,7 @@ import { VISIT_PURPOSES, LOCAL_EXPERIENCES } from '../data/mockData';
 import { useBooking } from '../context/BookingContext';
 import { useAuth } from '../context/AuthContext';
 import ScrollReveal from '../components/common/ScrollReveal';
+import { getGuideLocalTime } from '../utils/timeUtils';
 
 export default function BookingPage() {
   const { id } = useParams();
@@ -63,29 +64,35 @@ export default function BookingPage() {
     if (!guide) return [];
     
     const today = new Date();
-    const todayStr = today.toISOString().split('T')[0];
-    
-    // Default to a 12-hour notice buffer (only show dates from tomorrow onwards/late today)
-    const minDate = new Date(today.getTime() + 12 * 60 * 60 * 1000).toISOString().split('T')[0];
+    // Get local date string YYYY-MM-DD
+    const getLocalDateString = (dateObj) => {
+      const y = dateObj.getFullYear();
+      const m = String(dateObj.getMonth() + 1).padStart(2, '0');
+      const d = String(dateObj.getDate()).padStart(2, '0');
+      return `${y}-${m}-${d}`;
+    };
+
+    const minDate = getLocalDateString(today);
 
     // If guide has specific availability set, use it but filter out past dates
-    if (guide.availability && Object.keys(guide.availability).length > 0) {
-      return Object.entries(guide.availability)
-        .filter(([dateStr, avail]) => avail && dateStr >= minDate)
-        .map(([dateStr]) => dateStr)
-        .sort();
+    const configuredDates = guide.availability && Object.keys(guide.availability).length > 0
+      ? Object.entries(guide.availability)
+          .filter(([dateStr, isAvailable]) => isAvailable && dateStr >= minDate)
+          .map(([dateStr]) => dateStr)
+          .sort()
+      : [];
+    
+    // If there ARE valid specific dates, return them
+    if (configuredDates.length > 0) {
+      return configuredDates;
     }
     
-    // Fallback: If no availability explicitly set, assume available for the next 30 days starting from tomorrow
+    // Fallback: Default to next 30 days if no availability is explicitly set or all set dates are in the past
     const fallbackDates = [];
-    const tomorrow = new Date(today);
-    tomorrow.setDate(today.getDate() + 1);
-    
     for (let i = 0; i < 30; i++) {
-      const d = new Date(tomorrow);
-      d.setDate(tomorrow.getDate() + i);
-      const dateStr = d.toISOString().split('T')[0];
-      fallbackDates.push(dateStr);
+      const d = new Date(today);
+      d.setDate(today.getDate() + i);
+      fallbackDates.push(getLocalDateString(d));
     }
     return fallbackDates;
   }, [guide]);
@@ -216,7 +223,7 @@ export default function BookingPage() {
                   <span className="text-cream font-medium">{guide.name}</span>
                   <div className="flex items-center gap-3 text-xs mt-0.5">
                     <span className="flex items-center gap-1"><MapPin size={12} />{guide.city}</span>
-                    <span className="flex items-center gap-1 text-gold"><Clock size={12} /> {new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })} (Local Time)</span>
+                    <span className="flex items-center gap-1 text-gold"><Clock size={12} /> {getGuideLocalTime(guide.country)} (Local Time)</span>
                   </div>
                 </div>
               </div>
@@ -229,14 +236,25 @@ export default function BookingPage() {
                   <Calendar size={18} className="text-gold" />
                   Select Date
                 </span>
-                <select value={date} onChange={e => setDate(e.target.value)} className="input-dark mt-2" id="booking-date">
-                  <option value="">Choose an available date</option>
-                  {availableDates.map(d => (
-                    <option key={d} value={d}>
-                      {new Date(d).toLocaleDateString('en', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}
-                    </option>
-                  ))}
-                </select>
+                {availableDates.length > 0 ? (
+                  <select value={date} onChange={e => setDate(e.target.value)} className="input-dark mt-2" id="booking-date">
+                    <option value="">Choose an available date</option>
+                    {availableDates.map(d => {
+                      // Parse correctly without timezone shift
+                      const [year, month, day] = d.split('-').map(Number);
+                      const localDateObj = new Date(year, month - 1, day);
+                      return (
+                        <option key={d} value={d}>
+                          {localDateObj.toLocaleDateString('en', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}
+                        </option>
+                      );
+                    })}
+                  </select>
+                ) : (
+                  <div className="bg-dark-600 border border-dark-500 rounded-xl p-4 text-center mt-2">
+                    <p className="text-muted text-sm">This guide is fully booked or no dates are currently available.</p>
+                  </div>
+                )}
               </label>
             </ScrollReveal>
 
@@ -354,7 +372,13 @@ export default function BookingPage() {
                     {date && (
                       <div className="flex justify-between text-sm">
                         <span className="text-muted">Date</span>
-                        <span className="text-cream">{new Date(date).toLocaleDateString('en', { month: 'short', day: 'numeric' })}</span>
+                        <span className="text-cream">
+                          {(() => {
+                            const [year, month, day] = date.split('-').map(Number);
+                            const localDateObj = new Date(year, month - 1, day);
+                            return localDateObj.toLocaleDateString('en', { month: 'short', day: 'numeric' });
+                          })()}
+                        </span>
                       </div>
                     )}
                     <div className="flex justify-between text-sm">
