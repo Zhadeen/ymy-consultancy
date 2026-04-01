@@ -254,12 +254,16 @@ export default function AccountSettings() {
                   <div className="w-full h-full flex items-center justify-center">
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gold" />
                   </div>
-                ) : (
+                ) : user?.photo || guideData?.profileImage ? (
                   <img 
-                    src={user?.photo || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200'} 
+                    src={user?.photo || guideData?.profileImage} 
                     alt="Profile" 
                     className="w-full h-full object-cover"
                   />
+                ) : (
+                  <div className="w-full h-full flex flex-col items-center justify-center bg-dark-600 text-muted">
+                    <User size={36} opacity={0.5} />
+                  </div>
                 )}
               </div>
               <button 
