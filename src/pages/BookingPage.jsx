@@ -13,7 +13,7 @@ export default function BookingPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { booking, updateBooking, createBookingRequest, confirmed } = useBooking();
+  const { booking, updateBooking, createPendingBooking, confirmed } = useBooking();
   const [guide, setGuide] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
