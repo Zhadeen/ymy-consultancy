@@ -30,6 +30,7 @@ import VisitorPricingPage from './pages/VisitorPricingPage';
 import FloatingContact from './components/common/FloatingContact';
 import { useAuth } from './context/AuthContext';
 import { Navigate } from 'react-router-dom';
+import { useZendesk } from './hooks/useZendesk';
 
 function ProtectedRoute({ children, role }) {
   const { user, loading } = useAuth();
@@ -73,6 +74,8 @@ function ChatLayout() {
 }
 
 export default function App() {
+  useZendesk();
+
   return (
     <BrowserRouter>
       <AuthProvider>

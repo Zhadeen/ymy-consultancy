@@ -75,7 +75,12 @@ export default function FloatingContact() {
                 <button
                   onClick={() => {
                     setIsOpen(false);
-                    alert("Initializing Live Support system...");
+                    if (window.zE) {
+                      window.zE('webWidget', 'show');
+                      window.zE('webWidget', 'open');
+                    } else {
+                      alert("Live Support is currently offline or missing configuration.");
+                    }
                   }}
                   className="flex items-center gap-3 bg-dark-700 hover:bg-dark-600 border border-gold/30 text-cream p-3 rounded-2xl transition-all hover:scale-[1.02] active:scale-95 shadow-lg group/btn w-full text-left"
                 >
