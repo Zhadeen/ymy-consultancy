@@ -67,19 +67,18 @@ export default function Navbar() {
                 <Link
                   key={link.to}
                   to={link.to}
-                  className={`relative px-2 py-1 text-sm tracking-wide font-medium transition-all duration-300 group ${
-                    isActive(link.to) ? 'text-gold' : 'text-cream/90 hover:text-gold'
+                  className={`relative px-4 py-2 text-sm tracking-wide font-medium transition-all duration-300 group rounded-full active:scale-95 hover:bg-gold/5 ${
+                    isActive(link.to) ? 'text-gold bg-gold/10' : 'text-cream/90 hover:text-gold'
                   }`}
                 >
                   {link.label}
-                  <span className={`absolute left-0 -bottom-1 h-[2px] bg-gold transition-all duration-300 ${isActive(link.to) ? 'w-full' : 'w-0 group-hover:w-full'}`}></span>
                 </Link>
               ))}
               {user?.role === 'admin' && (
                 <Link
                   to="/admin"
-                  className={`text-sm font-bold tracking-wide transition-colors duration-300 hover:text-gold ${
-                    isActive('/admin') ? 'text-gold' : 'text-cream/90'
+                  className={`text-sm font-bold tracking-wide transition-all duration-300 hover:text-gold active:scale-95 px-4 py-2 rounded-full hover:bg-gold/5 ${
+                    isActive('/admin') ? 'text-gold bg-gold/10' : 'text-cream/90'
                   }`}
                 >
                   Admin
@@ -90,22 +89,22 @@ export default function Navbar() {
             {/* Desktop CTA */}
             <div className="hidden md:flex items-center gap-6">
               {user ? (
-                <div className="flex items-center gap-5">
-                  <Link to="/dashboard" className="text-sm font-medium text-cream/90 hover:text-gold transition-colors">
+                <div className="flex items-center gap-2">
+                  <Link to="/dashboard" className="text-sm font-medium text-cream/90 hover:text-gold transition-all duration-300 active:scale-95 px-4 py-2 rounded-full hover:bg-gold/5">
                     Dashboard
                   </Link>
-                  <button onClick={handleLogout} className="text-sm font-medium text-muted hover:text-rose-400 transition-colors">
+                  <button onClick={handleLogout} className="text-sm font-medium text-muted hover:text-rose-400 transition-all duration-300 active:scale-95 px-4 py-2 rounded-full hover:bg-rose-500/10">
                     Logout
                   </button>
                 </div>
               ) : (
-                <Link to="/login" className="text-sm font-medium tracking-wide text-cream/90 hover:text-gold transition-all duration-300 px-4 py-2 hover:bg-gold/5 rounded-full">
+                <Link to="/login" className="text-sm font-medium tracking-wide text-cream/90 hover:text-gold transition-all duration-300 px-4 py-2 hover:bg-gold/10 rounded-full active:scale-95">
                   Sign In
                 </Link>
               )}
               <Link 
                 to="/search" 
-                className="btn-gold text-sm font-bold tracking-wide !px-7 !py-3 shadow-[0_0_20px_rgba(201,168,76,0.15)] border border-gold-light/30 relative overflow-hidden group"
+                className="btn-gold text-sm font-bold tracking-wide !px-7 !py-3 shadow-[0_0_20px_rgba(201,168,76,0.15)] border border-gold-light/30 relative overflow-hidden group active:scale-95 transition-transform"
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[slideInRight_1s_ease-in-out_infinite]" />
                 <span className="relative z-10">{isGuideUser ? 'View Marketplace' : 'Find a Local Guide'}</span>
