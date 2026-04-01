@@ -67,11 +67,12 @@ export default function Navbar() {
                 <Link
                   key={link.to}
                   to={link.to}
-                  className={`nav-item text-sm font-medium ${
-                    isActive(link.to) ? 'nav-item-active' : 'text-cream/80'
-                  } ${link.label === 'Become a Guide' ? 'border border-gold/20 hover:border-gold/50' : ''}`}
+                  className={`relative px-2 py-1 text-sm tracking-wide font-bold transition-all duration-300 group active:scale-95 ${
+                    isActive(link.to) ? 'text-gold' : 'text-cream/90 hover:text-gold'
+                  }`}
                 >
                   {link.label}
+                  <span className={`absolute left-0 -bottom-1 h-[2px] bg-gold transition-all duration-300 ${isActive(link.to) ? 'w-full' : 'w-0 group-hover:w-full'}`}></span>
                 </Link>
               ))}
               {user?.role === 'admin' && (
@@ -98,7 +99,7 @@ export default function Navbar() {
                   </button>
                 </div>
               ) : (
-                <Link to="/login" className="nav-item text-sm text-cream/80">
+                <Link to="/login" className="text-sm font-bold tracking-wide text-cream/90 hover:text-gold transition-all duration-300 px-4 py-2 hover:bg-gold/10 rounded-full active:scale-95">
                   Sign In
                 </Link>
               )}
