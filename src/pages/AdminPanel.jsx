@@ -50,18 +50,35 @@ export default function AdminPanel() {
 
   if (loading) return <div className="pt-32 text-center text-cream min-h-screen bg-dark-900">Loading Dashboard...</div>;
 
-  const totalRevenue = bookings.reduce((sum, b) => sum + (b.totalPrice || 0), 0);
+  const paidStatuses = ['on_the_way', 'arrived', 'in_progress', 'completed'];
+  const paidBookings = bookings.filter(b => paidStatuses.includes(b.status));
+  
+  const totalRevenue = paidBookings.reduce((sum, b) => sum + (b.totalPrice || 0), 0);
+  
+  // Compute monthly revenue dynamically
+  const monthlyRevenueData = new Array(12).fill(0);
+  paidBookings.forEach(b => {
+    if (b.date) {
+      const monthIndex = new Date(b.date).getMonth();
+      if (monthIndex >= 0 && monthIndex <= 11) {
+        monthlyRevenueData[monthIndex] += (b.totalPrice || 0);
+      }
+    }
+  });
+
   const stats = {
     totalUsers: users.length,
     totalGuides: guides.length,
-    totalBookings: bookings.length,
+    totalBookings: bookings.length, // total gross bookings
     revenue: totalRevenue,
-    monthlyRevenue: new Array(12).fill(0), // Simplified
+    monthlyRevenue: monthlyRevenueData,
     pendingGuides: applications.length
   };
 
-  const maxRevenue = Math.max(...stats.monthlyRevenue, 1);
+  const maxRevenue = Math.max(...stats.monthlyRevenue, 100); // Give chart minimum scale
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  
+  const formatCurrency = (amt) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(amt);
 
   const handleApprove = async (app) => {
     setActionLoading(app.id);
@@ -250,7 +267,7 @@ export default function AdminPanel() {
                 { icon: Users, label: 'Total Users', value: stats.totalUsers.toLocaleString(), change: '+12%', up: true, color: 'text-blue-400', bg: 'bg-blue-500/10' },
                 { icon: Globe, label: 'Active Guides', value: stats.totalGuides, change: '+8%', up: true, color: 'text-green-400', bg: 'bg-green-500/10' },
                 { icon: Calendar, label: 'Total Bookings', value: stats.totalBookings.toLocaleString(), change: '+23%', up: true, color: 'text-gold', bg: 'bg-gold-100' },
-                { icon: DollarSign, label: 'Revenue', value: `$${(stats.revenue / 1000).toFixed(0)}K`, change: '+18%', up: true, color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
+                { icon: DollarSign, label: 'Revenue', value: formatCurrency(stats.revenue), change: '+18%', up: true, color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
               ].map((stat, i) => (
                 <ScrollReveal key={stat.label} delay={i * 60}>
                   <div className="card-dark p-5">
@@ -277,7 +294,7 @@ export default function AdminPanel() {
                 <div className="flex items-end gap-2 h-48">
                   {stats.monthlyRevenue.map((rev, i) => (
                     <div key={i} className="flex-1 flex flex-col items-center gap-2">
-                      <span className="text-[10px] text-muted">${(rev / 1000).toFixed(0)}K</span>
+                      <span className="text-[10px] text-muted">{rev >= 1000 ? `$${(rev / 1000).toFixed(1)}k` : `$${Math.floor(rev)}`}</span>
                       <div
                         className="w-full bg-gradient-to-t from-gold to-gold-light rounded-t-md transition-all duration-500 hover:opacity-80 cursor-pointer"
                         style={{ height: `${(rev / maxRevenue) * 150}px` }}
