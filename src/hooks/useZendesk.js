@@ -25,7 +25,10 @@ export function useZendesk() {
         // Aggressively hide the launcher during the 3-second async boot window
         let attempts = 0;
         const hideInterval = setInterval(() => {
-          if (window.zE) window.zE('webWidget', 'hide');
+          if (window.zE) {
+            window.zE('webWidget', 'hide');
+            try { window.zE('messenger', 'hide'); } catch(e){}
+          }
           attempts++;
           if (attempts > 30) clearInterval(hideInterval); // Stop after 3 seconds
         }, 100);
@@ -34,6 +37,12 @@ export function useZendesk() {
         window.zE('webWidget:on', 'close', () => {
           window.zE('webWidget', 'hide');
         });
+        
+        try {
+          window.zE('messenger:on', 'close', () => {
+            window.zE('messenger', 'hide');
+          });
+        } catch(e) {}
       }
     };
     

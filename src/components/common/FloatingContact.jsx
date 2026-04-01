@@ -76,8 +76,17 @@ export default function FloatingContact() {
                   onClick={() => {
                     setIsOpen(false);
                     if (window.zE) {
+                      // Support Classic Web Widget
                       window.zE('webWidget', 'show');
                       window.zE('webWidget', 'open');
+                      
+                      // Support Modern Zendesk Messaging
+                      try {
+                        window.zE('messenger', 'show');
+                        window.zE('messenger', 'open');
+                      } catch (e) {
+                         // silently ignore if classic is used
+                      }
                     } else {
                       alert("Live Support is currently offline or missing configuration.");
                     }
