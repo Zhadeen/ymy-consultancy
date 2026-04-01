@@ -7,10 +7,6 @@ import ScrollReveal from '../components/common/ScrollReveal';
 import { MapPin, Edit3, DollarSign, Calendar, Star, Users, Clock, MessageSquare, Settings, TrendingUp, ChevronRight, CheckCircle2, AlertCircle } from 'lucide-react';
 import { useUnreadCount } from '../hooks/useUnreadCount';
 import SessionTracker from '../components/dashboard/SessionTracker';
-import { useAuth } from '../context/AuthContext';
-import ScrollReveal from '../components/common/ScrollReveal';
-import { MapPin, Edit3, DollarSign, Calendar, Star, Users, Clock, MessageSquare, Settings, TrendingUp, ChevronRight, CheckCircle2, AlertCircle } from 'lucide-react';
-import { useUnreadCount } from '../hooks/useUnreadCount';
 
 export default function GuideDashboard() {
   const { user } = useAuth();
