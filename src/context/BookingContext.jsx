@@ -1,5 +1,5 @@
 import { createContext, useContext, useState } from 'react';
-import { collection, addDoc } from 'firebase/firestore';
+import { collection, addDoc, doc, updateDoc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from '../config/firebase';
 
 const BookingContext = createContext(null);
@@ -25,19 +25,56 @@ export function BookingProvider({ children }) {
     return 'YMY-' + Math.random().toString(36).substr(2, 6).toUpperCase();
   };
 
-  const createBookingRequest = async (bookingData) => {
-    // In the new marketplace model, this step sends the visitor to Stripe.
-    // We update the local state to prepare for payment.
-    setBooking(prev => ({ ...prev, ...bookingData }));
+  const createPendingBooking = async (bookingData) => {
+    try {
+      const reference = generateReference();
+      const pendingBooking = {
+        guideId: bookingData.guideId,
+        guideName: bookingData.guideName,
+        guidePhoto: bookingData.guidePhoto || '',
+        guideUid: bookingData.guideUid || '',
+        visitorId: bookingData.visitorId,
+        visitorName: bookingData.visitorName,
+        visitorEmail: bookingData.visitorEmail,
+        date: bookingData.date,
+        tourType: bookingData.tourType,
+        guests: parseInt(bookingData.guests),
+        totalPrice: parseFloat(bookingData.totalPrice),
+        visitPurpose: bookingData.visitPurpose || '',
+        localExperience: bookingData.localExperience || '',
+        specialRequests: bookingData.specialRequests || '',
+        reference,
+        status: 'pending',
+        paymentStatus: 'unpaid',
+        createdAt: new Date().toISOString(),
+      };
+
+      const docRef = await addDoc(collection(db, 'bookings'), pendingBooking);
+      
+      // Notify guide about the request
+      const requestText = `Hi ${bookingData.guideName}! I just sent a booking request for a ${bookingData.tourType} experience on ${new Date(bookingData.date).toLocaleDateString()}. Please check your dashboard to accept or decline!`;
+      await sendAutomatedBookingMessage({
+        userId: bookingData.visitorId,
+        guideId: bookingData.guideUid || bookingData.guideId, // Use auth UID for chat
+        visitorName: bookingData.visitorName,
+        guideName: bookingData.guideName,
+        guidePhoto: bookingData.guidePhoto || ''
+      }, requestText);
+
+      return docRef.id;
+    } catch (err) {
+      console.error('Error creating pending booking:', err);
+      throw err;
+    }
   };
 
-  const sendAutomatedBookingMessage = async (metadata) => {
+  const sendAutomatedBookingMessage = async (metadata, customText = null) => {
     try {
       const { userId, guideId, visitorName, guideName, tourType, bookingDate, guidePhoto } = metadata;
       if (!userId || !guideId) return;
 
       const chatId = [userId, guideId].sort().join('_');
-      const text = `Hi ${guideName}! I just booked you for a ${tourType} experience on ${new Date(bookingDate).toLocaleDateString()}. Looking forward to meeting you!`;
+      const text = customText || `Hi ${guideName}! I just booked you for a ${tourType} experience on ${new Date(bookingDate).toLocaleDateString()}. Looking forward to meeting you!`;
 
       // 1. Add the message to the subcollection
       await addDoc(collection(db, 'chats', chatId, 'messages'), {
@@ -65,6 +102,26 @@ export function BookingProvider({ children }) {
 
   const savePaidBooking = async (metadata) => {
     try {
+      if (metadata.bookingId) {
+        // Handle deferred payment execution (updating existing pending/accepted booking)
+        const docRef = doc(db, 'bookings', metadata.bookingId);
+        const existingSnap = await getDoc(docRef);
+        
+        if (existingSnap.exists()) {
+          const finalBooking = { ...existingSnap.data(), paymentStatus: 'paid', status: 'on_the_way', paidAt: new Date().toISOString() };
+          await updateDoc(docRef, { paymentStatus: 'paid', status: 'on_the_way', paidAt: finalBooking.paidAt });
+          
+          // Send payment confirmation message
+          const confirmationText = `Payment Confirmed! ✅ I have successfully completed the payment for my booking. I'm excited for our session!`;
+          await sendAutomatedBookingMessage(metadata, confirmationText);
+          
+          setConfirmed({ id: metadata.bookingId, ...finalBooking });
+          setError(null);
+          return finalBooking;
+        }
+      }
+
+      // Fallback for direct checkout overrides
       const reference = generateReference();
       const finalBooking = {
         guideId: metadata.guideId,
@@ -81,15 +138,15 @@ export function BookingProvider({ children }) {
         localExperience: metadata.localExperience || '',
         specialRequests: metadata.specialRequests || '',
         reference,
-        status: 'upcoming',
+        status: 'on_the_way', // directly to on_the_way after paid
         paymentStatus: 'paid',
         createdAt: new Date().toISOString(),
       };
 
       const docRef = await addDoc(collection(db, 'bookings'), finalBooking);
       
-      // Trigger automated notification to guide
-      await sendAutomatedBookingMessage(metadata);
+      const confirmationText = `Payment Confirmed! ✅ I have successfully completed the payment for my booking. I'm excited for our session!`;
+      await sendAutomatedBookingMessage(metadata, confirmationText);
 
       setConfirmed({ id: docRef.id, ...finalBooking });
       setError(null);
@@ -107,7 +164,7 @@ export function BookingProvider({ children }) {
   };
 
   return (
-    <BookingContext.Provider value={{ booking, confirmed, error, updateBooking, createBookingRequest, savePaidBooking, resetBooking }}>
+    <BookingContext.Provider value={{ booking, confirmed, error, updateBooking, createPendingBooking, savePaidBooking, resetBooking }}>
       {children}
     </BookingContext.Provider>
   );

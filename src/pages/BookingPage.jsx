@@ -128,18 +128,11 @@ export default function BookingPage() {
         specialRequests,
       };
 
-      const response = await fetch('/api/create-checkout-session', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ bookingData, userId: user.uid }),
-      });
-
-      const session = await response.json();
-      if (session.url) {
-        window.location.href = session.url;
-      } else {
-        throw new Error(session.message || 'Failed to initialize payment.');
-      }
+      await createPendingBooking(bookingData);
+      
+      // Navigate to Visitor Dashboard and show success alert
+      alert("Booking request sent successfully! The Local Guide will review your request.");
+      navigate('/dashboard');
     } catch (err) {
       console.error("Booking Error:", err);
       setError(err.message || 'Failed to process booking. Please try again.');
@@ -416,10 +409,7 @@ export default function BookingPage() {
                     {processing ? (
                       <div className="w-6 h-6 border-2 border-dark-900/30 border-t-dark-900 rounded-full animate-spin" />
                     ) : (
-                      <>
-                        <CreditCard size={20} />
-                        Confirm & Pay
-                      </>
+                      "Send Booking Request"
                     )}
                   </button>
 

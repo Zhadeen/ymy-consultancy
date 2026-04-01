@@ -1,7 +1,12 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { collection, query, where, getDocs, doc, getDoc } from 'firebase/firestore';
+import { collection, query, where, getDocs, doc, getDoc, onSnapshot } from 'firebase/firestore';
 import { db } from '../config/firebase';
+import { useAuth } from '../context/AuthContext';
+import ScrollReveal from '../components/common/ScrollReveal';
+import { MapPin, Edit3, DollarSign, Calendar, Star, Users, Clock, MessageSquare, Settings, TrendingUp, ChevronRight, CheckCircle2, AlertCircle } from 'lucide-react';
+import { useUnreadCount } from '../hooks/useUnreadCount';
+import SessionTracker from '../components/dashboard/SessionTracker';
 import { useAuth } from '../context/AuthContext';
 import ScrollReveal from '../components/common/ScrollReveal';
 import { MapPin, Edit3, DollarSign, Calendar, Star, Users, Clock, MessageSquare, Settings, TrendingUp, ChevronRight, CheckCircle2, AlertCircle } from 'lucide-react';
@@ -17,6 +22,8 @@ export default function GuideDashboard() {
 
   useEffect(() => {
     if (!user) return;
+    let unsubscribeBookings;
+    
     const fetchData = async () => {
       try {
         const guidesRef = collection(db, 'guides');
@@ -27,10 +34,11 @@ export default function GuideDashboard() {
           const gData = { id: snapG.docs[0].id, ...snapG.docs[0].data() };
           setGuide(gData);
 
-          // Get bookings for this guide
+          // Listen to bookings in real-time
           const qB = query(collection(db, 'bookings'), where('guideId', '==', gData.id));
-          const snapB = await getDocs(qB);
-          setBookings(snapB.docs.map(d => ({ id: d.id, ...d.data() })));
+          unsubscribeBookings = onSnapshot(qB, (snapB) => {
+            setBookings(snapB.docs.map(d => ({ id: d.id, ...d.data() })));
+          });
         }
       } catch (err) {
         console.error("Dashboard error:", err);
@@ -38,14 +46,20 @@ export default function GuideDashboard() {
         setLoading(false);
       }
     };
+    
     fetchData();
+    
+    return () => {
+      if (unsubscribeBookings) unsubscribeBookings();
+    };
   }, [user]);
 
   if (loading) return <div className="pt-32 text-center text-cream">Loading Dashboard...</div>;
   if (!guide) return <div className="pt-32 text-center text-cream">No Guide Profile Found. Please register/apply as a guide.</div>;
 
-  const upcomingBookings = bookings.filter(b => b.status === 'upcoming' || b.status === 'confirmed');
-  const completedBookings = bookings.filter(b => b.status === 'completed');
+  const activeStatuses = ['pending', 'accepted', 'on_the_way', 'arrived', 'in_progress', 'upcoming', 'confirmed'];
+  const upcomingBookings = bookings.filter(b => activeStatuses.includes(b.status));
+  const completedBookings = bookings.filter(b => b.status === 'completed' || b.status === 'declined');
   const totalEarnings = bookings.reduce((sum, b) => sum + (b.totalPrice || 0), 0);
 
   // Compute monthly earnings
@@ -180,6 +194,7 @@ export default function GuideDashboard() {
                           </Link>
                         </div>
                       </div>
+                      <SessionTracker booking={booking} role="guide" />
                     </div>
                   </ScrollReveal>
                 ))}

@@ -1,13 +1,14 @@
 import { Link } from 'react-router-dom';
 import { Heart, Calendar, Star, MessageSquare, Settings, ChevronRight, MapPin, CheckCircle2, CreditCard, AlertCircle, Mail } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import { collection, query, where, getDocs } from 'firebase/firestore';
+import { collection, query, where, getDocs, onSnapshot } from 'firebase/firestore';
 import { sendEmailVerification } from 'firebase/auth';
 import { db, auth } from '../config/firebase';
 import { useAuth } from '../context/AuthContext';
 import StarRating from '../components/common/StarRating';
 import ScrollReveal from '../components/common/ScrollReveal';
 import { useUnreadCount } from '../hooks/useUnreadCount';
+import SessionTracker from '../components/dashboard/SessionTracker';
 
 export default function VisitorDashboard() {
   const { user } = useAuth();
@@ -20,18 +21,25 @@ export default function VisitorDashboard() {
       setLoading(false);
       return;
     }
+    let unsubscribeBookings;
+    
     const fetchBookings = async () => {
       try {
         const q = query(collection(db, 'bookings'), where('visitorId', '==', user.uid));
-        const snap = await getDocs(q);
-        setBookings(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+        unsubscribeBookings = onSnapshot(q, (snap) => {
+          setBookings(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+          setLoading(false);
+        });
       } catch (err) {
         console.error("Error fetching bookings:", err);
-      } finally {
         setLoading(false);
       }
     };
     fetchBookings();
+    
+    return () => {
+      if (unsubscribeBookings) unsubscribeBookings();
+    };
   }, [user]);
 
   const savedGuides = []; // Empty for now until saved guides feature is implemented
@@ -161,6 +169,7 @@ export default function VisitorDashboard() {
                         </span>
                         <span className="text-gold font-heading font-bold">${booking.totalPrice}</span>
                       </div>
+                      <SessionTracker booking={booking} role="visitor" />
                     </div>
                   </ScrollReveal>
                 ))}
