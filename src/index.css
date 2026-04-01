@@ -128,3 +128,12 @@
     scrollbar-width: none;
   }
 }
+
+/* Native Zendesk Launcher Suppression */
+/* Ensures Zendesk's default widget button cannot render and overlap our UI */
+iframe#launcher {
+  display: none !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  visibility: hidden !important;
+}

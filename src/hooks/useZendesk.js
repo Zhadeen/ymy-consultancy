@@ -19,10 +19,18 @@ export function useZendesk() {
     script.src = `https://static.zdassets.com/ekr/snippet.js?key=${zendeskKey}`;
     script.async = true;
     
-    // Hide the native Zendesk launcher bubble if you want to use the custom FloatingContact button
+    // Hide the native Zendesk launcher bubble so it doesn't overlap with our custom FloatingContact
     script.onload = () => {
       if (window.zE) {
-        window.zE('webWidget', 'hide');
+        // Aggressively hide the launcher during the 3-second async boot window
+        let attempts = 0;
+        const hideInterval = setInterval(() => {
+          if (window.zE) window.zE('webWidget', 'hide');
+          attempts++;
+          if (attempts > 30) clearInterval(hideInterval); // Stop after 3 seconds
+        }, 100);
+
+        // Ensure when the user closes the chat, the launcher is explicitly hidden again
         window.zE('webWidget:on', 'close', () => {
           window.zE('webWidget', 'hide');
         });
