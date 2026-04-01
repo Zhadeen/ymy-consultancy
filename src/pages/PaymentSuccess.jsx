@@ -3,6 +3,8 @@ import { useSearchParams, Link } from 'react-router-dom';
 import { CheckCircle2, Copy, Mail, Phone, ArrowRight, Loader2 } from 'lucide-react';
 import { useBooking } from '../context/BookingContext';
 import ScrollReveal from '../components/common/ScrollReveal';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '../config/firebase';
 
 export default function PaymentSuccess() {
   const [searchParams] = useSearchParams();
@@ -11,6 +13,7 @@ export default function PaymentSuccess() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [copied, setCopied] = useState(false);
+  const [guideContact, setGuideContact] = useState({ email: 'Loading...', phone: 'Loading...' });
   const savingRef = useRef(false);
 
   useEffect(() => {
@@ -45,6 +48,26 @@ export default function PaymentSuccess() {
       setTimeout(() => setCopied(false), 2000);
     }
   };
+
+  useEffect(() => {
+    if (confirmed?.guideId) {
+      const fetchContact = async () => {
+        try {
+          const guideDoc = await getDoc(doc(db, 'guides', confirmed.guideId));
+          if (guideDoc.exists()) {
+            setGuideContact({
+              email: guideDoc.data().email || 'Contact unavailable',
+              phone: guideDoc.data().phone || 'Contact unavailable'
+            });
+          }
+        } catch (err) {
+          console.error("Failed to load guide contact:", err);
+          setGuideContact({ email: 'Error loading contact', phone: 'Error loading contact' });
+        }
+      };
+      fetchContact();
+    }
+  }, [confirmed]);
 
   if (loading) {
     return (
@@ -152,16 +175,16 @@ export default function PaymentSuccess() {
                 <p className="text-gold text-xs font-bold uppercase tracking-widest mb-3">📍 Local Guide Contact</p>
                 <div className="space-y-2">
                   <div className="flex items-center gap-3 text-cream text-sm">
-                    <div className="w-8 h-8 rounded-full bg-dark-500 flex items-center justify-center text-gold">
+                    <div className="w-8 h-8 rounded-full bg-dark-500 flex items-center justify-center text-gold min-w-8">
                       <Mail size={14} />
                     </div>
-                    <span>{confirmed.visitorEmail}</span>
+                    <span className="truncate">{guideContact.email}</span>
                   </div>
                   <div className="flex items-center gap-3 text-cream text-sm">
-                    <div className="w-8 h-8 rounded-full bg-dark-500 flex items-center justify-center text-gold">
+                    <div className="w-8 h-8 rounded-full bg-dark-500 flex items-center justify-center text-gold min-w-8">
                       <Phone size={14} />
                     </div>
-                    <span>+33 6 12 34 56 78</span>
+                    <span className="truncate">{guideContact.phone}</span>
                   </div>
                 </div>
               </div>
