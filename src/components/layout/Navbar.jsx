@@ -62,14 +62,14 @@ export default function Navbar() {
             </Link>
 
             {/* Desktop Nav */}
-            <div className="hidden md:flex items-center gap-10">
+            <div className="hidden md:flex items-center gap-8">
               {navLinks.map(link => (
                 <Link
                   key={link.to}
                   to={link.to}
-                  className={`relative px-4 py-2 text-sm tracking-wide font-medium transition-all duration-300 group rounded-full active:scale-95 hover:bg-gold/5 ${
-                    isActive(link.to) ? 'text-gold bg-gold/10' : 'text-cream/90 hover:text-gold'
-                  }`}
+                  className={`nav-item text-sm font-medium ${
+                    isActive(link.to) ? 'nav-item-active' : 'text-cream/80'
+                  } ${link.label === 'Become a Guide' ? 'border border-gold/20 hover:border-gold/50' : ''}`}
                 >
                   {link.label}
                 </Link>
@@ -77,8 +77,8 @@ export default function Navbar() {
               {user?.role === 'admin' && (
                 <Link
                   to="/admin"
-                  className={`text-sm font-bold tracking-wide transition-all duration-300 hover:text-gold active:scale-95 px-4 py-2 rounded-full hover:bg-gold/5 ${
-                    isActive('/admin') ? 'text-gold bg-gold/10' : 'text-cream/90'
+                  className={`text-sm font-bold tracking-wide transition-colors duration-300 hover:text-gold ${
+                    isActive('/admin') ? 'text-gold' : 'text-cream/90'
                   }`}
                 >
                   Admin
@@ -98,7 +98,7 @@ export default function Navbar() {
                   </button>
                 </div>
               ) : (
-                <Link to="/login" className="text-sm font-medium tracking-wide text-cream/90 hover:text-gold transition-all duration-300 px-4 py-2 hover:bg-gold/10 rounded-full active:scale-95">
+                <Link to="/login" className="nav-item text-sm text-cream/80">
                   Sign In
                 </Link>
               )}
