@@ -113,7 +113,16 @@ export default function FloatingContact() {
 
       {/* Main Floating Button */}
       <button
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => {
+          setIsOpen(!isOpen);
+          // If they click the golden button, force Zendesk to hide instantly
+          if (window.zE) {
+            try { window.zE('messenger', 'close'); } catch(e) {}
+            try { window.zE('webWidget', 'close'); } catch(e) {}
+            try { window.zE('messenger', 'hide'); } catch(e) {}
+            try { window.zE('webWidget', 'hide'); } catch(e) {}
+          }
+        }}
         className={`relative w-16 h-16 rounded-3xl flex items-center justify-center shadow-2xl transition-all duration-500 overflow-hidden group ${
           isOpen 
             ? 'bg-dark-800 border border-gold/50 rotate-90' 
