@@ -9,12 +9,14 @@ import StarRating from '../components/common/StarRating';
 import ScrollReveal from '../components/common/ScrollReveal';
 import { useUnreadCount } from '../hooks/useUnreadCount';
 import SessionTracker from '../components/dashboard/SessionTracker';
+import ReviewModal from '../components/dashboard/ReviewModal';
 
 export default function VisitorDashboard() {
   const { user } = useAuth();
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const unreadCount = useUnreadCount();
+  const [reviewBookingTarget, setReviewBookingTarget] = useState(null);
 
   useEffect(() => {
     if (!user) {
@@ -192,7 +194,11 @@ export default function VisitorDashboard() {
                           <span className="text-gold font-heading font-bold">${booking.totalPrice}</span>
                         </div>
                       </div>
-                      <SessionTracker booking={booking} role="visitor" />
+                      <SessionTracker 
+                        booking={booking} 
+                        role="visitor" 
+                        onReviewClick={(b) => setReviewBookingTarget(b)} 
+                      />
                     </div>
                   </ScrollReveal>
                 ))}
@@ -250,6 +256,14 @@ export default function VisitorDashboard() {
           </div>
         </div>
       </div>
+
+      <ReviewModal 
+        isOpen={!!reviewBookingTarget}
+        close={() => setReviewBookingTarget(null)}
+        booking={reviewBookingTarget}
+        reviewerRole="visitor"
+        reviewer={user}
+      />
     </main>
   );
 }

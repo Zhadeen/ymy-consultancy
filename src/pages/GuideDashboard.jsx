@@ -7,6 +7,7 @@ import ScrollReveal from '../components/common/ScrollReveal';
 import { MapPin, Edit3, DollarSign, Calendar, Star, Users, Clock, MessageSquare, Settings, TrendingUp, ChevronRight, CheckCircle2, AlertCircle } from 'lucide-react';
 import { useUnreadCount } from '../hooks/useUnreadCount';
 import SessionTracker from '../components/dashboard/SessionTracker';
+import ReviewModal from '../components/dashboard/ReviewModal';
 
 export default function GuideDashboard() {
   const { user } = useAuth();
@@ -14,6 +15,7 @@ export default function GuideDashboard() {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('upcoming');
+  const [reviewBookingTarget, setReviewBookingTarget] = useState(null);
   const unreadCount = useUnreadCount();
 
   useEffect(() => {
@@ -193,7 +195,11 @@ export default function GuideDashboard() {
                           </Link>
                         </div>
                       </div>
-                      <SessionTracker booking={booking} role="guide" />
+                      <SessionTracker 
+                        booking={booking} 
+                        role="guide" 
+                        onReviewClick={(b) => setReviewBookingTarget(b)}
+                      />
                     </div>
                   </ScrollReveal>
                 ))}
@@ -258,6 +264,14 @@ export default function GuideDashboard() {
           </div>
         </div>
       </div>
+
+      <ReviewModal 
+        isOpen={!!reviewBookingTarget}
+        close={() => setReviewBookingTarget(null)}
+        booking={reviewBookingTarget}
+        reviewerRole="guide"
+        reviewer={user}
+      />
     </main>
   );
 }

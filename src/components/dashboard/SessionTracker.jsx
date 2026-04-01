@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { doc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../../config/firebase';
-import { CheckCircle2, XCircle, MapPin, PlayCircle, Flag, CreditCard, Clock, Loader2 } from 'lucide-react';
+import { CheckCircle2, XCircle, MapPin, PlayCircle, Flag, CreditCard, Clock, Loader2, Star } from 'lucide-react';
 
-export default function SessionTracker({ booking, role }) {
+export default function SessionTracker({ booking, role, onReviewClick }) {
   const [loading, setLoading] = useState(false);
 
   // Guide actions
@@ -112,10 +112,23 @@ export default function SessionTracker({ booking, role }) {
           </div>
         );
       case 'completed':
+        if (!booking.guideReviewed) {
+          return (
+            <div className="flex flex-col gap-3 mt-4 pt-4 border-t border-dark-600">
+              <div className="flex items-center justify-center gap-2 text-green-500 mb-1">
+                <CheckCircle2 size={16} />
+                <span className="text-sm font-bold uppercase tracking-wider">Session Complete</span>
+              </div>
+              <button onClick={() => onReviewClick?.(booking)} className="btn-gold w-full !py-2 text-sm flex items-center justify-center gap-2">
+                <Star size={16} className="fill-current" /> Rate Your Guest
+              </button>
+            </div>
+          );
+        }
         return (
           <div className="flex items-center justify-center gap-2 mt-4 pt-4 border-t border-dark-600 text-muted">
             <CheckCircle2 size={16} className="text-green-500" />
-            <span className="text-sm">Session Complete</span>
+            <span className="text-sm">Session Complete & Reviewed</span>
           </div>
         );
       case 'declined':
@@ -188,10 +201,23 @@ export default function SessionTracker({ booking, role }) {
           </div>
         );
       case 'completed':
+        if (!booking.visitorReviewed) {
+          return (
+            <div className="flex flex-col gap-3 mt-4 pt-4 border-t border-dark-600 bg-dark-600 -mx-5 -mb-5 p-5 rounded-b-2xl">
+              <div className="flex items-center justify-center gap-2 text-green-500 mb-1">
+                <CheckCircle2 size={16} />
+                <span className="text-sm font-bold uppercase tracking-wider">Session Successfully Completed</span>
+              </div>
+              <button onClick={() => onReviewClick?.(booking)} className="btn-gold w-full !py-2 text-sm flex items-center justify-center gap-2">
+                <Star size={16} className="fill-current" /> Rate Your Guide
+              </button>
+            </div>
+          );
+        }
         return (
           <div className="flex items-center justify-center gap-2 mt-4 pt-4 border-t border-dark-600 text-muted bg-dark-600 -mx-5 -mb-5 p-4 rounded-b-2xl">
             <CheckCircle2 size={16} className="text-green-500" />
-            <span className="text-sm">Session Successfully Completed</span>
+            <span className="text-sm">Session Complete & Reviewed</span>
           </div>
         );
       case 'declined':
