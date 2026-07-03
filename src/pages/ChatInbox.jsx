@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { collection, query, where, orderBy, onSnapshot } from 'firebase/firestore';
-import { db } from '../config/firebase';
+import { subscribeToUserChatsOrdered } from '../infrastructure/firebase/repositories/messagesRepository';
 import { useAuth } from '../context/AuthContext';
 import { ChevronLeft, MessageSquare } from 'lucide-react';
 import ScrollReveal from '../components/common/ScrollReveal';
@@ -18,20 +17,13 @@ export default function ChatInbox() {
       return;
     }
 
-    const q = query(
-      collection(db, 'chats'),
-      where('participants', 'array-contains', user.uid),
-      orderBy('updatedAt', 'desc')
-    );
-
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const activeChats = snapshot.docs.map(doc => {
-        const data = doc.data();
+    const unsubscribe = subscribeToUserChatsOrdered(user.uid, (chats) => {
+      const activeChats = chats.map(data => {
         const peerId = data.participants.find(id => id !== user.uid) || data.participants[0];
         const peerData = data[peerId] || { name: 'Unknown', photo: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200' };
 
         return {
-          id: doc.id,
+          id: data.id,
           peerId,
           peerName: peerData.name,
           peerPhoto: peerData.photo,

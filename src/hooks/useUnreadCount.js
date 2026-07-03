@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
-import { collection, query, where, onSnapshot } from 'firebase/firestore';
-import { db } from '../config/firebase';
 import { useAuth } from '../context/AuthContext';
+import { subscribeToUserChats } from '../infrastructure/firebase/repositories/messagesRepository';
 
 export function useUnreadCount() {
   const { user } = useAuth();
@@ -13,15 +12,9 @@ export function useUnreadCount() {
       return;
     }
 
-    const q = query(
-      collection(db, 'chats'),
-      where('participants', 'array-contains', user.uid)
-    );
-
-    const unsubscribe = onSnapshot(q, (snapshot) => {
+    const unsubscribe = subscribeToUserChats(user.uid, (chats) => {
       let count = 0;
-      snapshot.docs.forEach(doc => {
-        const data = doc.data();
+      chats.forEach(data => {
         if (data.unreadCount && data.unreadCount[user.uid]) {
           count += data.unreadCount[user.uid];
         }

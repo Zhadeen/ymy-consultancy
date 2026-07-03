@@ -1,18 +1,8 @@
 import { createContext, useContext, useState, useEffect } from 'react';
-import { 
-  createUserWithEmailAndPassword, 
-  signInWithEmailAndPassword, 
-  signOut, 
-  onAuthStateChanged,
-  updateProfile,
-  signInWithPopup,
-  GoogleAuthProvider,
-  sendPasswordResetEmail,
-  sendEmailVerification
-} from 'firebase/auth';
-import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
-import { auth, db } from '../config/firebase';
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth } from '../config/firebase';
 import LoadingSpinner from '../components/common/LoadingSpinner';
+import * as authService from '../application/services/authService';
 
 const AuthContext = createContext(null);
 
@@ -26,27 +16,10 @@ export function AuthProvider({ children }) {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       try {
         if (firebaseUser) {
-          // Fetch custom user doc from Firestore
-          const docRef = doc(db, 'users', firebaseUser.uid);
-          const docSnap = await getDoc(docRef);
-          
-          let role = 'visitor';
-          if (docSnap.exists()) {
-            role = docSnap.data().role;
-          }
-          
-          setUser({
-            uid: firebaseUser.uid,
-            name: docSnap.exists() ? (docSnap.data().name || firebaseUser.displayName || 'Traveler') : (firebaseUser.displayName || 'Traveler'),
-            email: firebaseUser.email,
-            photo: docSnap.exists() ? (docSnap.data().photo || firebaseUser.photoURL || null) : (firebaseUser.photoURL || null),
-            role: role,
-            emailVerified: firebaseUser.emailVerified,
-            isSubscribed: docSnap.exists() ? !!docSnap.data().isSubscribed : false,
-            createdAt: docSnap.exists() ? docSnap.data().createdAt : null
-          });
-          setIsGuide(role === 'guide');
-          setIsAdmin(role === 'admin');
+          const appUser = await authService.resolveAppUser(firebaseUser);
+          setUser(appUser);
+          setIsGuide(appUser.role === 'guide');
+          setIsAdmin(appUser.role === 'admin');
         } else {
           setUser(null);
           setIsGuide(false);
@@ -63,53 +36,23 @@ export function AuthProvider({ children }) {
   }, []);
 
   const login = async (email, password) => {
-    return signInWithEmailAndPassword(auth, email, password);
+    return authService.login(email, password);
   };
 
   const loginWithGoogle = async () => {
-    const provider = new GoogleAuthProvider();
-    const result = await signInWithPopup(auth, provider);
-    
-    // Check if user doc exists, if not create base tourist
-    const docRef = doc(db, 'users', result.user.uid);
-    const docSnap = await getDoc(docRef);
-    if (!docSnap.exists()) {
-      await setDoc(docRef, {
-        name: result.user.displayName || 'Traveler',
-        email: result.user.email,
-        role: 'visitor',
-        createdAt: serverTimestamp()
-      });
-    }
-    return result;
+    return authService.loginWithGoogle();
   };
 
   const register = async (name, email, password, role = 'visitor') => {
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    
-    await updateProfile(userCredential.user, {
-      displayName: name
-    });
-
-    // Send email verification
-    await sendEmailVerification(userCredential.user);
-
-    await setDoc(doc(db, 'users', userCredential.user.uid), {
-      name,
-      email,
-      role,
-      createdAt: serverTimestamp()
-    });
-
-    return userCredential;
+    return authService.register(name, email, password, role);
   };
 
   const resetPassword = async (email) => {
-    return sendPasswordResetEmail(auth, email);
+    return authService.resetPassword(email);
   };
 
   const logout = async () => {
-    return signOut(auth);
+    return authService.logout();
   };
 
   const updateUserLocal = (newData) => {

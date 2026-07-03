@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { doc, updateDoc, serverTimestamp } from 'firebase/firestore';
-import { db } from '../../config/firebase';
+import { serverTimestamp } from 'firebase/firestore';
+import { updateBooking } from '../../infrastructure/firebase/repositories/bookingsRepository';
 import { CheckCircle2, XCircle, MapPin, PlayCircle, Flag, CreditCard, Clock, Loader2, Star } from 'lucide-react';
 
 export default function SessionTracker({ booking, role, onReviewClick }) {
@@ -16,7 +16,7 @@ export default function SessionTracker({ booking, role, onReviewClick }) {
   const advanceState = async (newStatus) => {
     setLoading(true);
     try {
-      await updateDoc(doc(db, 'bookings', booking.id), { 
+      await updateBooking(booking.id, {
         status: newStatus,
         updatedAt: serverTimestamp()
       });

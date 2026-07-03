@@ -3,6 +3,7 @@ import { CreditCard, CheckCircle2, Zap, ArrowRight, ShieldCheck, MessageSquare, 
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import ScrollReveal from '../components/common/ScrollReveal';
+import { PLATFORM_FEE_PERCENT } from '../domain/constants/fees';
 
 export default function VisitorPricingPage() {
   const { user } = useAuth();
@@ -45,7 +46,7 @@ export default function VisitorPricingPage() {
             { 
               icon: Star, 
               title: 'Transparent Pricing', 
-              desc: 'No hidden fees. A standard 15% platform fee is already included in the displayed price.' 
+              desc: `No hidden fees. A standard ${PLATFORM_FEE_PERCENT}% platform fee is already included in the displayed price.`
             }
           ].map((item, i) => (
             <ScrollReveal key={i} delay={i * 100}>

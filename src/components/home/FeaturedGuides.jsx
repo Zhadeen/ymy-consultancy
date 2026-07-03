@@ -1,8 +1,7 @@
 import { useRef, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, MapPin, Languages, BadgeCheck } from 'lucide-react';
-import { query, collection, limit, getDocs } from 'firebase/firestore';
-import { db } from '../../config/firebase';
+import { getFeaturedGuides } from '../../infrastructure/firebase/repositories/guidesRepository';
 import StarRating from '../common/StarRating';
 import ScrollReveal from '../common/ScrollReveal';
 
@@ -21,9 +20,8 @@ export default function FeaturedGuides() {
   useEffect(() => {
     const fetchFeatured = async () => {
       try {
-        const q = query(collection(db, 'guides'), limit(8));
-        const snap = await getDocs(q);
-        setGuides(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+        const guides = await getFeaturedGuides(8);
+        setGuides(guides);
       } catch (err) {
         console.error("Error fetching featured guides:", err);
       } finally {

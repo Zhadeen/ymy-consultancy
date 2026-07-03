@@ -1,9 +1,10 @@
 import { useState, useRef, useEffect } from 'react';
 import { Send, Paperclip, Check, CheckCheck, ChevronLeft, Image as ImageIcon } from 'lucide-react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
-import { collection, doc, query, orderBy, onSnapshot, addDoc, serverTimestamp, getDoc, setDoc, increment } from 'firebase/firestore';
-import { db } from '../config/firebase';
+import { serverTimestamp, increment } from 'firebase/firestore';
 import { useAuth } from '../context/AuthContext';
+import { getChatById, subscribeToMessages, addMessage, upsertChatMeta } from '../infrastructure/firebase/repositories/messagesRepository';
+import { getUserById } from '../infrastructure/firebase/repositories/usersRepository';
 
 export default function ChatPage() {
   const { guideId } = useParams();
@@ -28,23 +29,20 @@ export default function ChatPage() {
     const fetchPeerInfo = async () => {
       try {
         // Try to fetch existing chat document which has peer info
-        const chatDocRef = doc(db, 'chats', chatId);
-        const chatSnap = await getDoc(chatDocRef);
-        
-        if (chatSnap.exists()) {
-          const data = chatSnap.data();
-          const peerData = data[guideId];
+        const chatData = await getChatById(chatId);
+
+        if (chatData) {
+          const peerData = chatData[guideId];
           if (peerData) {
             setGuide({ id: guideId, name: peerData.name, photo: peerData.photo, city: peerData.city || 'YMY Platform' });
             return;
           }
         }
-        
+
         // Fallback: If no chat doc exists yet (first message scenario), try users collection
-        const userDocRef = doc(db, 'users', guideId);
-        const userSnap = await getDoc(userDocRef);
-        if (userSnap.exists()) {
-          setGuide({ id: userSnap.id, ...userSnap.data() });
+        const userData = await getUserById(guideId);
+        if (userData) {
+          setGuide(userData);
         } else {
           // Absolute fallback if it's a new chat between a Local Guide and Visitor (where visitor is the guideId param)
           setGuide({ id: guideId, name: 'Traveler', photo: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200', city: 'Guest' });
@@ -58,26 +56,21 @@ export default function ChatPage() {
     fetchPeerInfo();
 
     // Listen to messages
-    const q = query(
-      collection(db, 'chats', chatId, 'messages'),
-      orderBy('timestamp', 'asc')
-    );
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const msgs = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data(),
+    const unsubscribe = subscribeToMessages(chatId, (rawMsgs) => {
+      const msgs = rawMsgs.map(m => ({
+        ...m,
         // Handle serverTimestamp pending state
-        timestamp: doc.data().timestamp ? doc.data().timestamp.toDate().toISOString() : new Date().toISOString()
+        timestamp: m.timestamp ? m.timestamp.toDate().toISOString() : new Date().toISOString()
       }));
       setMessages(msgs);
 
       // Reset unread count for the current user when actively viewing this chat
       if (chatId && user) {
-        setDoc(doc(db, 'chats', chatId), {
+        upsertChatMeta(chatId, {
           unreadCount: {
             [user.uid]: 0
           }
-        }, { merge: true }).catch(err => console.error("Error resetting unread count:", err));
+        }).catch(err => console.error("Error resetting unread count:", err));
       }
     });
 
@@ -89,14 +82,14 @@ export default function ChatPage() {
     const textToSend = input;
     setInput('');
     try {
-      await addDoc(collection(db, 'chats', chatId, 'messages'), {
+      await addMessage(chatId, {
         text: textToSend,
         senderId: user.uid,
         timestamp: serverTimestamp(),
         read: false,
       });
 
-      await setDoc(doc(db, 'chats', chatId), {
+      await upsertChatMeta(chatId, {
         participants: [user.uid, guideId],
         lastMessage: textToSend,
         updatedAt: serverTimestamp(),
@@ -105,7 +98,7 @@ export default function ChatPage() {
         },
         [user.uid]: { name: user.name || 'Visitor', photo: user.photo || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200' },
         [guideId]: { name: guide.name, photo: guide.photo }
-      }, { merge: true });
+      });
 
     } catch (err) {
       console.error("Error sending message:", err);

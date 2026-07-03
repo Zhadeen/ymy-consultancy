@@ -1,6 +1,8 @@
-import Stripe from 'stripe';
+import { getStripeClient } from './lib/stripeClient.js';
+import { resolveOrigin } from './lib/validation.js';
+import { calculatePlatformFee } from './lib/fees.js';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY.trim());
+const stripe = getStripeClient();
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -15,10 +17,10 @@ export default async function handler(req, res) {
   }
 
   try {
-    const origin = req.headers.origin || 'https://www.ymycons.com';
+    const origin = resolveOrigin(req);
 
     // Calculate the 15% platform fee
-    const platformFee = Math.round(totalPrice * 0.15 * 100); // In cents
+    const platformFee = Math.round(calculatePlatformFee(totalPrice) * 100); // In cents
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],

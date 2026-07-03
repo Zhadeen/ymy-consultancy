@@ -3,8 +3,7 @@ import { useSearchParams, Link } from 'react-router-dom';
 import { CheckCircle2, Copy, Mail, Phone, ArrowRight, Loader2 } from 'lucide-react';
 import { useBooking } from '../context/BookingContext';
 import ScrollReveal from '../components/common/ScrollReveal';
-import { doc, getDoc } from 'firebase/firestore';
-import { db } from '../config/firebase';
+import { getGuideById } from '../infrastructure/firebase/repositories/guidesRepository';
 
 export default function PaymentSuccess() {
   const [searchParams] = useSearchParams();
@@ -53,11 +52,11 @@ export default function PaymentSuccess() {
     if (confirmed?.guideId) {
       const fetchContact = async () => {
         try {
-          const guideDoc = await getDoc(doc(db, 'guides', confirmed.guideId));
-          if (guideDoc.exists()) {
+          const guideData = await getGuideById(confirmed.guideId);
+          if (guideData) {
             setGuideContact({
-              email: guideDoc.data().email || 'Contact unavailable',
-              phone: guideDoc.data().phone || 'Contact unavailable'
+              email: guideData.email || 'Contact unavailable',
+              phone: guideData.phone || 'Contact unavailable'
             });
           }
         } catch (err) {

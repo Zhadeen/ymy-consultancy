@@ -1,6 +1,7 @@
-import Stripe from 'stripe';
+import { getStripeClient } from './lib/stripeClient.js';
+import { resolveOrigin } from './lib/validation.js';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY.trim());
+const stripe = getStripeClient();
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -14,7 +15,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const origin = req.headers.origin || 'https://www.ymycons.com';
+    const origin = resolveOrigin(req);
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],

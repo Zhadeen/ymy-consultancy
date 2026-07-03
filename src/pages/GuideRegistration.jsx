@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Mail, Lock, User, Camera, FileText, DollarSign, ChevronRight, ChevronLeft, Globe, CheckCircle2 } from 'lucide-react';
-import { collection, doc, setDoc, serverTimestamp } from 'firebase/firestore';
-import { auth, db } from '../config/firebase';
+import { serverTimestamp } from 'firebase/firestore';
+import { createApplication } from '../infrastructure/firebase/repositories/guideApplicationsRepository';
 import { LANGUAGES, COUNTRIES, CITIES_BY_COUNTRY } from '../data/mockData';
 import ScrollReveal from '../components/common/ScrollReveal';
 import { useAuth } from '../context/AuthContext';
@@ -138,7 +138,7 @@ export default function GuideRegistration() {
       setStatusText('Finalizing application...');
 
       // Save application details to 'guide_applications' collection
-      await setDoc(doc(db, 'guide_applications', uid), {
+      await createApplication(uid, {
         uid,
         name: `${form.firstName} ${form.lastName}`,
         email: form.email,

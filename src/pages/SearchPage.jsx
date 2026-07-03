@@ -1,11 +1,10 @@
 import { useState, useMemo, useEffect } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
-import { MapPin, Languages, Filter, X, ChevronDown, SlidersHorizontal, BadgeCheck, Star } from 'lucide-react';
-import { CITIES, LANGUAGES, COUNTRIES, CITIES_BY_COUNTRY } from '../data/mockData';
-import { collection, getDocs } from 'firebase/firestore';
-import { db } from '../config/firebase';
-import StarRating from '../components/common/StarRating';
-import ScrollReveal from '../components/common/ScrollReveal';
+import { useSearchParams } from 'react-router-dom';
+import { SlidersHorizontal } from 'lucide-react';
+import { getAllGuides } from '../infrastructure/firebase/repositories/guidesRepository';
+import FilterSidebar from './search/FilterSidebar';
+import MobileFilterModal from './search/MobileFilterModal';
+import GuideGrid from './search/GuideGrid';
 
 export default function SearchPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -29,11 +28,7 @@ export default function SearchPage() {
   useEffect(() => {
     const fetchGuides = async () => {
       try {
-        const querySnapshot = await getDocs(collection(db, 'guides'));
-        const guidesData = querySnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        }));
+        const guidesData = await getAllGuides();
         setAllGuides(guidesData);
       } catch (err) {
         console.error('Error fetching guides:', err);
@@ -89,91 +84,15 @@ export default function SearchPage() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex gap-8">
-          {/* Sidebar Filters — Desktop */}
-          <aside className="hidden lg:block w-72 flex-shrink-0">
-            <div className="sticky top-28 space-y-6">
-              <div className="flex items-center justify-between">
-                <h3 className="font-heading text-lg font-semibold text-cream">Filters</h3>
-                {activeFilterCount > 0 && (
-                  <button onClick={clearFilters} className="text-xs text-gold hover:underline">
-                    Clear all
-                  </button>
-                )}
-              </div>
-
-              {/* Country */}
-              <div>
-                <label className="text-sm font-medium text-cream mb-2 block">Country</label>
-                <select value={country} onChange={e => { setCountry(e.target.value); setCity(''); }} className="input-dark text-sm" id="filter-country">
-                  <option value="">All Countries</option>
-                  {COUNTRIES.map(c => <option key={c.code} value={c.name}>{c.flag} {c.name}</option>)}
-                </select>
-              </div>
-
-              {/* City */}
-              <div>
-                <label className="text-sm font-medium text-cream mb-2 block">City</label>
-                <input 
-                  type="text" 
-                  placeholder="Type a city..." 
-                  value={city} 
-                  onChange={e => setCity(e.target.value)} 
-                  className="input-dark text-sm" 
-                  id="filter-city" 
-                />
-              </div>
-
-              {/* Language */}
-              <div>
-                <label className="text-sm font-medium text-cream mb-2 block">Language</label>
-                <select value={language} onChange={e => setLanguage(e.target.value)} className="input-dark text-sm" id="filter-language">
-                  <option value="">All Languages</option>
-                  {LANGUAGES.map(l => <option key={l} value={l}>{l}</option>)}
-                </select>
-              </div>
-
-              {/* Price Range */}
-              <div>
-                <label className="text-sm font-medium text-cream mb-2 block">
-                  Max Price: <span className="text-gold">${maxPrice}/day</span>
-                </label>
-                <input
-                  type="range"
-                  min={50}
-                  max={300}
-                  step={10}
-                  value={maxPrice}
-                  onChange={e => setMaxPrice(Number(e.target.value))}
-                  className="w-full accent-gold"
-                  id="filter-price"
-                />
-                <div className="flex justify-between text-xs text-muted-dark mt-1">
-                  <span>$50</span>
-                  <span>$300</span>
-                </div>
-              </div>
-
-              {/* Rating */}
-              <div>
-                <label className="text-sm font-medium text-cream mb-2 block">Minimum Rating</label>
-                <div className="flex gap-2">
-                  {[0, 4, 4.5, 4.8].map(r => (
-                    <button
-                      key={r}
-                      onClick={() => setMinRating(r)}
-                      className={`px-3 py-2 rounded-btn text-xs border transition-all duration-300 ${
-                        minRating === r
-                          ? 'border-gold bg-gold-100 text-gold'
-                          : 'border-dark-500 text-muted hover:border-gold-200'
-                      }`}
-                    >
-                      {r === 0 ? 'Any' : `${r}+`}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </aside>
+          <FilterSidebar
+            country={country} setCountry={setCountry}
+            city={city} setCity={setCity}
+            language={language} setLanguage={setLanguage}
+            maxPrice={maxPrice} setMaxPrice={setMaxPrice}
+            minRating={minRating} setMinRating={setMinRating}
+            activeFilterCount={activeFilterCount}
+            onClear={clearFilters}
+          />
 
           {/* Main Content */}
           <div className="flex-1 min-w-0">
@@ -208,143 +127,22 @@ export default function SearchPage() {
               </div>
             </div>
 
-            {/* Guide Grid */}
-            {loading ? (
-              <div className="flex justify-center items-center py-20">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gold"></div>
-              </div>
-            ) : filteredGuides.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
-                {filteredGuides.map((guide, i) => (
-                  <ScrollReveal key={guide.id} delay={i * 60}>
-                    <Link to={`/guide/${guide.id}`} className="block group h-full">
-                      <div className="card-dark overflow-hidden h-full flex flex-col">
-                        <div className="relative h-52 overflow-hidden">
-                          <img
-                            src={guide.photo}
-                            alt={guide.name}
-                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-t from-dark-700 via-transparent to-transparent" />
-                          {guide.idVerified && (
-                            <div className="absolute top-3 right-3 bg-dark-800/80 backdrop-blur rounded-full px-2.5 py-1 flex items-center gap-1 border border-gold/30">
-                              <BadgeCheck size={12} className="text-gold" />
-                              <span className="text-[10px] text-cream font-medium">ID Verified</span>
-                            </div>
-                          )}
-                          <div className="absolute bottom-3 left-3">
-                            <span className="bg-green-500/90 text-white text-[10px] font-semibold px-2 py-1 rounded-full uppercase tracking-wider">
-                              Available
-                            </span>
-                          </div>
-                          <div className="absolute bottom-3 right-3 bg-gold rounded-lg px-2.5 py-1">
-                            <span className="text-dark-900 text-sm font-bold">${guide.priceFullDay}</span>
-                            <span className="text-dark-900/70 text-[10px]">/day</span>
-                          </div>
-                        </div>
-
-                        <div className="p-5 flex-1 flex flex-col">
-                          <h3 className="font-heading text-lg font-semibold text-cream group-hover:text-gold transition-colors duration-300">
-                            {guide.name}
-                          </h3>
-                          <div className="flex items-center gap-1.5 text-muted text-sm mt-1">
-                            <MapPin size={14} />
-                            <span>{guide.country}, {guide.city}</span>
-                          </div>
-
-                          <div className="flex items-center gap-3 mt-3">
-                            <StarRating rating={guide.rating} size={13} />
-                            <span className="text-muted-dark text-xs">({guide.reviewCount})</span>
-                          </div>
-
-                          <div className="flex items-center gap-1.5 text-muted-dark text-xs mt-3">
-                            <Languages size={12} />
-                            <span>{(guide.languages || []).join(' · ')}</span>
-                          </div>
-
-                          <div className="mt-auto pt-4">
-                            <span className="btn-gold w-full block text-center text-sm !py-2.5">
-                              View Profile
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    </Link>
-                  </ScrollReveal>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-20">
-                <div className="text-6xl mb-4">🔍</div>
-                <h3 className="font-heading text-2xl text-cream mb-2">No Local Guides found</h3>
-                <p className="text-muted mb-6">Try adjusting your filters to see more results.</p>
-                <div className="flex flex-col gap-3 max-w-xs mx-auto">
-                   <button onClick={clearFilters} className="btn-gold">Clear All Filters</button>
-                </div>
-              </div>
-            )}
+            <GuideGrid loading={loading} guides={filteredGuides} onClearFilters={clearFilters} />
           </div>
         </div>
       </div>
 
-      {/* Mobile Filter Modal */}
-      {showFilters && (
-        <div className="fixed inset-0 z-50 lg:hidden">
-          <div className="absolute inset-0 bg-black/60" onClick={() => setShowFilters(false)} />
-          <div className="absolute bottom-0 left-0 right-0 bg-dark-800 rounded-t-3xl p-6 max-h-[80vh] overflow-y-auto animate-slide-up">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="font-heading text-xl font-semibold text-cream">Filters</h3>
-              <button onClick={() => setShowFilters(false)} className="text-muted hover:text-cream">
-                <X size={24} />
-              </button>
-            </div>
-            <div className="space-y-6">
-              <div>
-                <label className="text-sm font-medium text-cream mb-2 block">Country</label>
-                <select value={country} onChange={e => { setCountry(e.target.value); setCity(''); }} className="input-dark text-sm">
-                  <option value="">All Countries</option>
-                  {COUNTRIES.map(c => <option key={c.code} value={c.name}>{c.flag} {c.name}</option>)}
-                </select>
-              </div>
-              <div>
-                <label className="text-sm font-medium text-cream mb-2 block">City</label>
-                <input 
-                  type="text" 
-                  placeholder="Type a city..." 
-                  value={city} 
-                  onChange={e => setCity(e.target.value)} 
-                  className="input-dark text-sm" 
-                />
-              </div>
-              <div>
-                <label className="text-sm font-medium text-cream mb-2 block">Language</label>
-                <select value={language} onChange={e => setLanguage(e.target.value)} className="input-dark text-sm">
-                  <option value="">All Languages</option>
-                  {LANGUAGES.map(l => <option key={l} value={l}>{l}</option>)}
-                </select>
-              </div>
-              <div>
-                <label className="text-sm font-medium text-cream mb-2 block">Max Price: ${maxPrice}/day</label>
-                <input type="range" min={50} max={300} step={10} value={maxPrice} onChange={e => setMaxPrice(Number(e.target.value))} className="w-full accent-gold" />
-              </div>
-              <div>
-                <label className="text-sm font-medium text-cream mb-2 block">Min Rating</label>
-                <div className="flex gap-2">
-                  {[0, 4, 4.5, 4.8].map(r => (
-                    <button key={r} onClick={() => setMinRating(r)} className={`px-3 py-2 rounded-btn text-xs border transition-all ${minRating === r ? 'border-gold bg-gold-100 text-gold' : 'border-dark-500 text-muted'}`}>
-                      {r === 0 ? 'Any' : `${r}+`}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-            <div className="flex gap-3 mt-8">
-              <button onClick={clearFilters} className="btn-ghost flex-1">Clear</button>
-              <button onClick={() => setShowFilters(false)} className="btn-gold flex-1">Show {filteredGuides.length} Results</button>
-            </div>
-          </div>
-        </div>
-      )}
+      <MobileFilterModal
+        show={showFilters}
+        onClose={() => setShowFilters(false)}
+        country={country} setCountry={setCountry}
+        city={city} setCity={setCity}
+        language={language} setLanguage={setLanguage}
+        maxPrice={maxPrice} setMaxPrice={setMaxPrice}
+        minRating={minRating} setMinRating={setMinRating}
+        onClear={clearFilters}
+        filteredCount={filteredGuides.length}
+      />
     </main>
   );
 }

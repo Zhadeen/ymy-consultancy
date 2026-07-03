@@ -51,4 +51,4 @@ export const GUIDE_ADDONS = [
   },
 ];
 
-export const PLATFORM_FEE_PERCENT = 15;
+export { PLATFORM_FEE_PERCENT } from '../domain/constants/fees';

@@ -4,8 +4,7 @@ import { Check, X, Star, Crown, Zap, CreditCard, Percent, ShieldCheck, Target, T
 import { SUBSCRIPTION_PLANS, GUIDE_ADDONS } from '../config/stripe';
 import ScrollReveal from '../components/common/ScrollReveal';
 import { useAuth } from '../context/AuthContext';
-import { db } from '../config/firebase';
-import { doc, setDoc, getDoc } from 'firebase/firestore';
+import { getSubscriptionByUserId } from '../infrastructure/firebase/repositories/subscriptionsRepository';
 
 export default function PricingPage() {
   const { user } = useAuth();
@@ -16,9 +15,9 @@ export default function PricingPage() {
   useState(() => {
     const checkCurrentPlan = async () => {
       if (user) {
-        const subDoc = await getDoc(doc(db, 'subscriptions', user.uid));
-        if (subDoc.exists()) {
-          setCurrentPlan(subDoc.data().planId);
+        const subscription = await getSubscriptionByUserId(user.uid);
+        if (subscription) {
+          setCurrentPlan(subscription.planId);
         }
       }
     };

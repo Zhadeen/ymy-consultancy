@@ -1,6 +1,6 @@
-import Stripe from 'stripe';
+import { getStripeClient } from './lib/stripeClient.js';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY.trim());
+const stripe = getStripeClient();
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {

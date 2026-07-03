@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { X, CreditCard, CheckCircle2, Zap } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { PLATFORM_FEE_PERCENT } from '../domain/constants/fees';
 
 export default function VisitorPricingModal({ isOpen, onClose }) {
   const { user } = useAuth();
@@ -46,7 +47,7 @@ export default function VisitorPricingModal({ isOpen, onClose }) {
             <ul className="space-y-4">
               {[
                 'Pay only per booking',
-                '15% platform fee (included)',
+                `${PLATFORM_FEE_PERCENT}% platform fee (included)`,
                 '24h full refund protection',
                 'Real-time chat with Local Guides',
                 'Verified local expertise'

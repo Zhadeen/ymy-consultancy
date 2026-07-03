@@ -1,7 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Star, X } from 'lucide-react';
-import { collection, addDoc, updateDoc, doc, getDocs, query, where, serverTimestamp } from 'firebase/firestore';
-import { db } from '../../config/firebase';
+import { serverTimestamp } from 'firebase/firestore';
+import { createReview, getReviewsByTargetId } from '../../infrastructure/firebase/repositories/reviewsRepository';
+import { updateBooking } from '../../infrastructure/firebase/repositories/bookingsRepository';
+import { updateGuide } from '../../infrastructure/firebase/repositories/guidesRepository';
+import { updateUser } from '../../infrastructure/firebase/repositories/usersRepository';
 
 export default function ReviewModal({ isOpen, close, booking, reviewerRole, reviewer, onSuccess }) {
   const [rating, setRating] = useState(0);
@@ -25,7 +28,6 @@ export default function ReviewModal({ isOpen, close, booking, reviewerRole, revi
   const isVisitorRatingGuide = reviewerRole === 'visitor';
   const targetId = isVisitorRatingGuide ? booking.guideId : booking.visitorId;
   const targetName = isVisitorRatingGuide ? booking.guideName : booking.visitorName;
-  const targetCollection = isVisitorRatingGuide ? 'guides' : 'users';
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -39,7 +41,7 @@ export default function ReviewModal({ isOpen, close, booking, reviewerRole, revi
 
     try {
       // 1. Add review to 'reviews' collection
-      await addDoc(collection(db, 'reviews'), {
+      await createReview({
         bookingId: booking.id,
         reviewerId: reviewer.uid,
         reviewerName: reviewer.name,
@@ -54,27 +56,33 @@ export default function ReviewModal({ isOpen, close, booking, reviewerRole, revi
 
       // 2. Mark booking as reviewed
       const bookingUpdateField = isVisitorRatingGuide ? 'visitorReviewed' : 'guideReviewed';
-      await updateDoc(doc(db, 'bookings', booking.id), {
+      await updateBooking(booking.id, {
         [bookingUpdateField]: true,
         updatedAt: serverTimestamp()
       });
 
       // 3. Recalculate target's average rating
-      const reviewsQ = query(collection(db, 'reviews'), where('targetId', '==', targetId));
-      const reviewsSnap = await getDocs(reviewsQ);
-      
-      const totalReviews = reviewsSnap.docs.length;
+      const targetReviews = await getReviewsByTargetId(targetId);
+
+      const totalReviews = targetReviews.length;
       let sumRatings = 0;
-      reviewsSnap.docs.forEach(doc => {
-        sumRatings += (doc.data().rating || 0);
+      targetReviews.forEach(r => {
+        sumRatings += (r.rating || 0);
       });
       const newAverage = sumRatings / totalReviews;
 
       // 4. Update the target profile (Guide or User collection)
-      await updateDoc(doc(db, targetCollection, targetId), {
-        rating: Number(newAverage.toFixed(1)),
-        reviewCount: totalReviews
-      });
+      if (isVisitorRatingGuide) {
+        await updateGuide(targetId, {
+          rating: Number(newAverage.toFixed(1)),
+          reviewCount: totalReviews
+        });
+      } else {
+        await updateUser(targetId, {
+          rating: Number(newAverage.toFixed(1)),
+          reviewCount: totalReviews
+        });
+      }
 
       if (onSuccess) onSuccess();
       close();

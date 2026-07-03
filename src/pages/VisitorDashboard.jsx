@@ -1,15 +1,16 @@
 import { Link } from 'react-router-dom';
 import { Heart, Calendar, Star, MessageSquare, Settings, ChevronRight, MapPin, CheckCircle2, CreditCard, AlertCircle, Mail } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import { collection, query, where, getDocs, onSnapshot } from 'firebase/firestore';
 import { sendEmailVerification } from 'firebase/auth';
-import { db, auth } from '../config/firebase';
+import { auth } from '../config/firebase';
+import { subscribeToBookingsByVisitorId } from '../infrastructure/firebase/repositories/bookingsRepository';
 import { useAuth } from '../context/AuthContext';
 import StarRating from '../components/common/StarRating';
 import ScrollReveal from '../components/common/ScrollReveal';
 import { useUnreadCount } from '../hooks/useUnreadCount';
 import SessionTracker from '../components/dashboard/SessionTracker';
 import ReviewModal from '../components/dashboard/ReviewModal';
+import { BOOKING_STATUS } from '../domain/constants/bookingStatus';
 
 export default function VisitorDashboard() {
   const { user } = useAuth();
@@ -27,9 +28,8 @@ export default function VisitorDashboard() {
     
     const fetchBookings = async () => {
       try {
-        const q = query(collection(db, 'bookings'), where('visitorId', '==', user.uid));
-        unsubscribeBookings = onSnapshot(q, (snap) => {
-          setBookings(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+        unsubscribeBookings = subscribeToBookingsByVisitorId(user.uid, (bookingsData) => {
+          setBookings(bookingsData);
           setLoading(false);
         });
       } catch (err) {
@@ -168,12 +168,12 @@ export default function VisitorDashboard() {
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div className="flex items-center gap-4 flex-1 min-w-0">
                           <div className={`w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 ${
-                            booking.status === 'completed' ? 'bg-green-500/10' :
-                            booking.status === 'upcoming' ? 'bg-gold-100' : 'bg-blue-500/10'
+                            booking.status === BOOKING_STATUS.COMPLETED ? 'bg-green-500/10' :
+                            booking.status === BOOKING_STATUS.UPCOMING ? 'bg-gold-100' : 'bg-blue-500/10'
                           }`}>
                             <Calendar size={20} className={
-                              booking.status === 'completed' ? 'text-green-500' :
-                              booking.status === 'upcoming' ? 'text-gold' : 'text-blue-400'
+                              booking.status === BOOKING_STATUS.COMPLETED ? 'text-green-500' :
+                              booking.status === BOOKING_STATUS.UPCOMING ? 'text-gold' : 'text-blue-400'
                             } />
                           </div>
                           <div className="min-w-0">
@@ -186,7 +186,7 @@ export default function VisitorDashboard() {
                         </div>
                         <div className="flex items-center sm:justify-end gap-4 flex-shrink-0">
                           <span className={`text-xs font-semibold px-3 py-1.5 rounded-full uppercase tracking-wider ${
-                            booking.status === 'completed' ? 'bg-green-500/10 text-green-400' :
+                            booking.status === BOOKING_STATUS.COMPLETED ? 'bg-green-500/10 text-green-400' :
                             'bg-gold-100 text-gold'
                           }`}>
                             {booking.status.replace('_', ' ')}

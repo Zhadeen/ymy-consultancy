@@ -1,8 +1,9 @@
 import { useEffect, useState, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { CheckCircle2, AlertCircle, ArrowRight } from 'lucide-react';
-import { doc, setDoc, updateDoc } from 'firebase/firestore';
-import { db } from '../config/firebase';
+import { upsertSubscription } from '../infrastructure/firebase/repositories/subscriptionsRepository';
+import { updateUser } from '../infrastructure/firebase/repositories/usersRepository';
+import { updateGuide } from '../infrastructure/firebase/repositories/guidesRepository';
 
 export default function SubscriptionSuccess() {
   const [searchParams] = useSearchParams();
@@ -50,7 +51,7 @@ export default function SubscriptionSuccess() {
         const planName = metadata.planName || 'Visitor Account';
 
         // Process Database Updates
-        await setDoc(doc(db, 'subscriptions', userId), {
+        await upsertSubscription(userId, {
           planId,
           planName,
           status: 'active',
@@ -59,16 +60,16 @@ export default function SubscriptionSuccess() {
           stripeSessionId: sessionId,
           type: metadata.type,
           updatedAt: new Date().toISOString()
-        }, { merge: true });
+        });
 
         // Update the primary user document to unlock features
-        await updateDoc(doc(db, 'users', userId), {
+        await updateUser(userId, {
           isSubscribed: true
         });
 
         // If guide, also update the guides collection
         if (isGuide) {
-          await updateDoc(doc(db, 'guides', userId), {
+          await updateGuide(userId, {
             isSubscribed: true
           });
         }
