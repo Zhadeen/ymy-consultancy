@@ -10,44 +10,12 @@ import {
 } from 'firebase/auth';
 import { serverTimestamp } from 'firebase/firestore';
 import { auth } from '../../config/firebase';
-import {
-  getUserById,
-  createUser,
-  updateUser,
-} from '../../infrastructure/firebase/repositories/usersRepository';
-
-const getConfiguredAdminEmails = () =>
-  (import.meta.env.VITE_ADMIN_EMAILS || '')
-    .split(',')
-    .map((email) => email.trim().toLowerCase())
-    .filter(Boolean);
-
-export function isConfiguredAdminEmail(email) {
-  if (!email) return false;
-  return getConfiguredAdminEmails().includes(email.trim().toLowerCase());
-}
+import { getUserById, createUser } from '../../infrastructure/firebase/repositories/usersRepository';
 
 // Shapes the app-level user object from the Firebase Auth user plus their Firestore profile doc.
 export async function resolveAppUser(firebaseUser) {
   const userDoc = await getUserById(firebaseUser.uid);
-  const configuredAdmin = isConfiguredAdminEmail(firebaseUser.email);
-  const role = configuredAdmin ? 'admin' : (userDoc ? userDoc.role : 'visitor');
-
-  if (configuredAdmin && (!userDoc || userDoc.role !== 'admin')) {
-    const profilePayload = {
-      name: userDoc ? (userDoc.name || firebaseUser.displayName || 'Traveler') : (firebaseUser.displayName || 'Traveler'),
-      email: firebaseUser.email,
-      role: 'admin',
-      createdAt: userDoc ? userDoc.createdAt : serverTimestamp(),
-      photo: userDoc ? (userDoc.photo || firebaseUser.photoURL || null) : (firebaseUser.photoURL || null),
-    };
-
-    if (userDoc) {
-      await updateUser(firebaseUser.uid, profilePayload);
-    } else {
-      await createUser(firebaseUser.uid, profilePayload);
-    }
-  }
+  const role = userDoc ? userDoc.role : 'visitor';
 
   return {
     uid: firebaseUser.uid,
@@ -71,15 +39,12 @@ export async function loginWithGoogle() {
 
   const existing = await getUserById(result.user.uid);
   if (!existing) {
-    const role = isConfiguredAdminEmail(result.user.email) ? 'admin' : 'visitor';
     await createUser(result.user.uid, {
       name: result.user.displayName || 'Traveler',
       email: result.user.email,
-      role,
+      role: 'visitor',
       createdAt: serverTimestamp(),
     });
-  } else if (isConfiguredAdminEmail(result.user.email) && existing.role !== 'admin') {
-    await updateUser(result.user.uid, { role: 'admin' });
   }
 
   return result;
