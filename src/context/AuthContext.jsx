@@ -11,6 +11,7 @@ export function AuthProvider({ children }) {
   const [isGuide, setIsGuide] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [authError, setAuthError] = useState(null);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
@@ -20,13 +21,18 @@ export function AuthProvider({ children }) {
           setUser(appUser);
           setIsGuide(appUser.role === 'guide');
           setIsAdmin(appUser.role === 'admin');
+          setAuthError(null);
         } else {
           setUser(null);
           setIsGuide(false);
           setIsAdmin(false);
+          setAuthError(null);
         }
       } catch (err) {
+        // Sign-in succeeded but the profile lookup failed (e.g. Firestore rules
+        // denied the read). Surface it instead of leaving the UI silently stuck.
         console.error("Auth initialization error:", err);
+        setAuthError(err.message || 'Could not load your profile. Please try again.');
       } finally {
         setLoading(false);
       }
@@ -60,7 +66,7 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, isGuide, isAdmin, loading, login, loginWithGoogle, register, logout, resetPassword, updateUserLocal }}>
+    <AuthContext.Provider value={{ user, isGuide, isAdmin, loading, authError, login, loginWithGoogle, register, logout, resetPassword, updateUserLocal }}>
       {loading ? <LoadingSpinner /> : children}
     </AuthContext.Provider>
   );

@@ -13,7 +13,7 @@ export default function LoginPage() {
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [resetEmail, setResetEmail] = useState('');
   const [resetSent, setResetSent] = useState(false);
-  const { user, login, loginWithGoogle, resetPassword } = useAuth();
+  const { user, authError, login, loginWithGoogle, resetPassword } = useAuth();
   const navigate = useNavigate();
 
   // Handle redirect after login state is updated
@@ -88,9 +88,9 @@ export default function LoginPage() {
             <div className="flex-1 h-px bg-dark-600" />
           </div>
 
-          {error && (
+          {(error || authError) && (
             <div className="bg-red-500/10 border border-red-500/30 rounded-btn px-4 py-3 mb-4">
-              <p className="text-red-400 text-sm">{error}</p>
+              <p className="text-red-400 text-sm">{error || authError}</p>
             </div>
           )}
 
