@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Globe } from 'lucide-react'; // if needed later
-import { Mail, MapPin, Phone, ExternalLink, Hash, Heart, Play } from 'lucide-react';
+import { Mail, MapPin, Phone, ExternalLink, Hash, Heart, Play, Shield } from 'lucide-react';
 import logo from '../../assets/logo.png';
 import { useState } from 'react';
 
@@ -134,9 +134,20 @@ export default function Footer() {
           <p className="text-muted-dark text-xs">
             © {new Date().getFullYear()} YMY Consultancy. All rights reserved.
           </p>
-          <div className="flex items-center gap-1 text-muted-dark text-xs">
-            <MapPin size={12} />
-            <span>Serving 50+ cities worldwide</span>
+          <div className="flex items-center gap-5">
+            <div className="flex items-center gap-1 text-muted-dark text-xs">
+              <MapPin size={12} />
+              <span>Serving 50+ cities worldwide</span>
+            </div>
+            {/* Discreet staff entry point. Not an access control: /admin is
+                guarded by ProtectedRoute and the Firestore rules. */}
+            <Link
+              to="/admin/login"
+              className="flex items-center gap-1.5 text-muted-dark/50 hover:text-gold text-xs transition-colors duration-300"
+            >
+              <Shield size={11} />
+              <span>Admin</span>
+            </Link>
           </div>
         </div>
       </div>
