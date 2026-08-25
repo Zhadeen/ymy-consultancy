@@ -1,0 +1,17 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "gradient-text",
+        "value": "*",
+        "files": [
+          "src/index.css"
+        ],
+        "createdAt": "2026-08-25T23:35:41.215Z",
+        "reason": "User confirmed the gold gradient on the hero heading (.text-gradient-gold) is intentional brand styling"
+      }
+    ]
+  }
+}
