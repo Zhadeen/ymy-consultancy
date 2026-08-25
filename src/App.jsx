@@ -38,7 +38,7 @@ function ProtectedRoute({ children, role }) {
   if (loading) return null;
   if (!user || (role && user.role !== role)) {
     // Admin routes bounce to the admin portal rather than the public sign-in page.
-    return <Navigate to={role === 'admin' ? '/admin/login' : '/login'} replace />;
+    return <Navigate to={role === 'admin' ? '/ymy-console' : '/login'} replace />;
   }
   return children;
 }
@@ -129,8 +129,12 @@ export default function App() {
               <Route path="/chat/:guideId" element={<ChatPage />} />
             </Route>
 
-            {/* Admin portal sign-in - standalone, no navbar or footer */}
-            <Route path="/admin/login" element={<AdminLoginPage />} />
+            {/* Admin portal sign-in - standalone, no navbar or footer.
+                The path is deliberately not /admin/login so it is not guessable
+                from the panel route. This is obscurity, not access control:
+                route strings ship in the public JS bundle. /admin stays guarded
+                by ProtectedRoute and the Firestore rules. */}
+            <Route path="/ymy-console" element={<AdminLoginPage />} />
 
             {/* Admin - no footer */}
             <Route element={<ChatLayout />}>

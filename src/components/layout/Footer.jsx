@@ -142,7 +142,7 @@ export default function Footer() {
             {/* Discreet staff entry point. Not an access control: /admin is
                 guarded by ProtectedRoute and the Firestore rules. */}
             <Link
-              to="/admin/login"
+              to="/ymy-console"
               className="flex items-center gap-1.5 text-muted-dark/50 hover:text-gold text-xs transition-colors duration-300"
             >
               <Shield size={11} />
