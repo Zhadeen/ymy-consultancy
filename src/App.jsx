@@ -17,6 +17,7 @@ import AccountSettings from './pages/AccountSettings';
 import GuideRegistration from './pages/GuideRegistration';
 import GuideDashboard from './pages/GuideDashboard';
 import AdminPanel from './pages/AdminPanel';
+import AdminLoginPage from './pages/AdminLoginPage';
 import HelpCenterPage from './pages/HelpCenterPage';
 import SafetyPage from './pages/SafetyPage';
 import CancellationPage from './pages/CancellationPage';
@@ -35,7 +36,10 @@ import { useZendesk } from './hooks/useZendesk';
 function ProtectedRoute({ children, role }) {
   const { user, loading } = useAuth();
   if (loading) return null;
-  if (!user || (role && user.role !== role)) return <Navigate to="/login" />;
+  if (!user || (role && user.role !== role)) {
+    // Admin routes bounce to the admin portal rather than the public sign-in page.
+    return <Navigate to={role === 'admin' ? '/admin/login' : '/login'} replace />;
+  }
   return children;
 }
 
@@ -125,15 +129,18 @@ export default function App() {
               <Route path="/chat/:guideId" element={<ChatPage />} />
             </Route>
 
+            {/* Admin portal sign-in - standalone, no navbar or footer */}
+            <Route path="/admin/login" element={<AdminLoginPage />} />
+
             {/* Admin - no footer */}
             <Route element={<ChatLayout />}>
-              <Route 
-                path="/admin" 
+              <Route
+                path="/admin"
                 element={
                   <ProtectedRoute role="admin">
                     <AdminPanel />
                   </ProtectedRoute>
-                } 
+                }
               />
             </Route>
           </Routes>
