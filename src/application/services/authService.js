@@ -25,6 +25,9 @@ export async function resolveAppUser(firebaseUser) {
     role,
     emailVerified: firebaseUser.emailVerified,
     isSubscribed: userDoc ? !!userDoc.isSubscribed : false,
+    // Set by an admin from the Users tab. AuthContext signs these accounts back
+    // out immediately, so a disabled user cannot reach the app.
+    disabled: userDoc ? !!userDoc.disabled : false,
     createdAt: userDoc ? userDoc.createdAt : null,
   };
 }

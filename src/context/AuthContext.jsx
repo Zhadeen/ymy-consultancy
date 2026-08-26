@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../config/firebase';
 import LoadingSpinner from '../components/common/LoadingSpinner';
@@ -13,11 +13,30 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
   const [authError, setAuthError] = useState(null);
 
+  // Signing a disabled account out re-fires this listener with a null user,
+  // whose branch clears authError. This flag tells that pass to keep the
+  // message so the person actually sees why they were turned away.
+  const keepAuthErrorRef = useRef(false);
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       try {
         if (firebaseUser) {
           const appUser = await authService.resolveAppUser(firebaseUser);
+
+          // An admin has disabled this account. Sign it straight back out rather
+          // than letting it into the app, and say why so the person is not left
+          // guessing at a login that appears to do nothing.
+          if (appUser.disabled) {
+            keepAuthErrorRef.current = true;
+            await authService.logout();
+            setUser(null);
+            setIsGuide(false);
+            setIsAdmin(false);
+            setAuthError('This account has been disabled. Please contact support if you think this is a mistake.');
+            return;
+          }
+
           setUser(appUser);
           setIsGuide(appUser.role === 'guide');
           setIsAdmin(appUser.role === 'admin');
@@ -26,7 +45,11 @@ export function AuthProvider({ children }) {
           setUser(null);
           setIsGuide(false);
           setIsAdmin(false);
-          setAuthError(null);
+          if (keepAuthErrorRef.current) {
+            keepAuthErrorRef.current = false; // consume it, keep the message on screen
+          } else {
+            setAuthError(null);
+          }
         }
       } catch (err) {
         // Sign-in succeeded but the profile lookup failed (e.g. Firestore rules

@@ -159,6 +159,25 @@ export default function AdminPanel() {
     }
   };
 
+  const handleToggleDisabled = async (targetUser) => {
+    const turningOff = !targetUser.disabled;
+    const question = turningOff
+      ? `Disable ${targetUser.email}? They will be signed out and blocked from signing in again until you re-enable them.`
+      : `Re-enable ${targetUser.email}? They will be able to sign in again.`;
+    if (!window.confirm(question)) return;
+
+    setActionLoading(targetUser.id);
+    try {
+      await updateUser(targetUser.id, { disabled: turningOff });
+      setUsers(prev => prev.map(u => u.id === targetUser.id ? { ...u, disabled: turningOff } : u));
+    } catch (err) {
+      console.error('Failed to update account status:', err);
+      alert('Could not update this account: ' + err.message);
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
   const handleWipeData = async () => {
     const collectionsToWipe = ['guides', 'bookings', 'guide_applications', 'reviews', 'chats', 'users'];
     const confirmed = window.confirm(
@@ -169,6 +188,11 @@ export default function AdminPanel() {
 
     const doubleConfirmed = window.prompt("Type 'DELETE ALL' to confirm (caps sensitive):");
     if (doubleConfirmed !== 'DELETE ALL') return;
+
+    // Track what actually got cleared. A failure partway through used to report
+    // only "Wipe failed", which read as "nothing happened" while earlier
+    // collections had already been destroyed.
+    const cleared = [];
 
     setLoading(true);
     try {
@@ -212,12 +236,24 @@ export default function AdminPanel() {
         if (count > 0) {
           await batch.commit();
         }
+
+        cleared.push(collName);
       }
       alert("Database wiped successfully. You have a clean slate!");
       window.location.reload();
     } catch (err) {
       console.error("Wipe failed:", err);
-      alert("Wipe failed: " + err.message);
+      // Say exactly how far it got. Deletes already committed are permanent, and
+      // reporting a bare failure hides that.
+      const done = cleared.length ? cleared.join(', ') : 'nothing';
+      const remaining = collectionsToWipe.filter(c => !cleared.includes(c)).join(', ') || 'none';
+      alert(
+        `Wipe stopped partway.\n\n` +
+        `Already deleted (permanently): ${done}\n` +
+        `Not touched: ${remaining}\n\n` +
+        `Reason: ${err.message}`
+      );
+      window.location.reload();
     } finally {
       setLoading(false);
     }
@@ -270,7 +306,14 @@ export default function AdminPanel() {
           <OverviewTab stats={stats} maxRevenue={maxRevenue} months={months} onReviewGuides={() => setActiveTab('guides')} />
         )}
 
-        {activeTab === 'users' && <UsersTab users={users} />}
+        {activeTab === 'users' && (
+          <UsersTab
+            users={users}
+            currentUserId={currentUser?.uid}
+            actionLoading={actionLoading}
+            onToggleDisabled={handleToggleDisabled}
+          />
+        )}
 
         {activeTab === 'guides' && <GuidesTab guides={guides} />}
 

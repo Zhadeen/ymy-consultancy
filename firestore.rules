@@ -19,14 +19,25 @@ service cloud.firestore {
       return request.resource.data.role == resource.data.role;
     }
 
+    // A disabled account must not be able to re-enable itself. Only admins set
+    // this field; everyone else has to leave it exactly as it is, including
+    // leaving it absent when it was absent.
+    function disabledUnchanged() {
+      return !('disabled' in request.resource.data.keys())
+        ? !('disabled' in resource.data.keys())
+        : ('disabled' in resource.data.keys()
+           && request.resource.data.disabled == resource.data.disabled);
+    }
+
     // Users: anyone signed in can read profiles (needed for chat peer lookup).
-    // A user may edit their own profile but may NOT change their own role,
-    // otherwise any account could grant itself admin from the browser console.
+    // A user may edit their own profile but may NOT change their own role or
+    // their disabled flag, otherwise any account could grant itself admin, or
+    // un-ban itself, from the browser console.
     match /users/{userId} {
       allow read: if isSignedIn();
       allow create: if isSignedIn() && request.auth.uid == userId;
       allow update: if isAdmin()
-        || (isSignedIn() && request.auth.uid == userId && roleUnchanged());
+        || (isSignedIn() && request.auth.uid == userId && roleUnchanged() && disabledUnchanged());
       allow delete: if isAdmin();
     }
 
@@ -69,18 +80,33 @@ service cloud.firestore {
       allow read, write: if isSignedIn() && request.auth.uid == userId;
     }
 
-    // Chats: participants only. On create the document does not exist yet, so the
-    // participants list must be read from request.resource, not resource.
+    // Chats: participants only, plus admins.
+    //
+    // Admin read is required for the System tab's database wipe: deleting a
+    // collection means first listing it, and Firestore evaluates a list query
+    // against the rule as a whole rather than per document, so an admin who is
+    // not a participant cannot enumerate chats at all. Without this the wipe
+    // deletes the earlier collections and then dies here, which is exactly how
+    // it half-completed before.
+    //
+    // The cost is real and worth stating plainly: an admin can read every
+    // private conversation on the platform. Firestore cannot express "may list
+    // in order to delete but may not read", so this is the price of running the
+    // wipe from the browser at all.
+    //
+    // On create the document does not exist yet, so the participants list must
+    // be read from request.resource, not resource.
     match /chats/{chatId} {
-      allow read: if isSignedIn() && request.auth.uid in resource.data.participants;
+      allow read: if isAdmin() || (isSignedIn() && request.auth.uid in resource.data.participants);
       allow create: if isSignedIn() && request.auth.uid in request.resource.data.participants;
       allow update: if isSignedIn() && request.auth.uid in resource.data.participants;
       allow delete: if isAdmin();
 
       // Messages live in a subcollection and are not covered by the parent rule.
       match /messages/{messageId} {
-        allow read: if isSignedIn()
-          && request.auth.uid in get(/databases/$(database)/documents/chats/$(chatId)).data.participants;
+        allow read: if isAdmin()
+          || (isSignedIn()
+              && request.auth.uid in get(/databases/$(database)/documents/chats/$(chatId)).data.participants);
         allow create: if isSignedIn() && request.resource.data.senderId == request.auth.uid;
         allow update, delete: if isAdmin();
       }
