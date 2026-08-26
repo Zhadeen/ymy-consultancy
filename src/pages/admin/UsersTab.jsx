@@ -1,4 +1,4 @@
-import { Search, Eye, Ban, CheckCircle2 } from 'lucide-react';
+import { Search, Ban, CheckCircle2 } from 'lucide-react';
 import ScrollReveal from '../../components/common/ScrollReveal';
 
 export default function UsersTab({ users, currentUserId, actionLoading, onToggleDisabled }) {
@@ -54,12 +54,9 @@ export default function UsersTab({ users, currentUserId, actionLoading, onToggle
                       </td>
                       <td className="px-5 py-4">
                         <div className="flex items-center gap-2">
-                          <button className="w-8 h-8 rounded-lg bg-dark-600 flex items-center justify-center text-muted hover:text-cream transition-colors" title="View">
-                            <Eye size={14} />
-                          </button>
-
                           {/* An admin locking themselves out of their own panel is
                               not a state worth supporting, so self is never togglable. */}
+                          {isSelf && <span className="text-muted-dark text-xs">—</span>}
                           {!isSelf && (
                             <button
                               onClick={() => onToggleDisabled(user)}

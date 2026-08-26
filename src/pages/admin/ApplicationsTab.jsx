@@ -22,7 +22,12 @@ export default function ApplicationsTab({ applications, actionLoading, onSelect,
                 <div className="flex-1">
                   <div className="flex items-center justify-between mb-2">
                     <h3 className="font-heading text-xl font-bold text-cream">{app.name}</h3>
-                    <span className="text-xs font-semibold px-2 px-1 text-gold bg-gold-100 rounded-full uppercase">Pending Review</span>
+                    <div className="flex items-center gap-2">
+                      {app.documentsComplete === false && (
+                        <span className="text-xs font-semibold px-2 py-1 text-yellow-300 bg-yellow-500/10 border border-yellow-500/20 rounded-full uppercase">Docs incomplete</span>
+                      )}
+                      <span className="text-xs font-semibold px-2 px-1 text-gold bg-gold-100 rounded-full uppercase">Pending Review</span>
+                    </div>
                   </div>
                   <p className="text-muted text-sm mb-4 line-clamp-2">{app.bio}</p>
                   <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-6 text-xs">
@@ -32,14 +37,19 @@ export default function ApplicationsTab({ applications, actionLoading, onSelect,
                     <div><span className="text-muted-dark block">Email</span><span className="text-cream">{app.email}</span></div>
                     <div>
                       <span className="text-muted-dark block">ID Verification</span>
-                      <a
-                        href={app.idDocumentUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-gold hover:text-gold-light flex items-center gap-1 mt-0.5 font-medium underline"
-                      >
-                        <Eye size={12} /> View {app.idType}
-                      </a>
+                      {app.idDocumentUrl ? (
+                        <a
+                          href={app.idDocumentUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          className="text-gold hover:text-gold-light flex items-center gap-1 mt-0.5 font-medium underline"
+                        >
+                          <Eye size={12} /> View {app.idType}
+                        </a>
+                      ) : (
+                        <span className="text-yellow-400/80 mt-0.5 block">Not uploaded</span>
+                      )}
                     </div>
                   </div>
                   <div className="flex items-center gap-3">

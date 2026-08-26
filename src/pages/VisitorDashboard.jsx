@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Heart, Calendar, Star, MessageSquare, Settings, ChevronRight, MapPin, CheckCircle2, CreditCard, AlertCircle, Mail } from 'lucide-react';
+import { Heart, Calendar, Star, MessageSquare, Settings, ChevronRight, MapPin, CheckCircle2, CreditCard, AlertCircle, Mail, Clock } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { sendEmailVerification } from 'firebase/auth';
 import { auth } from '../config/firebase';
@@ -68,9 +68,15 @@ export default function VisitorDashboard() {
             </div>
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
               <div className="flex items-center gap-3">
-                <span className="flex items-center gap-1 text-xs font-bold bg-gold/10 text-gold px-3 py-1 rounded-full border border-gold/20 uppercase tracking-wider">
-                  <CheckCircle2 size={12} /> Visitor Account
-                </span>
+                {user?.role === 'pending_guide' ? (
+                  <span className="flex items-center gap-1 text-xs font-bold bg-yellow-500/10 text-yellow-300 px-3 py-1 rounded-full border border-yellow-500/20 uppercase tracking-wider">
+                    <Clock size={12} /> Guide Application Pending
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-1 text-xs font-bold bg-gold/10 text-gold px-3 py-1 rounded-full border border-gold/20 uppercase tracking-wider">
+                    <CheckCircle2 size={12} /> Visitor Account
+                  </span>
+                )}
                 {user?.role === 'admin' && (
                   <Link to="/admin" className="btn-dark hidden sm:flex items-center gap-2 border-gold/50 text-gold">
                     Admin Panel
@@ -84,6 +90,24 @@ export default function VisitorDashboard() {
             </div>
           </div>
         </ScrollReveal>
+
+        {/* Guide application under review */}
+        {user?.role === 'pending_guide' && (
+          <ScrollReveal>
+            <div className="mb-8 p-4 rounded-2xl bg-gold/10 border border-gold/20 flex items-start gap-4">
+              <div className="w-10 h-10 rounded-full bg-gold/20 flex items-center justify-center flex-shrink-0">
+                <Clock size={20} className="text-gold" />
+              </div>
+              <div>
+                <p className="text-gold font-semibold text-sm">Your guide application is under review</p>
+                <p className="text-muted text-xs mt-0.5 leading-relaxed">
+                  Our team is reviewing your details. Until it's approved you can keep using YMY as a visitor.
+                  Guide tools will appear here automatically once you're approved.
+                </p>
+              </div>
+            </div>
+          </ScrollReveal>
+        )}
 
         {/* Email Verification Banner */}
         {user && !user.emailVerified && (

@@ -14,6 +14,7 @@ const steps = ['Personal Info', 'Photo', 'ID Verification', 'Bio & Languages', '
 export default function GuideRegistration() {
   const [step, setStep] = useState(0);
   const [submitted, setSubmitted] = useState(false);
+  const [uploadWarning, setUploadWarning] = useState(false);
   const [error, setError] = useState('');
   const [processing, setProcessing] = useState(false);
   const [statusText, setStatusText] = useState('');
@@ -111,30 +112,41 @@ export default function GuideRegistration() {
 
       const uid = user.uid;
 
-      // Upload files to Firebase Storage
-      let photoUrl = 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&q=80&w=200';
+      // File uploads are best-effort. The account has already been created above,
+      // so a storage failure must NOT throw out of this function — that was the
+      // bug that left applicants stranded as "pending_guide" with no application
+      // for the admin to review. Each upload is attempted on its own; a failure
+      // is recorded and the application is saved regardless, flagged so an admin
+      // does not approve someone whose ID never made it onto the record.
+      const PLACEHOLDER_PHOTO = 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&q=80&w=200';
+      let photoUrl = PLACEHOLDER_PHOTO;
       let idDocumentUrl = '';
+      let uploadFailed = false;
 
-      // Upload profile photo
       if (form.photo && form.photo instanceof File) {
         setStatusText('Uploading profile photo');
         setUploadProgress(0);
-        // Using folder-based path for better security rules: profile_photos/UID/profile
-        const uploadedUrl = await uploadFile(form.photo, `profile_photos/${uid}`, 'profile', (p) => setUploadProgress(p));
-        if (!uploadedUrl) throw new Error("Could not process profile photo. Please try a smaller image.");
-        photoUrl = uploadedUrl;
+        try {
+          const uploadedUrl = await uploadFile(form.photo, `profile_photos/${uid}`, 'profile', (p) => setUploadProgress(p));
+          if (uploadedUrl) photoUrl = uploadedUrl;
+        } catch (uploadErr) {
+          console.error('Profile photo upload failed (continuing with application):', uploadErr);
+          uploadFailed = true;
+        }
       }
-      
-      // Upload ID document
+
       if (form.idDocument && form.idDocument instanceof File) {
         setStatusText('Uploading ID document');
         setUploadProgress(0);
-        // Using folder-based path for better security rules: id_documents/UID/id
-        const uploadedUrl = await uploadFile(form.idDocument, `id_documents/${uid}`, 'id', (p) => setUploadProgress(p));
-        if (!uploadedUrl) throw new Error("Could not process your ID document. Please try a smaller file.");
-        idDocumentUrl = uploadedUrl;
+        try {
+          const uploadedUrl = await uploadFile(form.idDocument, `id_documents/${uid}`, 'id', (p) => setUploadProgress(p));
+          if (uploadedUrl) idDocumentUrl = uploadedUrl;
+        } catch (uploadErr) {
+          console.error('ID document upload failed (continuing with application):', uploadErr);
+          uploadFailed = true;
+        }
       }
-      
+
       setStatusText('Finalizing application...');
 
       // Save application details to 'guide_applications' collection
@@ -151,6 +163,10 @@ export default function GuideRegistration() {
         idType: form.idType,
         idDocumentUrl: idDocumentUrl,
         idVerified: false,
+        // False when the ID document could not be uploaded (e.g. storage was
+        // down). The admin review UI surfaces this so the application is not
+        // approved without an ID on file.
+        documentsComplete: !!idDocumentUrl,
         bio: form.bio,
         languages: form.languages,
         specialties: form.specialties,
@@ -161,6 +177,7 @@ export default function GuideRegistration() {
         createdAt: serverTimestamp()
       });
 
+      setUploadWarning(uploadFailed);
       setSubmitted(true);
     } catch (err) {
       console.error("Registration failed:", err);
@@ -182,7 +199,16 @@ export default function GuideRegistration() {
               <CheckCircle2 size={40} className="text-gold" />
             </div>
             <h1 className="font-heading text-3xl font-bold text-cream mb-3">Application Submitted!</h1>
-            <p className="text-muted mb-8">Thank you for applying to become a YMY Local Guide. Our team will review your application within 24-48 hours.</p>
+            <p className="text-muted mb-6">Thank you for applying to become a YMY Local Guide. Our team will review your application within 24-48 hours.</p>
+            {uploadWarning && (
+              <div className="mb-8 p-4 rounded-xl bg-yellow-500/10 border border-yellow-500/20 text-left">
+                <p className="text-yellow-300 text-sm font-semibold mb-1">One thing to note</p>
+                <p className="text-yellow-400/80 text-xs leading-relaxed">
+                  Your application was saved, but your ID document could not be uploaded just now.
+                  Our team will contact you to collect it before your profile goes live.
+                </p>
+              </div>
+            )}
             <Link to="/" className="btn-gold inline-block">Back to Home</Link>
           </div>
         </ScrollReveal>
