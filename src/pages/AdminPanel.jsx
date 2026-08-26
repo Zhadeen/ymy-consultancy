@@ -4,6 +4,8 @@ import { collection, getDocs, writeBatch, serverTimestamp } from 'firebase/fires
 import { db } from '../config/firebase';
 import { useAuth } from '../context/AuthContext';
 import { PAID_BOOKING_STATUSES } from '../domain/constants/bookingStatus';
+import { growthPercent, startOfCurrentMonth, countBefore, sumBefore } from '../domain/stats';
+import { toDateSafe } from '../utils/timeUtils';
 import { getAllUsers, updateUser } from '../infrastructure/firebase/repositories/usersRepository';
 import { getAllGuides, createGuide } from '../infrastructure/firebase/repositories/guidesRepository';
 import { getAllBookings } from '../infrastructure/firebase/repositories/bookingsRepository';
@@ -80,6 +82,19 @@ export default function AdminPanel() {
       }
     }
   });
+
+  // Real month-to-date growth, measured against where each total stood at the
+  // start of this month. These cards used to display hardcoded "+12% / +8% /
+  // +23% / +18%" that never changed and were always green, which is worse than
+  // showing nothing. growthPercent returns null when there is no baseline, and
+  // the card renders no badge in that case.
+  const monthStart = startOfCurrentMonth();
+  const growth = {
+    users: growthPercent(users.length, countBefore(users, monthStart, 'createdAt', toDateSafe)),
+    guides: growthPercent(guides.length, countBefore(guides, monthStart, 'createdAt', toDateSafe)),
+    bookings: growthPercent(bookings.length, countBefore(bookings, monthStart, 'createdAt', toDateSafe)),
+    revenue: growthPercent(totalRevenue, sumBefore(paidBookings, monthStart, 'createdAt', 'totalPrice', toDateSafe)),
+  };
 
   const stats = {
     totalUsers: users.length,
@@ -303,7 +318,7 @@ export default function AdminPanel() {
       {/* Content */}
       <div className="flex-1 p-4 sm:p-8 pb-24 lg:pb-8 overflow-y-auto">
         {activeTab === 'overview' && (
-          <OverviewTab stats={stats} maxRevenue={maxRevenue} months={months} onReviewGuides={() => setActiveTab('guides')} />
+          <OverviewTab stats={stats} growth={growth} maxRevenue={maxRevenue} months={months} onReviewGuides={() => setActiveTab('guides')} />
         )}
 
         {activeTab === 'users' && (

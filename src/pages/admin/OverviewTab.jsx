@@ -1,8 +1,28 @@
 import { Users, Globe, Calendar, DollarSign, Clock, ArrowUpRight, ArrowDownRight } from 'lucide-react';
 import ScrollReveal from '../../components/common/ScrollReveal';
-import { formatCurrency } from '../../utils/formatters';
+import { formatCurrency, formatCurrencyCompact } from '../../utils/formatters';
 
-export default function OverviewTab({ stats, maxRevenue, months, onReviewGuides }) {
+// A null change means there was no baseline to measure against this month, so
+// no badge is shown. Rendering "+0%" or an invented figure there would be a
+// claim the data does not support.
+function ChangeBadge({ change }) {
+  if (change === null || change === undefined) {
+    return <span className="text-[10px] text-muted-dark">no prior data</span>;
+  }
+
+  const up = change > 0;
+  const flat = change === 0;
+  const tone = flat ? 'text-muted' : up ? 'text-green-400' : 'text-red-400';
+
+  return (
+    <div className={`flex items-center gap-1 text-xs font-medium ${tone}`}>
+      {!flat && (up ? <ArrowUpRight size={12} /> : <ArrowDownRight size={12} />)}
+      {flat ? 'no change' : `${up ? '+' : ''}${change.toFixed(change % 1 === 0 ? 0 : 1)}%`}
+    </div>
+  );
+}
+
+export default function OverviewTab({ stats, growth = {}, maxRevenue, months, onReviewGuides }) {
   return (
     <div>
       <ScrollReveal>
@@ -11,10 +31,10 @@ export default function OverviewTab({ stats, maxRevenue, months, onReviewGuides 
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {[
-          { icon: Users, label: 'Total Users', value: stats.totalUsers.toLocaleString(), change: '+12%', up: true, color: 'text-blue-400', bg: 'bg-blue-500/10' },
-          { icon: Globe, label: 'Active Guides', value: stats.totalGuides, change: '+8%', up: true, color: 'text-green-400', bg: 'bg-green-500/10' },
-          { icon: Calendar, label: 'Total Bookings', value: stats.totalBookings.toLocaleString(), change: '+23%', up: true, color: 'text-gold', bg: 'bg-gold-100' },
-          { icon: DollarSign, label: 'Revenue', value: formatCurrency(stats.revenue), change: '+18%', up: true, color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
+          { icon: Users, label: 'Total Users', value: stats.totalUsers.toLocaleString(), change: growth.users, color: 'text-blue-400', bg: 'bg-blue-500/10' },
+          { icon: Globe, label: 'Active Guides', value: stats.totalGuides, change: growth.guides, color: 'text-green-400', bg: 'bg-green-500/10' },
+          { icon: Calendar, label: 'Total Bookings', value: stats.totalBookings.toLocaleString(), change: growth.bookings, color: 'text-gold', bg: 'bg-gold-100' },
+          { icon: DollarSign, label: 'Revenue', value: formatCurrency(stats.revenue), change: growth.revenue, color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
         ].map((stat, i) => (
           <ScrollReveal key={stat.label} delay={i * 60}>
             <div className="card-dark p-5">
@@ -22,10 +42,7 @@ export default function OverviewTab({ stats, maxRevenue, months, onReviewGuides 
                 <div className={`w-10 h-10 rounded-xl ${stat.bg} flex items-center justify-center`}>
                   <stat.icon size={18} className={stat.color} />
                 </div>
-                <div className={`flex items-center gap-1 text-xs font-medium ${stat.up ? 'text-green-400' : 'text-red-400'}`}>
-                  {stat.up ? <ArrowUpRight size={12} /> : <ArrowDownRight size={12} />}
-                  {stat.change}
-                </div>
+                <ChangeBadge change={stat.change} />
               </div>
               <div className="text-2xl font-heading font-bold text-cream">{stat.value}</div>
               <div className="text-xs text-muted mt-1">{stat.label}</div>
@@ -34,6 +51,10 @@ export default function OverviewTab({ stats, maxRevenue, months, onReviewGuides 
         ))}
       </div>
 
+      <p className="text-[11px] text-muted-dark mb-8 -mt-4">
+        Percentages compare each total against where it stood at the start of this month.
+      </p>
+
       {/* Revenue Chart */}
       <ScrollReveal delay={240}>
         <div className="card-dark p-6">
@@ -41,7 +62,7 @@ export default function OverviewTab({ stats, maxRevenue, months, onReviewGuides 
           <div className="flex items-end gap-2 h-48">
             {stats.monthlyRevenue.map((rev, i) => (
               <div key={i} className="flex-1 flex flex-col items-center gap-2">
-                <span className="text-[10px] text-muted">{rev >= 1000 ? `$${(rev / 1000).toFixed(1)}k` : `$${Math.floor(rev)}`}</span>
+                <span className="text-[10px] text-muted">{formatCurrencyCompact(rev)}</span>
                 <div
                   className="w-full bg-gradient-to-t from-gold to-gold-light rounded-t-md transition-all duration-500 hover:opacity-80 cursor-pointer"
                   style={{ height: `${(rev / maxRevenue) * 150}px` }}
