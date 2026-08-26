@@ -18,6 +18,7 @@ import GuideRegistration from './pages/GuideRegistration';
 import GuideDashboard from './pages/GuideDashboard';
 import AdminPanel from './pages/AdminPanel';
 import AdminLoginPage from './pages/AdminLoginPage';
+import NotFoundPage from './pages/NotFoundPage';
 import HelpCenterPage from './pages/HelpCenterPage';
 import SafetyPage from './pages/SafetyPage';
 import CancellationPage from './pages/CancellationPage';
@@ -114,6 +115,11 @@ export default function App() {
               <Route path="/payment/cancel" element={<PaymentCancel />} />
               <Route path="/subscription/success" element={<SubscriptionSuccess />} />
               <Route path="/visitor-pricing" element={<VisitorPricingPage />} />
+
+              {/* Catch-all. Must stay last inside this layout so every real
+                  route above wins first. Rendered with the navbar and footer
+                  so a lost visitor has somewhere to go. */}
+              <Route path="*" element={<NotFoundPage />} />
             </Route>
 
             {/* Chat - no footer */}
