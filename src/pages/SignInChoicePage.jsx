@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Compass, Award, ArrowRight } from 'lucide-react';
 import logo from '../assets/logo.png';
+import worldMap from '../assets/world-map.jpg';
 import ScrollReveal from '../components/common/ScrollReveal';
 
 // Entry hub reached from "Sign In". Both roles authenticate through the same
@@ -10,8 +11,21 @@ import ScrollReveal from '../components/common/ScrollReveal';
 // Create Account, guides to the Join as Local Guide application.
 export default function SignInChoicePage() {
   return (
-    <main className="pt-24 min-h-screen bg-dark-900 flex items-center justify-center px-4 py-16">
-      <ScrollReveal className="w-full max-w-3xl">
+    <main className="relative pt-24 min-h-screen bg-dark-900 flex items-center justify-center px-4 py-16 overflow-hidden">
+      {/* World-map backdrop: faint, behind everything, so it reads as ambient
+          texture rather than competing with the content. */}
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 bg-center bg-cover pointer-events-none"
+        style={{ backgroundImage: `url(${worldMap})`, opacity: 0.14 }}
+      />
+      {/* Dark wash to deepen the edges and keep text crisp over the map. */}
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 pointer-events-none bg-gradient-to-b from-dark-900/70 via-dark-900/40 to-dark-900/85"
+      />
+
+      <ScrollReveal className="relative z-10 w-full max-w-3xl">
         <div className="text-center mb-10">
           <Link to="/" className="inline-flex items-center justify-center mb-6">
             <img src={logo} alt="YMY Consultancy Logo" className="h-14 w-auto object-contain drop-shadow-lg" />
