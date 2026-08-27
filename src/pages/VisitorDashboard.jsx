@@ -74,7 +74,7 @@ export default function VisitorDashboard() {
                   </span>
                 ) : (
                   <span className="flex items-center gap-1 text-xs font-bold bg-gold/10 text-gold px-3 py-1 rounded-full border border-gold/20 uppercase tracking-wider">
-                    <CheckCircle2 size={12} /> Visitor Account
+                    <CheckCircle2 size={12} /> Traveler Account
                   </span>
                 )}
                 {user?.role === 'admin' && (
@@ -101,7 +101,7 @@ export default function VisitorDashboard() {
               <div>
                 <p className="text-gold font-semibold text-sm">Your guide application is under review</p>
                 <p className="text-muted text-xs mt-0.5 leading-relaxed">
-                  Our team is reviewing your details. Until it's approved you can keep using YMY as a visitor.
+                  Our team is reviewing your details. Until it's approved you can keep using YMY as a traveler.
                   Guide tools will appear here automatically once you're approved.
                 </p>
               </div>

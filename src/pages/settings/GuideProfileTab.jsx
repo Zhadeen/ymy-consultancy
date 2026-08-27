@@ -23,7 +23,7 @@ export default function GuideProfileTab({
               value={bio}
               onChange={(e) => setBio(e.target.value)}
               className="input-dark min-h-[120px] resize-none"
-              placeholder="Tell visitors about yourself, your experience, and what makes your tours special..."
+              placeholder="Tell travelers about yourself, your experience, and what makes your tours special..."
             />
           </div>
           <div>

@@ -27,7 +27,7 @@ export default function Footer() {
               <img src={logo} alt="YMY Consultancy Logo" className="h-12 w-auto object-contain" />
             </Link>
             <p className="text-muted text-sm leading-relaxed mb-6">
-              Premium local guide experiences worldwide. Connecting curious visitors with verified local experts since 2024.
+              Premium local guide experiences worldwide. Connecting curious travelers with verified local experts since 2024.
             </p>
             <div className="flex gap-3">
               {[ 

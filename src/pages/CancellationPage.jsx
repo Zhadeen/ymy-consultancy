@@ -22,7 +22,7 @@ export default function CancellationPage() {
             </div>
             <div>
               <h2 className="text-xl font-heading font-semibold text-gold mb-3">Local Guide Cancellations</h2>
-              <p>In the rare event a confirmed Local Guide must cancel an experience, Visitors will always receive an immediate 100% refund of the full amount paid, including all fees.</p>
+              <p>In the rare event a confirmed Local Guide must cancel an experience, Travelers will always receive an immediate 100% refund of the full amount paid, including all fees.</p>
             </div>
           </div>
         </ScrollReveal>

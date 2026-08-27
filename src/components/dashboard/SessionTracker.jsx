@@ -76,7 +76,7 @@ export default function SessionTracker({ booking, role, onReviewClick }) {
         return (
           <div className="flex items-center gap-2 mt-4 pt-4 border-t border-dark-600 text-yellow-400">
             <Clock size={16} />
-            <span className="text-sm font-medium">Waiting for visitor to complete payment.</span>
+            <span className="text-sm font-medium">Waiting for traveler to complete payment.</span>
           </div>
         );
       case 'on_the_way':

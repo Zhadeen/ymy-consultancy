@@ -35,17 +35,17 @@ export default function SignInChoicePage() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-          {/* Visitor */}
+          {/* Traveler */}
           <div className="card-dark !bg-dark-900/85 p-8 flex flex-col items-center text-center border-gold/10 hover:border-gold/40 transition-all duration-300">
             <div className="w-16 h-16 rounded-2xl bg-gold/10 flex items-center justify-center mb-5">
               <Compass size={30} className="text-gold" />
             </div>
-            <h2 className="font-heading text-xl font-bold text-cream mb-2">I'm a Visitor</h2>
+            <h2 className="font-heading text-xl font-bold text-cream mb-2">I'm a Traveler</h2>
             <p className="text-muted text-sm mb-6 leading-relaxed">
               Book verified local guides and explore cities like a local.
             </p>
             <Link to="/login" className="btn-gold w-full !py-3 flex items-center justify-center gap-2">
-              Sign in as Visitor <ArrowRight size={16} />
+              Sign in as Traveler <ArrowRight size={16} />
             </Link>
             <Link to="/register" className="text-muted hover:text-gold text-xs mt-4 transition-colors">
               New here? Create a free account

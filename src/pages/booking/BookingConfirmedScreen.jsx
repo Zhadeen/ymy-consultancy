@@ -29,7 +29,7 @@ export default function BookingConfirmedScreen({ confirmed, totalPrice }) {
               Chat with Local Guide
             </Link>
             <Link to="/dashboard" className="text-muted hover:text-cream text-sm font-medium">
-              Go to Visitor Dashboard
+              Go to Traveler Dashboard
             </Link>
           </div>
         </div>

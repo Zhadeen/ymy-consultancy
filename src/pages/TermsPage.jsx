@@ -18,7 +18,7 @@ export default function TermsPage() {
             </div>
             <div>
               <h2 className="text-xl font-heading font-semibold text-gold mb-3">2. Service Usage</h2>
-              <p>Our platform operates as a connective layer granting Visitors access to independent Local Guides. YMY Consultancy itself does not coordinate physical tours, transport logistics, or assume liability for circumstances experienced during a booking connection.</p>
+              <p>Our platform operates as a connective layer granting Travelers access to independent Local Guides. YMY Consultancy itself does not coordinate physical tours, transport logistics, or assume liability for circumstances experienced during a booking connection.</p>
             </div>
             <div>
               <h2 className="text-xl font-heading font-semibold text-gold mb-3">3. Payments & Fees</h2>

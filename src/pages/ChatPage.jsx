@@ -96,7 +96,7 @@ export default function ChatPage() {
         unreadCount: {
           [guideId]: increment(1)
         },
-        [user.uid]: { name: user.name || 'Visitor', photo: user.photo || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200' },
+        [user.uid]: { name: user.name || 'Traveler', photo: user.photo || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200' },
         [guideId]: { name: guide.name, photo: guide.photo }
       });
 

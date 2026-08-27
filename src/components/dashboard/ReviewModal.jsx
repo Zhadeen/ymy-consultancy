@@ -144,8 +144,8 @@ export default function ReviewModal({ isOpen, close, booking, reviewerRole, revi
             <textarea 
               rows={4}
               placeholder={isVisitorRatingGuide 
-                ? "What did you love about your local guide? Tell future visitors!" 
-                : "How was the visitor? Were they respectful and on time?"}
+                ? "What did you love about your local guide? Tell future travelers!"
+                : "How was the traveler? Were they respectful and on time?"}
               value={text} 
               onChange={e => setText(e.target.value)} 
               className="input-dark w-full resize-none bg-dark-700 border-dark-600 text-sm focus:border-gold"

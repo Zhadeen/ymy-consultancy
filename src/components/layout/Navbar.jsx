@@ -37,7 +37,7 @@ export default function Navbar() {
     { to: '/pricing', label: 'Local Guides' },
   ] : [
     { to: '/search', label: 'Explore' },
-    { to: '/visitor-pricing', label: 'Visitors' },
+    { to: '/visitor-pricing', label: 'Travelers' },
     { to: '/pricing', label: 'Local Guides' },
     { to: '/guide-register', label: 'Join as Local Guide' },
   ];

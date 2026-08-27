@@ -303,7 +303,7 @@ export default function GuideRegistration() {
           {/* Step 2: ID Verification */}
           {step === 2 && (
             <div className="space-y-6">
-              <p className="text-muted text-sm">To ensure the safety of our visitors, we require a clear photo of your government-issued ID.</p>
+              <p className="text-muted text-sm">To ensure the safety of our travelers, we require a clear photo of your government-issued ID.</p>
               
               <div>
                 <label className="text-sm text-cream font-medium mb-3 block">Document Type</label>
@@ -346,7 +346,7 @@ export default function GuideRegistration() {
               <div className="bg-gold-50/10 border border-gold-200/20 rounded-xl p-4 flex gap-3">
                 <div className="text-gold mt-0.5">🛡️</div>
                 <p className="text-xs text-muted-dark leading-relaxed">
-                  Your ID is processed securely and is only visible to YMY administrators for verification purposes. It will never be shared with Visitors or third parties.
+                  Your ID is processed securely and is only visible to YMY administrators for verification purposes. It will never be shared with Travelers or third parties.
                 </p>
               </div>
             </div>
@@ -357,7 +357,7 @@ export default function GuideRegistration() {
             <div className="space-y-6">
               <div>
                 <label className="text-sm text-cream font-medium mb-2 block">Bio</label>
-                <textarea rows={5} placeholder="Tell visitors about yourself, your expertise, and what makes your experiences special..." value={form.bio} onChange={e => update('bio', e.target.value)} className="input-dark resize-none" />
+                <textarea rows={5} placeholder="Tell travelers about yourself, your expertise, and what makes your experiences special..." value={form.bio} onChange={e => update('bio', e.target.value)} className="input-dark resize-none" />
                 <p className="text-muted-dark text-xs mt-1">{form.bio.length}/500 characters</p>
               </div>
               <div>

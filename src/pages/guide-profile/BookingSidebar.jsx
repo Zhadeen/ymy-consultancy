@@ -13,7 +13,7 @@ export default function BookingSidebar({ guide, isOwnProfile, isBookable, onBook
                   <User size={24} className="text-gold" />
                 </div>
                 <p className="text-cream font-semibold text-sm">This is your public profile</p>
-                <p className="text-muted-dark text-xs mt-1">This is how visitors see you.</p>
+                <p className="text-muted-dark text-xs mt-1">This is how travelers see you.</p>
               </div>
               <Link to="/settings?tab=guide" className="btn-gold w-full flex items-center justify-center gap-2 !py-3">
                 Edit My Profile

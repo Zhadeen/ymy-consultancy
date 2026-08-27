@@ -48,7 +48,7 @@ export default function SubscriptionSuccess() {
 
         const userId = isTourist ? metadata.userId : metadata.guideId;
         const planId = metadata.planId || 'visitor_access';
-        const planName = metadata.planName || 'Visitor Account';
+        const planName = metadata.planName || 'Traveler Account';
 
         // Process Database Updates
         await upsertSubscription(userId, {
@@ -107,8 +107,8 @@ export default function SubscriptionSuccess() {
             </h2>
             <p className="text-muted mb-8 leading-relaxed">
               {status === 'success_guide' 
-                ? 'Your subscription is active. Your profile is now eligible to receive bookings from Visitors.'
-                : 'Your Visitor account is verified. You can now message and book any of our verified Local Guides.'
+                ? 'Your subscription is active. Your profile is now eligible to receive bookings from Travelers.'
+                : 'Your Traveler account is verified. You can now message and book any of our verified Local Guides.'
               }
             </p>
             <button 

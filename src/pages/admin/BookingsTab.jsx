@@ -16,7 +16,7 @@ export default function BookingsTab({ bookings }) {
               <thead>
                 <tr className="border-b border-dark-600">
                   <th className="text-left text-xs text-muted uppercase tracking-wider font-medium px-5 py-4">Ref</th>
-                  <th className="text-left text-xs text-muted uppercase tracking-wider font-medium px-5 py-4">Visitor</th>
+                  <th className="text-left text-xs text-muted uppercase tracking-wider font-medium px-5 py-4">Traveler</th>
                   <th className="text-left text-xs text-muted uppercase tracking-wider font-medium px-5 py-4">Guide</th>
                   <th className="text-left text-xs text-muted uppercase tracking-wider font-medium px-5 py-4">Date</th>
                   <th className="text-left text-xs text-muted uppercase tracking-wider font-medium px-5 py-4">Total</th>

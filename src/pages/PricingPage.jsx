@@ -164,7 +164,7 @@ export default function PricingPage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-24">
           {[
             { icon: <TrendingUp className="text-gold" />, title: "SEO Optimized", desc: "Your profile is automatically optimized for search engines to bring you more bookings." },
-            { icon: <Target className="text-gold" />, title: "Targeted Marketing", desc: "We spend on ads to bring visitors looking for your specific area of expertise." },
+            { icon: <Target className="text-gold" />, title: "Targeted Marketing", desc: "We spend on ads to bring travelers looking for your specific area of expertise." },
             { icon: <Zap className="text-gold" />, title: "Fast Payouts", desc: "Receive your earnings daily to your connected bank account via Stripe Connect." }
           ].map((item, i) => (
             <ScrollReveal key={i} delay={i * 100}>

@@ -45,7 +45,7 @@ export default function ProfileHeader({ user, guideData, isGuide, photoUploading
             {isGuide ? (
               <> <Award size={14} /> Local Guide Account</>
             ) : (
-              <> <User size={14} /> Visitor Account</>
+              <> <User size={14} /> Traveler Account</>
             )}
           </p>
           <p className="text-muted-dark text-xs mt-2">Member since {user?.createdAt?.toDate ? new Date(user.createdAt.toDate()).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : 'recently'}</p>
