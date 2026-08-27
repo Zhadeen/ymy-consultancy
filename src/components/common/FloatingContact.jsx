@@ -76,20 +76,12 @@ export default function FloatingContact() {
                   onClick={() => {
                     setIsOpen(false);
                     if (window.zE) {
-                      // Support Classic Web Widget
-                      try {
-                        window.zE('webWidget', 'show');
-                        window.zE('webWidget', 'open');
-                      } catch (e) {
-                         // silently ignore
-                      }
-                      
-                      // Support Modern Zendesk Messaging
+                      // Modern Zendesk Messaging: reveal the launcher then open it
                       try {
                         window.zE('messenger', 'show');
                         window.zE('messenger', 'open');
                       } catch (e) {
-                         // silently ignore
+                        alert("Live Support is starting up. Please try again in a moment, or reach us on WhatsApp.");
                       }
                     } else {
                       alert("Live Support is currently offline or missing configuration.");
@@ -118,9 +110,7 @@ export default function FloatingContact() {
           // If they click the golden button, force Zendesk to hide instantly
           if (window.zE) {
             try { window.zE('messenger', 'close'); } catch(e) {}
-            try { window.zE('webWidget', 'close'); } catch(e) {}
             try { window.zE('messenger', 'hide'); } catch(e) {}
-            try { window.zE('webWidget', 'hide'); } catch(e) {}
           }
         }}
         className={`relative w-16 h-16 rounded-3xl flex items-center justify-center shadow-2xl transition-all duration-500 overflow-hidden group ${
