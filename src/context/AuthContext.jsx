@@ -3,8 +3,16 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../config/firebase';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import * as authService from '../application/services/authService';
+import { useIdleTimeout } from '../hooks/useIdleTimeout';
 
 const AuthContext = createContext(null);
+
+// How long an admin can sit idle before being signed out. Admins hold
+// destructive powers (wipe, disable accounts), so an unattended admin session
+// left open — e.g. overnight — is a real risk. Regular visitors and guides keep
+// the normal persistent session, which is the expected behaviour for a booking
+// site. Change this one value to adjust the window.
+const ADMIN_IDLE_TIMEOUT_MS = 30 * 60 * 1000; // 30 minutes
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
@@ -63,6 +71,15 @@ export function AuthProvider({ children }) {
 
     return unsubscribe;
   }, []);
+
+  // Auto sign-out an idle admin. Setting the message before logout and flagging
+  // keepAuthErrorRef means the null-user pass below preserves it, so the admin
+  // lands on the sign-in page understanding why, rather than silently logged out.
+  useIdleTimeout(user?.role === 'admin', ADMIN_IDLE_TIMEOUT_MS, async () => {
+    keepAuthErrorRef.current = true;
+    setAuthError('You were signed out after 30 minutes of inactivity. Please sign in again.');
+    await authService.logout();
+  });
 
   const login = async (email, password) => {
     return authService.login(email, password);
