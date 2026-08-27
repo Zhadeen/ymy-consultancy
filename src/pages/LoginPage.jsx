@@ -13,19 +13,24 @@ export default function LoginPage() {
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [resetEmail, setResetEmail] = useState('');
   const [resetSent, setResetSent] = useState(false);
-  const { user, authError, login, loginWithGoogle, resetPassword } = useAuth();
+  const [adminBlocked, setAdminBlocked] = useState(false);
+  const { user, authError, login, loginWithGoogle, logout, resetPassword } = useAuth();
   const navigate = useNavigate();
 
-  // Handle redirect after login state is updated
+  // Handle redirect after login state is updated. Admins do not sign in through
+  // the public form: if one authenticates here, sign them straight back out and
+  // send them to the admin portal instead. This is a routing choice, not an
+  // access control — /admin is guarded by role + Firestore rules regardless of
+  // which page the password was entered on.
   useEffect(() => {
-    if (user) {
-      if (user.role === 'admin') {
-        navigate('/admin');
-      } else {
-        navigate('/dashboard');
-      }
+    if (!user) return;
+    if (user.role === 'admin') {
+      // Sign the admin back out, then show the notice once they're signed out.
+      logout().finally(() => setAdminBlocked(true));
+    } else {
+      navigate('/dashboard');
     }
-  }, [user, navigate]);
+  }, [user, navigate, logout]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -88,7 +93,14 @@ export default function LoginPage() {
             <div className="flex-1 h-px bg-dark-600" />
           </div>
 
-          {(error || authError) && (
+          {adminBlocked && (
+            <div className="bg-gold/10 border border-gold/30 rounded-btn px-4 py-3 mb-4">
+              <p className="text-gold text-sm font-medium mb-1">Administrators sign in through the admin portal.</p>
+              <Link to="/ymy-console" className="text-gold text-sm underline hover:text-gold-light">Go to the admin portal →</Link>
+            </div>
+          )}
+
+          {(error || authError) && !adminBlocked && (
             <div className="bg-red-500/10 border border-red-500/30 rounded-btn px-4 py-3 mb-4">
               <p className="text-red-400 text-sm">{error || authError}</p>
             </div>
