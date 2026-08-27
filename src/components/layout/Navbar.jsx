@@ -99,7 +99,7 @@ export default function Navbar() {
                   </button>
                 </div>
               ) : (
-                <Link to="/login" className="text-sm font-bold tracking-wide text-cream/90 hover:text-gold transition-all duration-300 px-4 py-2 hover:bg-gold/10 rounded-full active:scale-95">
+                <Link to="/sign-in" className="text-sm font-bold tracking-wide text-cream/90 hover:text-gold transition-all duration-300 px-4 py-2 hover:bg-gold/10 rounded-full active:scale-95">
                   Sign In
                 </Link>
               )}
@@ -164,7 +164,7 @@ export default function Navbar() {
               </>
             ) : (
               <>
-                <Link to="/login" className="flex items-center px-4 py-3 rounded-xl text-cream hover:bg-white/5 transition-colors">Sign In</Link>
+                <Link to="/sign-in" className="flex items-center px-4 py-3 rounded-xl text-cream hover:bg-white/5 transition-colors">Sign In</Link>
                 <Link to="/register" className="flex items-center px-4 py-3 rounded-xl text-cream hover:bg-white/5 transition-colors">Register</Link>
               </>
             )}

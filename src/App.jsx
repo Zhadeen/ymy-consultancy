@@ -19,6 +19,7 @@ import GuideDashboard from './pages/GuideDashboard';
 import AdminPanel from './pages/AdminPanel';
 import AdminLoginPage from './pages/AdminLoginPage';
 import NotFoundPage from './pages/NotFoundPage';
+import SignInChoicePage from './pages/SignInChoicePage';
 import HelpCenterPage from './pages/HelpCenterPage';
 import SafetyPage from './pages/SafetyPage';
 import CancellationPage from './pages/CancellationPage';
@@ -99,6 +100,7 @@ export default function App() {
               <Route path="/search" element={<SearchPage />} />
               <Route path="/guide/:id" element={<GuideProfilePage />} />
               <Route path="/booking/:id" element={<BookingPage />} />
+              <Route path="/sign-in" element={<SignInChoicePage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/register" element={<RegisterPage />} />
               <Route path="/dashboard" element={<DashboardRouter />} />

@@ -68,7 +68,7 @@ export default function Footer() {
                 { to: '/search', label: 'Find a Local Guide' },
                 { to: '/#how-it-works', label: 'How It Works' },
                 { to: '/guide-register', label: 'Become a Local Guide' },
-                { to: '/login', label: 'Sign In' },
+                { to: '/sign-in', label: 'Sign In' },
               ].map(link => (
                 <Link key={link.to} to={link.to} className="text-muted text-sm hover:text-gold transition-colors duration-300">
                   {link.label}
