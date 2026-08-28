@@ -267,7 +267,10 @@ export const CITIES_BY_COUNTRY = {
   VN: ['Ho Chi Minh City', 'Hanoi', 'Da Nang', 'Hoi An', 'Hue', 'Phu Quoc', 'Sapa'],
 };
 
-export const CITIES = Object.values(CITIES_BY_COUNTRY).flat();
+// A few city names appear under more than one country (e.g. Granada in Spain
+// and Nicaragua), so de-duplicate the flattened list. Rendered as <option>s
+// keyed by the city name, duplicates would otherwise collide on their React key.
+export const CITIES = [...new Set(Object.values(CITIES_BY_COUNTRY).flat())];
 
 export const GUIDE_PHOTOS = [
   'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face',
