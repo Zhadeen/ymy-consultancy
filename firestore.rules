@@ -29,12 +29,30 @@ service cloud.firestore {
            && request.resource.data.disabled == resource.data.disabled);
     }
 
-    // Users: anyone signed in can read profiles (needed for chat peer lookup).
+    // A guide may edit their own listing (bio, prices, photo, availability…) but
+    // must NOT be able to change the trust/reputation fields an admin controls.
+    // Otherwise a guide could self-verify or inflate their own rating from the
+    // browser console. Every guide doc is created by admin approval with all of
+    // these fields set, so the comparisons are always defined on update.
+    function guideTrustFieldsUnchanged() {
+      return request.resource.data.verified == resource.data.verified
+        && request.resource.data.idVerified == resource.data.idVerified
+        && request.resource.data.rating == resource.data.rating
+        && request.resource.data.reviewCount == resource.data.reviewCount
+        && request.resource.data.totalBookings == resource.data.totalBookings
+        && request.resource.data.status == resource.data.status;
+    }
+
+    // Users: a user reads only their OWN profile; admins read any. Profiles hold
+    // PII (name + email), so a blanket signed-in read let any account enumerate
+    // every user's email from the browser console. Chat peer display no longer
+    // reads this collection — it uses the public /guides doc and the peer info
+    // already embedded on the chat document (see ChatPage).
     // A user may edit their own profile but may NOT change their own role or
     // their disabled flag, otherwise any account could grant itself admin, or
     // un-ban itself, from the browser console.
     match /users/{userId} {
-      allow read: if isSignedIn();
+      allow read: if isAdmin() || (isSignedIn() && request.auth.uid == userId);
       allow create: if isSignedIn() && request.auth.uid == userId;
       allow update: if isAdmin()
         || (isSignedIn() && request.auth.uid == userId && roleUnchanged() && disabledUnchanged());
@@ -49,16 +67,35 @@ service cloud.firestore {
     }
 
     // Guides: public read so visitors can browse without signing in.
+    //
+    // Only an admin CREATES a guide listing — that happens when an admin
+    // approves a guide_application. This is what keeps the public directory
+    // trustworthy: a random signed-in user can no longer write guides/{ownUid}
+    // to insert themselves as an (auto-verified) guide without going through
+    // review. A guide may UPDATE their own listing, but not the trust fields.
     match /guides/{guideId} {
       allow read: if true;
-      allow write: if isAdmin() || (isSignedIn() && request.auth.uid == guideId);
+      allow create: if isAdmin();
+      allow update: if isAdmin()
+        || (isSignedIn() && request.auth.uid == guideId && guideTrustFieldsUnchanged());
+      allow delete: if isAdmin();
     }
 
     // Bookings: the visitor who booked, the assigned guide, or an admin.
     // Field is visitorId (the previous rules checked touristId, which the app
     // never writes, so the visitor branch was dead).
     match /bookings/{bookingId} {
-      allow read: if isSignedIn();
+      // Read is scoped to the parties on the booking (or an admin). A blanket
+      // signed-in read let any account dump every booking on the platform —
+      // visitor names, emails, guides, dates and amounts. The dashboards query
+      // their own bookings (where visitorId / guideId == uid), which these
+      // per-document conditions permit; the admin panel lists all via isAdmin().
+      allow read: if isAdmin()
+        || (isSignedIn() && (
+             resource.data.visitorId == request.auth.uid
+             || resource.data.guideId == request.auth.uid
+             || resource.data.guideUid == request.auth.uid
+           ));
       allow create: if isSignedIn() && request.resource.data.visitorId == request.auth.uid;
       allow update, delete: if isAdmin()
         || (isSignedIn() && (

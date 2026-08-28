@@ -4,7 +4,7 @@ import { Link, useParams, useNavigate } from 'react-router-dom';
 import { serverTimestamp, increment } from 'firebase/firestore';
 import { useAuth } from '../context/AuthContext';
 import { getChatById, subscribeToMessages, addMessage, upsertChatMeta } from '../infrastructure/firebase/repositories/messagesRepository';
-import { getUserById } from '../infrastructure/firebase/repositories/usersRepository';
+import { getGuideById } from '../infrastructure/firebase/repositories/guidesRepository';
 
 export default function ChatPage() {
   const { guideId } = useParams();
@@ -39,12 +39,16 @@ export default function ChatPage() {
           }
         }
 
-        // Fallback: If no chat doc exists yet (first message scenario), try users collection
-        const userData = await getUserById(guideId);
-        if (userData) {
-          setGuide(userData);
+        // No chat doc yet (first-message scenario). The peer's private /users
+        // profile is no longer world-readable, so look them up in the public
+        // /guides directory instead — this covers the common visitor→guide
+        // case. When the peer is a visitor (guide-initiated chat), there is no
+        // guide doc, so we fall through to a generic label; the real name gets
+        // written onto the chat document as soon as the first message is sent.
+        const guideData = await getGuideById(guideId);
+        if (guideData) {
+          setGuide({ id: guideId, name: guideData.name, photo: guideData.photo, city: guideData.city || 'YMY Platform' });
         } else {
-          // Absolute fallback if it's a new chat between a Local Guide and Visitor (where visitor is the guideId param)
           setGuide({ id: guideId, name: 'Traveler', photo: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200', city: 'Guest' });
         }
       } catch (err) {
