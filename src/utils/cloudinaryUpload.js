@@ -11,12 +11,39 @@
 //   VITE_CLOUDINARY_UPLOAD_PRESET   the name of an *unsigned* upload preset
 //
 // Note on sensitive files: ID documents delivered through a plain Cloudinary
-// URL are readable by anyone who has the URL, the same posture as Firebase's
-// tokenised download URLs. Fine for an MVP; harden later with signed/
-// authenticated delivery if needed.
+// URL are readable by anyone who has the URL. The upload preset generates an
+// unguessable public ID, so the URLs can't be enumerated, but this is not the
+// same as private delivery. Full closure (authenticated delivery + signed
+// viewing URLs) needs the Cloudinary secret server-side; harden there before
+// onboarding real guides who upload identity documents.
+
+// The unsigned preset can't enforce file type/size on Cloudinary's free tier,
+// so we validate here before spending bandwidth on the upload. This is a
+// convenience + light barrier, not a security boundary: a determined attacker
+// can bypass the client and hit the unsigned endpoint directly. Real
+// enforcement requires signed uploads (a small serverless function).
+const MAX_UPLOAD_BYTES = 10 * 1024 * 1024; // 10 MB
+
+function validateUploadFile(file) {
+  if (file.size > MAX_UPLOAD_BYTES) {
+    return `File is too large (${(file.size / 1024 / 1024).toFixed(1)} MB). The maximum is 10 MB.`;
+  }
+  const type = file.type || '';
+  // Allow ordinary images and PDFs. SVG is an image type but can carry scripts,
+  // so it is excluded on purpose.
+  const isImage = type.startsWith('image/') && type !== 'image/svg+xml';
+  const isPdf = type === 'application/pdf';
+  if (!isImage && !isPdf) {
+    return 'Unsupported file type. Please upload a JPG, PNG, WEBP, or PDF.';
+  }
+  return null;
+}
 
 export function uploadToCloudinary(file, folder, _fileName, onProgress) {
   if (!file) return Promise.resolve(null);
+
+  const validationError = validateUploadFile(file);
+  if (validationError) return Promise.reject(new Error(validationError));
 
   const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
   const preset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
