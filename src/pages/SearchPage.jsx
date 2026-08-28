@@ -2,6 +2,8 @@ import { useState, useMemo, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { SlidersHorizontal } from 'lucide-react';
 import { getAllGuides } from '../infrastructure/firebase/repositories/guidesRepository';
+import { getAllReviews } from '../infrastructure/firebase/repositories/reviewsRepository';
+import { buildGuideRatingMap, applyRatings } from '../domain/ratings';
 import FilterSidebar from './search/FilterSidebar';
 import MobileFilterModal from './search/MobileFilterModal';
 import GuideGrid from './search/GuideGrid';
@@ -28,8 +30,8 @@ export default function SearchPage() {
   useEffect(() => {
     const fetchGuides = async () => {
       try {
-        const guidesData = await getAllGuides();
-        setAllGuides(guidesData);
+        const [guidesData, reviews] = await Promise.all([getAllGuides(), getAllReviews()]);
+        setAllGuides(applyRatings(guidesData, buildGuideRatingMap(reviews)));
       } catch (err) {
         console.error('Error fetching guides:', err);
       } finally {

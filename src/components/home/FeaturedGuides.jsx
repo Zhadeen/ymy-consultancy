@@ -2,6 +2,8 @@ import { useRef, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, MapPin, Languages, BadgeCheck } from 'lucide-react';
 import { getFeaturedGuides } from '../../infrastructure/firebase/repositories/guidesRepository';
+import { getAllReviews } from '../../infrastructure/firebase/repositories/reviewsRepository';
+import { buildGuideRatingMap, applyRatings } from '../../domain/ratings';
 import StarRating from '../common/StarRating';
 import ScrollReveal from '../common/ScrollReveal';
 
@@ -20,8 +22,8 @@ export default function FeaturedGuides() {
   useEffect(() => {
     const fetchFeatured = async () => {
       try {
-        const guides = await getFeaturedGuides(8);
-        setGuides(guides);
+        const [guides, reviews] = await Promise.all([getFeaturedGuides(8), getAllReviews()]);
+        setGuides(applyRatings(guides, buildGuideRatingMap(reviews)));
       } catch (err) {
         console.error("Error fetching featured guides:", err);
       } finally {

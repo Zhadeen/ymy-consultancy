@@ -1,10 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Star, X } from 'lucide-react';
 import { serverTimestamp } from 'firebase/firestore';
-import { createReview, getReviewsByTargetId } from '../../infrastructure/firebase/repositories/reviewsRepository';
+import { createReview } from '../../infrastructure/firebase/repositories/reviewsRepository';
 import { updateBooking } from '../../infrastructure/firebase/repositories/bookingsRepository';
-import { updateGuide } from '../../infrastructure/firebase/repositories/guidesRepository';
-import { updateUser } from '../../infrastructure/firebase/repositories/usersRepository';
 
 export default function ReviewModal({ isOpen, close, booking, reviewerRole, reviewer, onSuccess }) {
   const [rating, setRating] = useState(0);
@@ -40,7 +38,13 @@ export default function ReviewModal({ isOpen, close, booking, reviewerRole, revi
     setError(null);
 
     try {
-      // 1. Add review to 'reviews' collection
+      // 1. Add review to 'reviews' collection. When a visitor rates a guide we
+      // also stamp guideId (== targetId) so the guide profile and the list
+      // pages, which query/aggregate reviews by guideId, pick it up. The
+      // guide's average rating is computed from these reviews at read time
+      // (see domain/ratings.js) — we no longer write it back onto the guide
+      // doc, which the security rules reject for a non-owner reviewer and which
+      // was making every submission fail after the review had already saved.
       await createReview({
         bookingId: booking.id,
         reviewerId: reviewer.uid,
@@ -49,6 +53,7 @@ export default function ReviewModal({ isOpen, close, booking, reviewerRole, revi
         reviewerPhoto: reviewer.photo || null,
         targetId: targetId,
         targetName: targetName,
+        ...(isVisitorRatingGuide ? { guideId: targetId } : {}),
         rating: rating,
         text: text,
         createdAt: serverTimestamp(),
@@ -60,29 +65,6 @@ export default function ReviewModal({ isOpen, close, booking, reviewerRole, revi
         [bookingUpdateField]: true,
         updatedAt: serverTimestamp()
       });
-
-      // 3. Recalculate target's average rating
-      const targetReviews = await getReviewsByTargetId(targetId);
-
-      const totalReviews = targetReviews.length;
-      let sumRatings = 0;
-      targetReviews.forEach(r => {
-        sumRatings += (r.rating || 0);
-      });
-      const newAverage = sumRatings / totalReviews;
-
-      // 4. Update the target profile (Guide or User collection)
-      if (isVisitorRatingGuide) {
-        await updateGuide(targetId, {
-          rating: Number(newAverage.toFixed(1)),
-          reviewCount: totalReviews
-        });
-      } else {
-        await updateUser(targetId, {
-          rating: Number(newAverage.toFixed(1)),
-          reviewCount: totalReviews
-        });
-      }
 
       if (onSuccess) onSuccess();
       close();

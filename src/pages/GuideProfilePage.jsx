@@ -3,6 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { serverTimestamp } from 'firebase/firestore';
 import { getGuideById } from '../infrastructure/firebase/repositories/guidesRepository';
 import { createReview, getReviewsByGuideId } from '../infrastructure/firebase/repositories/reviewsRepository';
+import { computeRating } from '../domain/ratings';
 import { useBooking } from '../context/BookingContext';
 import { useAuth } from '../context/AuthContext';
 import VisitorPricingModal from '../components/VisitorPricingModal';
@@ -76,6 +77,13 @@ export default function GuideProfilePage() {
     );
   }
 
+  // Rating shown on the profile is computed from the loaded reviews, not the
+  // guide document. A guide with no reviews yet keeps its stored default.
+  const { rating: computedRating, reviewCount: computedCount } = computeRating(reviews);
+  const displayGuide = computedCount > 0
+    ? { ...guide, rating: computedRating, reviewCount: computedCount }
+    : guide;
+
   // Detect if the logged-in user is viewing their OWN guide profile
   const isOwnProfile = user && guide && user.uid === guide.uid;
 
@@ -148,7 +156,7 @@ export default function GuideProfilePage() {
 
   return (
     <main className="pt-20 min-h-screen bg-dark-800">
-      <ProfileHero guide={guide} isOwnProfile={isOwnProfile} isBookable={isBookable} onBook={handleBook} onMessage={handleMessage} />
+      <ProfileHero guide={displayGuide} isOwnProfile={isOwnProfile} isBookable={isBookable} onBook={handleBook} onMessage={handleMessage} />
 
       {/* Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">

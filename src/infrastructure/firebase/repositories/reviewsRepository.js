@@ -19,3 +19,10 @@ export async function getReviewsByGuideId(guideId) {
   const snap = await getDocs(query(collection(db, 'reviews'), where('guideId', '==', guideId), orderBy('createdAt', 'desc')));
   return snap.docs.map(d => ({ id: d.id, ...d.data() }));
 }
+
+// All reviews, for computing guide ratings on list pages (home, search) in a
+// single read instead of one query per guide. Reviews are publicly readable.
+export async function getAllReviews() {
+  const snap = await getDocs(collection(db, 'reviews'));
+  return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+}
