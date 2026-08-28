@@ -17,6 +17,7 @@ import ApplicationsTab from './admin/ApplicationsTab';
 import BookingsTab from './admin/BookingsTab';
 import SystemTab from './admin/SystemTab';
 import ApplicationDetailModal from './admin/ApplicationDetailModal';
+import ReauthModal from './admin/ReauthModal';
 
 // NOTE: handleWipeData below still uses raw Firestore access (collection/getDocs/writeBatch/db)
 // rather than the repository layer. That's intentional — it's a destructive, cross-collection
@@ -43,6 +44,30 @@ export default function AdminPanel() {
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(null);
   const [selectedApp, setSelectedApp] = useState(null);
+
+  // Re-authentication gate for destructive actions (wipe, disable/enable).
+  // pendingAction holds the work to run once the admin re-enters their password.
+  const [reauthOpen, setReauthOpen] = useState(false);
+  const [reauthLabel, setReauthLabel] = useState('');
+  const [pendingAction, setPendingAction] = useState(null);
+
+  const requireReauth = (label, fn) => {
+    setReauthLabel(label);
+    setPendingAction(() => fn); // store the function itself, not its result
+    setReauthOpen(true);
+  };
+
+  const handleReauthConfirmed = () => {
+    setReauthOpen(false);
+    const fn = pendingAction;
+    setPendingAction(null);
+    if (fn) fn();
+  };
+
+  const handleReauthCancel = () => {
+    setReauthOpen(false);
+    setPendingAction(null);
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -174,13 +199,19 @@ export default function AdminPanel() {
     }
   };
 
-  const handleToggleDisabled = async (targetUser) => {
+  const handleToggleDisabled = (targetUser) => {
     const turningOff = !targetUser.disabled;
     const question = turningOff
       ? `Disable ${targetUser.email}? They will be signed out and blocked from signing in again until you re-enable them.`
       : `Re-enable ${targetUser.email}? They will be able to sign in again.`;
     if (!window.confirm(question)) return;
+    requireReauth(
+      turningOff ? 'disable this account' : 're-enable this account',
+      () => doToggleDisabled(targetUser, turningOff)
+    );
+  };
 
+  const doToggleDisabled = async (targetUser, turningOff) => {
     setActionLoading(targetUser.id);
     try {
       await updateUser(targetUser.id, { disabled: turningOff });
@@ -193,8 +224,9 @@ export default function AdminPanel() {
     }
   };
 
-  const handleWipeData = async () => {
-    const collectionsToWipe = ['guides', 'bookings', 'guide_applications', 'reviews', 'chats', 'users'];
+  const collectionsToWipe = ['guides', 'bookings', 'guide_applications', 'reviews', 'chats', 'users'];
+
+  const handleWipeData = () => {
     const confirmed = window.confirm(
       "CRITICAL ACTION: This will delete ALL " + collectionsToWipe.join(', ') +
       " (except your own admin account). This cannot be undone. Are you absolutely sure?"
@@ -204,6 +236,10 @@ export default function AdminPanel() {
     const doubleConfirmed = window.prompt("Type 'DELETE ALL' to confirm (caps sensitive):");
     if (doubleConfirmed !== 'DELETE ALL') return;
 
+    requireReauth('wipe the entire database', () => doWipeData());
+  };
+
+  const doWipeData = async () => {
     // Track what actually got cleared. A failure partway through used to report
     // only "Wipe failed", which read as "nothing happened" while earlier
     // collections had already been destroyed.
@@ -354,6 +390,14 @@ export default function AdminPanel() {
 
         {activeTab === 'system' && <SystemTab onWipeData={handleWipeData} />}
       </div>
+
+      {reauthOpen && (
+        <ReauthModal
+          actionLabel={reauthLabel}
+          onCancel={handleReauthCancel}
+          onConfirmed={handleReauthConfirmed}
+        />
+      )}
     </main>
   );
 }

@@ -97,6 +97,10 @@ export function AuthProvider({ children }) {
     return authService.resetPassword(email);
   };
 
+  const reauthenticate = async (password) => {
+    return authService.reauthenticate(password);
+  };
+
   const logout = async () => {
     return authService.logout();
   };
@@ -106,7 +110,7 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, isGuide, isAdmin, loading, authError, login, loginWithGoogle, register, logout, resetPassword, updateUserLocal }}>
+    <AuthContext.Provider value={{ user, isGuide, isAdmin, loading, authError, login, loginWithGoogle, register, logout, resetPassword, reauthenticate, updateUserLocal }}>
       {loading ? <LoadingSpinner /> : children}
     </AuthContext.Provider>
   );

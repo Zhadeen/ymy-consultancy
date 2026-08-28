@@ -5,6 +5,8 @@ import {
   updateProfile,
   signInWithPopup,
   GoogleAuthProvider,
+  EmailAuthProvider,
+  reauthenticateWithCredential,
   sendPasswordResetEmail,
   sendEmailVerification,
 } from 'firebase/auth';
@@ -65,6 +67,19 @@ export async function register(name, email, password, role = 'visitor') {
 
 export async function resetPassword(email) {
   return sendPasswordResetEmail(auth, email);
+}
+
+// Re-verify the currently signed-in user's password. Used to gate destructive
+// admin actions so a hijacked or unattended admin session can't run them
+// without the password. Firebase throws on a wrong password (auth/wrong-password
+// or auth/invalid-credential), which the caller surfaces.
+export async function reauthenticate(password) {
+  const current = auth.currentUser;
+  if (!current || !current.email) {
+    throw new Error('No signed-in account to confirm.');
+  }
+  const credential = EmailAuthProvider.credential(current.email, password);
+  await reauthenticateWithCredential(current, credential);
 }
 
 export async function logout() {
