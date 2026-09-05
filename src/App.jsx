@@ -38,6 +38,7 @@ import FloatingContact from './components/common/FloatingContact';
 import Analytics from './components/seo/Analytics';
 import StickyMobileCTA from './components/conversion/StickyMobileCTA';
 import RouteHead from './seo/RouteHead';
+import { HeadProvider } from './seo/HeadProvider';
 import { useAuth } from './context/AuthContext';
 import { Navigate } from 'react-router-dom';
 import { useZendesk } from './hooks/useZendesk';
@@ -86,15 +87,16 @@ function ChatLayout() {
   );
 }
 
-export default function App() {
+// The whole app EXCEPT the router and head provider, so it can be mounted under
+// <BrowserRouter> on the client and a memory router during prerender.
+export function AppTree() {
   useZendesk();
 
   return (
-    <BrowserRouter>
-      <AuthProvider>
-        <BookingProvider>
-          <ScrollToTop />
-          <RouteHead />
+    <AuthProvider>
+      <BookingProvider>
+        <ScrollToTop />
+        <RouteHead />
           {/* Global Ambient Background Effects */}
           <div className="tech-grid" />
           <div className="bg-ambient-glow" />
@@ -170,8 +172,17 @@ export default function App() {
               />
             </Route>
           </Routes>
-        </BookingProvider>
-      </AuthProvider>
+      </BookingProvider>
+    </AuthProvider>
+  );
+}
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <HeadProvider>
+        <AppTree />
+      </HeadProvider>
     </BrowserRouter>
   );
 }

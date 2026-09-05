@@ -1,7 +1,6 @@
 import { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../config/firebase';
-import LoadingSpinner from '../components/common/LoadingSpinner';
 import * as authService from '../application/services/authService';
 import { useIdleTimeout } from '../hooks/useIdleTimeout';
 
@@ -18,7 +17,11 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [isGuide, setIsGuide] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [loading, setLoading] = useState(true);
+  // On the server (prerender) there is no auth to wait for, so start resolved so
+  // pages render their content instead of a spinner. In the browser we still
+  // start `true` so protected routes wait for the real auth state before
+  // deciding whether to redirect (see ProtectedRoute / DashboardRouter).
+  const [loading, setLoading] = useState(typeof window === 'undefined' ? false : true);
   const [authError, setAuthError] = useState(null);
 
   // Signing a disabled account out re-fires this listener with a null user,
@@ -111,7 +114,11 @@ export function AuthProvider({ children }) {
 
   return (
     <AuthContext.Provider value={{ user, isGuide, isAdmin, loading, authError, login, loginWithGoogle, register, logout, resetPassword, reauthenticate, updateUserLocal }}>
-      {loading ? <LoadingSpinner /> : children}
+      {/* No global loading gate: public/prerendered pages render immediately and
+          hydrate cleanly (the tree depends on `user`, which is null on both the
+          server and the client's first paint). Auth-gated screens wait on
+          `loading` themselves via ProtectedRoute / DashboardRouter. */}
+      {children}
     </AuthContext.Provider>
   );
 }

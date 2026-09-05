@@ -117,46 +117,44 @@ Each route's description is distinct (see `ROUTE_META` in `src/config/site.js`).
 
 ---
 
-## 4. ⚠️ PENDING — static prerendering (Step 0) and what depends on it
+## 4. Static prerendering (Step 0) — DONE
 
-**Status: not yet implemented.** This is the one headline item still open, and
-here is the honest reason and the plan.
+**Implemented and verified.** `vite-react-ssg` is incompatible with React Router
+7 and `react-helmet-async` with React 19 (both verified via `npm install` peer
+conflicts), so prerendering uses a **bespoke, zero-runtime-dependency** Vite-SSR
+pipeline:
 
-**Why the spec's tool doesn't work here:** the task suggested `vite-react-ssg`.
-It declares a peer dependency of **React Router ^6**, but this app runs **React
-Router 7.13.2** (verified `npm install` peer conflict). `react-helmet-async`
-likewise caps at **React 18** and rejects this app's **React 19**. Forcing either
-with `--legacy-peer-deps` onto a live, auth-hardened marketplace risks subtle
-hydration bugs. So prerendering must use a **bespoke, dependency-light** pipeline.
+- `src/App.jsx` exports a router-agnostic **`AppTree`**; the client wraps it in
+  `<BrowserRouter>`, the prerender in `<MemoryRouter>`.
+- `AuthProvider` starts `loading = false` on the server (no auth to wait for) so
+  pages prerender as their content, not a spinner — and its global loading gate
+  was removed so the client hydrates the same markup cleanly. Protected routes
+  still wait for auth via `ProtectedRoute` / `DashboardRouter`.
+- `src/entry-server.jsx` renders a URL with a `HeadProvider` **collector**;
+  `scripts/prerender.mjs` serialises that head (title, description, canonical,
+  robots, OG/Twitter, JSON-LD) into the built `index.html` and writes
+  `dist/<route>/index.html` for every route in `PRERENDER_ROUTES`.
+- It also emits **`dist/404.html`**, **`dist/sitemap.xml`** (indexable routes
+  only — `/thank-you` is excluded), and **`dist/app.html`** (empty shell for
+  client-only routes so they don't hydrate-mismatch the home prerender).
+- Build: `npm run build` = `vite build && vite build --ssr … && node
+  scripts/prerender.mjs`.
+- `vercel.json` serves prerendered files directly, rewrites the **client-only**
+  routes (`/search`, `/guide/:id`, dashboards, auth, `/admin`…) to `/app.html`,
+  leaves `/api/*` alone, and lets unknown paths fall through to **404.html with a
+  real 404 status** (no soft 200 shell).
 
-**The plan (equivalent prerender step):**
-1. Extract the app tree so it's router-agnostic: a `<AppTree>` that renders the
-   providers + routes but **not** the router. Client wraps it in `<BrowserRouter>`;
-   the prerender wraps it in `<StaticRouter>`/`createMemoryRouter` per URL.
-2. Guard SSR: in `AuthProvider`, start `loading = false` when `typeof window ===
-   'undefined'` so pages prerender as their content (today it would prerender the
-   `<LoadingSpinner/>`). Effects (`onAuthStateChanged`, Zendesk, IntersectionObserver)
-   already don't run during SSR render.
-3. Add `entry-server.jsx` that renders a URL with a `HeadProvider` **collector**
-   (already built — `src/seo/HeadProvider.jsx`); serialise the collector into the
-   `index.html` `<head>` (title, meta, canonical, OG, JSON-LD).
-4. `scripts/prerender.mjs`: `vite build` → `vite build --ssr entry-server` →
-   loop `PRERENDER_ROUTES` (already exported from `site.js`) → write
-   `dist/<route>/index.html`. Emit `dist/404.html`. Generate `dist/sitemap.xml`
-   from `PRERENDER_ROUTES`. Wire into `"build"`.
-5. `vercel.json`: replace the catch-all `→ /` rewrite so prerendered files are
-   served directly and unknown paths return the real **404.html** with a 404
-   status (today's rewrite makes everything a 200 SPA shell). Keep `/api/*`
-   untouched.
+**Verified:** every public route emits static HTML with exactly one `<title>`,
+unique meta, canonical, robots, OG, and JSON-LD in the raw `<head>`; the client
+**hydrates with no console errors**; SPA navigation and client-only routes work;
+`/nonexistent` returns a 404 status.
 
-**Items that land only once prerendering is in:**
-- OG image + per-route meta visible to crawlers in **static** HTML (they already
-  work client-side / for SPA navigation today).
-- `sitemap.xml` (generated from `PRERENDER_ROUTES`).
-- True `404` status for unknown paths.
-
-Everything in §3 works today client-side; prerendering makes the `<head>` +
-JSON-LD present in the raw HTML that crawlers read without running JS.
+**Known minor note:** content wrapped in the existing `ScrollReveal` component
+prerenders at `opacity:0` (it animates in on scroll via IntersectionObserver).
+The text is present in the HTML for crawlers, but users with JavaScript disabled
+won't see those specific sections. Mostly affects Terms/Privacy; the new pages
+don't use ScrollReveal. Optional future tweak: default `ScrollReveal` to visible
+when there's no IntersectionObserver.
 
 ---
 
@@ -173,10 +171,22 @@ worth flagging):
 
 ## 6. Acceptance status
 - ✅ build + lint pass; no new lint over baseline.
+- ✅ Prerender emits static HTML per public route (verified in `dist/`).
 - ✅ No fabricated reviews / address / GA ID / response-time / case-study data.
 - ✅ Unique title + description per route (table above).
+- ✅ OG image resolves in the **prerendered** `<head>` (absolute URL), not only client-injected.
 - ✅ JSON-LD structurally valid; unsupplied fields omitted (FAQPage/areaServed/address).
-- ⏳ Prerendered static HTML per route, OG-in-static-head, sitemap.xml, true 404 —
-  pending the §4 prerender pipeline.
-- ⏳ Lighthouse SEO/a11y — meaningful to measure after prerendering; run
-  `npx vite preview` + Lighthouse once §4 lands.
+- ✅ `sitemap.xml` (indexable routes only) + `robots.txt` + real 404 status for unknown paths.
+- ⏳ **Lighthouse SEO/a11y** — run it against a deploy (or `npm run build` then a
+  static serve): `npx lighthouse https://<preview-url>/ --only-categories=seo,accessibility`.
+  Expected strong SEO (per-route title/meta/canonical, crawlable static content,
+  sitemap, valid structured data). Likely a11y follow-ups: color-contrast on muted
+  gold-on-dark text, and a couple of pre-existing decorative images' alt text
+  (new components already use proper `alt` / `aria-hidden`).
+
+## 7. Running the prerender locally
+```bash
+npm run build          # client build + SSR build + prerender -> dist/
+# serve dist/ with clean-URL + directory-index resolution to preview, e.g.:
+npx serve dist         # or any static server that maps /faq -> faq/index.html
+```
