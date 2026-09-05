@@ -5,9 +5,23 @@ export default function PrivacyPage() {
     <main className="pt-28 pb-20 min-h-screen bg-dark-900 px-4">
       <div className="max-w-4xl mx-auto">
         <ScrollReveal>
-          <div className="text-center mb-12">
+          <div className="text-center mb-8">
             <h1 className="font-heading text-4xl md:text-5xl font-bold text-cream mb-4">Privacy Policy</h1>
             <p className="text-muted text-lg">How we collect and manage your personal data.</p>
+          </div>
+        </ScrollReveal>
+        {/* TEMPLATE banner — this policy is a starting template, not legal advice.
+            TODO(owner): have this reviewed and finalized by legal counsel before
+            relying on it. See SETUP.md. */}
+        <ScrollReveal delay={50}>
+          <div className="mb-8 rounded-2xl border border-amber-500/40 bg-amber-500/10 p-4 sm:p-5 flex items-start gap-3">
+            <span className="text-amber-400 text-lg leading-none mt-0.5" aria-hidden="true">⚠️</span>
+            <p className="text-amber-200/90 text-sm leading-relaxed">
+              <strong className="text-amber-100">Template — pending legal review.</strong> This
+              privacy policy is a generic starting point provided for convenience. It is not legal
+              advice and may not reflect the laws that apply to your business. Please review and
+              finalize it with qualified legal counsel before publishing.
+            </p>
           </div>
         </ScrollReveal>
         <ScrollReveal delay={100}>

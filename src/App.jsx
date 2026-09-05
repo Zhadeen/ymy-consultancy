@@ -30,7 +30,14 @@ import PaymentSuccess from './pages/PaymentSuccess';
 import PaymentCancel from './pages/PaymentCancel';
 import SubscriptionSuccess from './pages/SubscriptionSuccess';
 import VisitorPricingPage from './pages/VisitorPricingPage';
+import FAQPage from './pages/FAQPage';
+import StoriesPage from './pages/StoriesPage';
+import ContactPage from './pages/ContactPage';
+import ThankYouPage from './pages/ThankYouPage';
 import FloatingContact from './components/common/FloatingContact';
+import Analytics from './components/seo/Analytics';
+import StickyMobileCTA from './components/conversion/StickyMobileCTA';
+import RouteHead from './seo/RouteHead';
 import { useAuth } from './context/AuthContext';
 import { Navigate } from 'react-router-dom';
 import { useZendesk } from './hooks/useZendesk';
@@ -87,12 +94,15 @@ export default function App() {
       <AuthProvider>
         <BookingProvider>
           <ScrollToTop />
+          <RouteHead />
           {/* Global Ambient Background Effects */}
           <div className="tech-grid" />
           <div className="bg-ambient-glow" />
           <div className="bg-ambient-glow-white pointer-events-none" />
           
+          <Analytics />
           <FloatingContact />
+          <StickyMobileCTA />
           <Routes>
             {/* Main layout with footer */}
             <Route element={<Layout />}>
@@ -117,6 +127,10 @@ export default function App() {
               <Route path="/payment/cancel" element={<PaymentCancel />} />
               <Route path="/subscription/success" element={<SubscriptionSuccess />} />
               <Route path="/visitor-pricing" element={<VisitorPricingPage />} />
+              <Route path="/faq" element={<FAQPage />} />
+              <Route path="/stories" element={<StoriesPage />} />
+              <Route path="/contact" element={<ContactPage />} />
+              <Route path="/thank-you" element={<ThankYouPage />} />
 
               {/* Catch-all. Must stay last inside this layout so every real
                   route above wins first. Rendered with the navbar and footer

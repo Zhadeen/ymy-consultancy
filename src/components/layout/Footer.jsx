@@ -68,6 +68,7 @@ export default function Footer() {
                 { to: '/search', label: 'Find a Local Guide' },
                 { to: '/#how-it-works', label: 'How It Works' },
                 { to: '/guide-register', label: 'Become a Local Guide' },
+                { to: '/stories', label: 'Traveler Stories' },
                 { to: '/sign-in', label: 'Sign In' },
               ].map(link => (
                 <Link key={link.to} to={link.to} className="text-muted text-sm hover:text-gold transition-colors duration-300">
@@ -83,6 +84,8 @@ export default function Footer() {
             <div className="flex flex-col gap-3">
               {[
                 { label: 'Help Center', to: '/help' },
+                { label: 'FAQ', to: '/faq' },
+                { label: 'Contact Us', to: '/contact' },
                 { label: 'Safety', to: '/safety' },
                 { label: 'Pricing', to: '/pricing' },
                 { label: 'Chat on WhatsApp', href: 'https://wa.me/905435082886' },

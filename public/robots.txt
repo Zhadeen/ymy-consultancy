@@ -1,0 +1,18 @@
+User-agent: *
+Allow: /
+
+# Private / app areas — keep out of the index
+Disallow: /dashboard
+Disallow: /settings
+Disallow: /admin
+Disallow: /ymy-console
+Disallow: /chat
+Disallow: /booking
+Disallow: /payment
+Disallow: /subscription
+Disallow: /login
+Disallow: /register
+Disallow: /sign-in
+Disallow: /thank-you
+
+Sitemap: https://www.ymycons.com/sitemap.xml
