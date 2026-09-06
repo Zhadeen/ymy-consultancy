@@ -109,11 +109,11 @@ export default function LoginPage() {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="relative">
               <Mail size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-dark" />
-              <input type="email" placeholder="Email address" value={email} onChange={e => setEmail(e.target.value)} className="input-dark !pl-10" id="login-email" />
+              <input type="email" aria-label="Email address" placeholder="Email address" value={email} onChange={e => setEmail(e.target.value)} className="input-dark !pl-10" id="login-email" />
             </div>
             <div className="relative">
               <Lock size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-dark" />
-              <input type={showPassword ? 'text' : 'password'} placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} className="input-dark !pl-10 !pr-12" id="login-password" />
+              <input type={showPassword ? 'text' : 'password'} aria-label="Password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} className="input-dark !pl-10 !pr-12" id="login-password" />
               <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-dark hover:text-cream transition-colors">
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>

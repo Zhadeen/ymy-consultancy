@@ -252,20 +252,21 @@ export default function GuideRegistration() {
           {step === 0 && (
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
-                <input type="text" placeholder="First Name" value={form.firstName} onChange={e => update('firstName', e.target.value)} className="input-dark" />
-                <input type="text" placeholder="Last Name" value={form.lastName} onChange={e => update('lastName', e.target.value)} className="input-dark" />
+                <input aria-label="First name" type="text" placeholder="First Name" value={form.firstName} onChange={e => update('firstName', e.target.value)} className="input-dark" />
+                <input aria-label="Last name" type="text" placeholder="Last Name" value={form.lastName} onChange={e => update('lastName', e.target.value)} className="input-dark" />
               </div>
-              <input type="email" placeholder="Email Address" value={form.email} onChange={e => update('email', e.target.value)} className="input-dark" />
-              <input type="password" placeholder="Create Password (min 8 chars)" value={form.password} onChange={e => update('password', e.target.value)} className="input-dark" />
+              <input aria-label="Email address" type="email" placeholder="Email Address" value={form.email} onChange={e => update('email', e.target.value)} className="input-dark" />
+              <input aria-label="Create password (minimum 8 characters)" type="password" placeholder="Create Password (min 8 chars)" value={form.password} onChange={e => update('password', e.target.value)} className="input-dark" />
               <select value={form.country} onChange={e => { const selected = COUNTRIES.find(c => c.name === e.target.value); update('country', e.target.value); update('countryCode', selected?.code || ''); update('phoneCode', selected?.phoneCode || ''); update('city', ''); }} className="input-dark">
                 <option value="">Select your country</option>
                 {COUNTRIES.map(c => <option key={c.code} value={c.name}>{c.flag} {c.name}</option>)}
               </select>
               {form.country && (
                 <div className="mt-4">
-                  <input 
-                    type="text" 
-                    placeholder="City (e.g. Kyoto, New York)" 
+                  <input
+                    type="text"
+                    aria-label="City"
+                    placeholder="City (e.g. Kyoto, New York)"
                     value={form.city} 
                     onChange={e => update('city', e.target.value)} 
                     className="input-dark" 
@@ -276,7 +277,7 @@ export default function GuideRegistration() {
                 <div className="w-28 flex-shrink-0">
                   <input type="text" value={form.phoneCode} readOnly placeholder="+XXX" className="input-dark text-center" />
                 </div>
-                <input type="tel" placeholder="Your phone number" value={form.phone} onChange={e => update('phone', e.target.value)} className="input-dark flex-1" />
+                <input aria-label="Your phone number" type="tel" placeholder="Your phone number" value={form.phone} onChange={e => update('phone', e.target.value)} className="input-dark flex-1" />
               </div>
             </div>
           )}
@@ -357,7 +358,7 @@ export default function GuideRegistration() {
             <div className="space-y-6">
               <div>
                 <label className="text-sm text-cream font-medium mb-2 block">Bio</label>
-                <textarea rows={5} placeholder="Tell travelers about yourself, your expertise, and what makes your experiences special..." value={form.bio} onChange={e => update('bio', e.target.value)} className="input-dark resize-none" />
+                <textarea aria-label="About you" rows={5} placeholder="Tell travelers about yourself, your expertise, and what makes your experiences special..." value={form.bio} onChange={e => update('bio', e.target.value)} className="input-dark resize-none" />
                 <p className="text-muted-dark text-xs mt-1">{form.bio.length}/500 characters</p>
               </div>
               <div>
@@ -380,7 +381,7 @@ export default function GuideRegistration() {
               </div>
               <div>
                 <label className="text-sm text-cream font-medium mb-2 block">Specialties</label>
-                <input type="text" placeholder="e.g. History, Food, Architecture, Nightlife" value={form.specialties} onChange={e => update('specialties', e.target.value)} className="input-dark" />
+                <input aria-label="Specialties" type="text" placeholder="e.g. History, Food, Architecture, Nightlife" value={form.specialties} onChange={e => update('specialties', e.target.value)} className="input-dark" />
               </div>
             </div>
           )}
@@ -396,7 +397,7 @@ export default function GuideRegistration() {
                   <p className="text-muted-dark text-xs mb-3">4 hours</p>
                   <div className="relative">
                     <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gold font-bold">$</span>
-                    <input type="number" placeholder="120" value={form.priceHalfDay} onChange={e => update('priceHalfDay', e.target.value)} className="input-dark !pl-8 text-center" />
+                    <input type="number" aria-label="Half-day price in USD" placeholder="120" value={form.priceHalfDay} onChange={e => update('priceHalfDay', e.target.value)} className="input-dark !pl-8 text-center" />
                   </div>
                 </div>
                 <div className="card-dark p-5 text-center border-gold !bg-dark-600">
@@ -405,7 +406,7 @@ export default function GuideRegistration() {
                   <p className="text-muted-dark text-xs mb-3">8 hours</p>
                   <div className="relative">
                     <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gold font-bold">$</span>
-                    <input type="number" placeholder="200" value={form.priceFullDay} onChange={e => update('priceFullDay', e.target.value)} className="input-dark !pl-8 text-center" />
+                    <input type="number" aria-label="Full-day price in USD" placeholder="200" value={form.priceFullDay} onChange={e => update('priceFullDay', e.target.value)} className="input-dark !pl-8 text-center" />
                   </div>
                 </div>
                 <div className="card-dark p-5 text-center !bg-dark-600">
@@ -414,7 +415,7 @@ export default function GuideRegistration() {
                   <p className="text-muted-dark text-xs mb-3">Per hour</p>
                   <div className="relative">
                     <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gold font-bold">$</span>
-                    <input type="number" placeholder="50" value={form.priceCustom} onChange={e => update('priceCustom', e.target.value)} className="input-dark !pl-8 text-center" />
+                    <input type="number" aria-label="Custom hourly price in USD" placeholder="50" value={form.priceCustom} onChange={e => update('priceCustom', e.target.value)} className="input-dark !pl-8 text-center" />
                   </div>
                 </div>
               </div>

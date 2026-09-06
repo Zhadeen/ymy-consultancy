@@ -133,6 +133,20 @@ export const ROUTE_META = {
     index: true,
     og: '/og/home.png',
   },
+  '/cookies': {
+    title: 'Cookies Policy',
+    description:
+      'The cookies and trackers the YMY site uses, categorized, and how to accept or reject non-essential ones. A template pending legal review.',
+    index: true,
+    og: '/og/home.png',
+  },
+  '/refunds': {
+    title: 'Refund & Cancellation Policy',
+    description:
+      'How cancellations and refunds work for YMY guide bookings. A template pending legal review; exact terms set by the operator.',
+    index: true,
+    og: '/og/home.png',
+  },
   '/faq': {
     title: 'Frequently Asked Questions',
     description:
@@ -171,7 +185,7 @@ export const ROUTE_META = {
 // The public, prerendered, indexable routes (drives sitemap + SSG route list).
 export const PRERENDER_ROUTES = [
   '/', '/pricing', '/visitor-pricing', '/help', '/safety',
-  '/cancellation', '/terms', '/privacy', '/faq', '/stories', '/contact', '/thank-you',
+  '/cancellation', '/terms', '/privacy', '/cookies', '/refunds', '/faq', '/stories', '/contact', '/thank-you',
 ];
 
 // FAQ — exactly 5. Technical/marketplace-services framing. Answers are the

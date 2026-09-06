@@ -2,21 +2,8 @@ import { Link } from 'react-router-dom';
 import { Globe } from 'lucide-react'; // if needed later
 import { Mail, MapPin, Phone, ExternalLink, Hash, Heart, Play, Shield } from 'lucide-react';
 import logo from '../../assets/logo.png';
-import { useState } from 'react';
 
 export default function Footer() {
-  const [email, setEmail] = useState('');
-  const [subscribed, setSubscribed] = useState(false);
-
-  const handleSubscribe = (e) => {
-    e.preventDefault();
-    if (email) {
-      setSubscribed(true);
-      setEmail('');
-      setTimeout(() => setSubscribed(false), 3000);
-    }
-  };
-
   return (
     <footer className="bg-dark-900 border-t border-dark-600/50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
@@ -90,8 +77,10 @@ export default function Footer() {
                 { label: 'Pricing', to: '/pricing' },
                 { label: 'Chat on WhatsApp', href: 'https://wa.me/905435082886' },
                 { label: 'Cancellation Policy', to: '/cancellation' },
+                { label: 'Refund Policy', to: '/refunds' },
                 { label: 'Terms of Service', to: '/terms' },
                 { label: 'Privacy Policy', to: '/privacy' },
+                { label: 'Cookies Policy', to: '/cookies' },
               ].map(item => (
                 item.to ? (
                   <Link key={item.label} to={item.to} className="text-muted text-sm hover:text-gold transition-colors duration-300">
@@ -106,27 +95,16 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Newsletter */}
+          {/* Get in touch — replaced the non-functional newsletter capture, which
+              collected emails it never stored (COMPLIANCE.md M4). */}
           <div>
-            <h4 className="font-heading text-cream font-semibold mb-4">Stay Inspired</h4>
+            <h4 className="font-heading text-cream font-semibold mb-4">Get in Touch</h4>
             <p className="text-muted text-sm mb-4">
-              Travel tips, new destinations, and exclusive offers. No spam, ever.
+              Questions about booking a guide, becoming a guide, or partnerships? We're happy to help.
             </p>
-            <form onSubmit={handleSubscribe} className="flex gap-2">
-              <input
-                type="email"
-                placeholder="Your email"
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-                className="input-dark text-sm !py-2.5 flex-1"
-              />
-              <button type="submit" className="btn-gold text-sm !px-4 !py-2.5 whitespace-nowrap">
-                {subscribed ? '✓' : 'Join'}
-              </button>
-            </form>
-            {subscribed && (
-              <p className="text-gold text-xs mt-2 animate-fade-in">Welcome aboard! ✨</p>
-            )}
+            <Link to="/contact" className="btn-gold text-sm !px-5 !py-2.5 inline-flex whitespace-nowrap">
+              Contact us
+            </Link>
           </div>
         </div>
       </div>

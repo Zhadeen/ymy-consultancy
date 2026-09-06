@@ -30,7 +30,10 @@ export default {
         },
         muted: {
           DEFAULT: '#A0A0A0',
-          dark: '#6B6B6B',
+          // Was #6B6B6B (~3.9:1 on near-black — fails WCAG AA). Lifted to
+          // #8A8A8A (~5.7:1 on #0a0a0a) so muted-dark text meets AA. See
+          // COMPLIANCE.md H5.
+          dark: '#8A8A8A',
         },
       },
       fontFamily: {

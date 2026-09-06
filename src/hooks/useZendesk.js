@@ -1,8 +1,11 @@
 import { useEffect } from 'react';
 
-export function useZendesk() {
+export function useZendesk(enabled = true) {
   useEffect(() => {
-    // Only load if a key is provided
+    // The Zendesk widget sets cookies, so it is a non-essential tracker: only
+    // load it once the visitor has accepted cookies (enabled) AND a key exists.
+    if (!enabled) return;
+
     const zendeskKey = import.meta.env.VITE_ZENDESK_KEY;
     if (!zendeskKey) {
       console.log('No Zendesk key found in environment variables.');
@@ -53,5 +56,5 @@ export function useZendesk() {
     return () => {
       // Cleanup if needed
     };
-  }, []);
+  }, [enabled]);
 }

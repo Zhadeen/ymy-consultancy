@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { Mail, Send, MessageCircle } from 'lucide-react';
 import Seo from '../seo/Seo';
 import { ROUTE_META, SITE } from '../config/site';
@@ -13,6 +13,7 @@ export default function ContactPage() {
   const meta = ROUTE_META['/contact'];
   const navigate = useNavigate();
   const [form, setForm] = useState({ name: '', email: '', message: '', company: '' });
+  const [agreed, setAgreed] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -20,6 +21,10 @@ export default function ContactPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!agreed) {
+      setError('Please agree to the Privacy Policy so we can respond to you.');
+      return;
+    }
     setLoading(true);
     setError(null);
     try {
@@ -72,6 +77,19 @@ export default function ContactPage() {
             className="hidden" aria-hidden="true"
             name="company"
           />
+
+          <label className="flex items-start gap-2.5 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={agreed}
+              onChange={(e) => setAgreed(e.target.checked)}
+              className="accent-gold w-4 h-4 mt-0.5 flex-shrink-0"
+            />
+            <span className="text-muted text-sm leading-snug">
+              I agree that my details will be used to respond to my enquiry, as described in the{' '}
+              <Link to="/privacy" className="text-gold hover:underline">Privacy Policy</Link>.
+            </span>
+          </label>
 
           {error && <p className="text-red-400 text-sm" role="alert">{error}</p>}
 

@@ -6,7 +6,11 @@ import { organizationLd, webSiteLd, localBusinessLd } from './jsonLd';
 // Single source of per-route <head> for pages that don't manage their own.
 // Pages needing page-specific JSON-LD (FAQ, Stories, Contact, Thank-you) render
 // their own <Seo>, so this skips them to avoid a double head.
-const SELF_MANAGED = new Set(['/faq', '/stories', '/contact', '/thank-you']);
+const SELF_MANAGED = new Set([
+  '/faq', '/stories', '/contact', '/thank-you',
+  // Legal pages render their own <Seo> via LegalPage.
+  '/privacy', '/terms', '/cookies', '/refunds',
+]);
 
 export default function RouteHead() {
   const { pathname } = useLocation();

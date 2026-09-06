@@ -25,6 +25,8 @@ import SafetyPage from './pages/SafetyPage';
 import CancellationPage from './pages/CancellationPage';
 import TermsPage from './pages/TermsPage';
 import PrivacyPage from './pages/PrivacyPage';
+import CookiesPage from './pages/CookiesPage';
+import RefundsPage from './pages/RefundsPage';
 import PricingPage from './pages/PricingPage';
 import PaymentSuccess from './pages/PaymentSuccess';
 import PaymentCancel from './pages/PaymentCancel';
@@ -39,6 +41,8 @@ import Analytics from './components/seo/Analytics';
 import StickyMobileCTA from './components/conversion/StickyMobileCTA';
 import RouteHead from './seo/RouteHead';
 import { HeadProvider } from './seo/HeadProvider';
+import { useConsent } from './consent/useConsent';
+import CookieBanner from './consent/CookieBanner';
 import { useAuth } from './context/AuthContext';
 import { Navigate } from 'react-router-dom';
 import { useZendesk } from './hooks/useZendesk';
@@ -90,7 +94,11 @@ function ChatLayout() {
 // The whole app EXCEPT the router and head provider, so it can be mounted under
 // <BrowserRouter> on the client and a memory router during prerender.
 export function AppTree() {
-  useZendesk();
+  // The Zendesk chat widget is a non-essential (cookie-setting) tracker, so it
+  // loads only after the visitor accepts cookies. Analytics is gated the same
+  // way inside <Analytics />.
+  const consent = useConsent();
+  useZendesk(consent === 'accepted');
 
   return (
     <AuthProvider>
@@ -105,6 +113,7 @@ export function AppTree() {
           <Analytics />
           <FloatingContact />
           <StickyMobileCTA />
+          <CookieBanner />
           <Routes>
             {/* Main layout with footer */}
             <Route element={<Layout />}>
@@ -124,6 +133,8 @@ export function AppTree() {
               <Route path="/cancellation" element={<CancellationPage />} />
               <Route path="/terms" element={<TermsPage />} />
               <Route path="/privacy" element={<PrivacyPage />} />
+              <Route path="/cookies" element={<CookiesPage />} />
+              <Route path="/refunds" element={<RefundsPage />} />
               <Route path="/pricing" element={<PricingPage />} />
               <Route path="/payment/success" element={<PaymentSuccess />} />
               <Route path="/payment/cancel" element={<PaymentCancel />} />

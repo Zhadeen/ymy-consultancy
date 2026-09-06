@@ -108,22 +108,22 @@ export default function RegisterPage() {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="relative">
                 <User size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-dark" />
-                <input type="text" placeholder="Full Name" value={name} onChange={e => setName(e.target.value)} className="input-dark !pl-10" id="register-name" />
+                <input type="text" aria-label="Full name" placeholder="Full Name" value={name} onChange={e => setName(e.target.value)} className="input-dark !pl-10" id="register-name" />
               </div>
               <div className="relative">
                 <Mail size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-dark" />
-                <input type="email" placeholder="Email address" value={email} onChange={e => setEmail(e.target.value)} className="input-dark !pl-10" id="register-email" />
+                <input type="email" aria-label="Email address" placeholder="Email address" value={email} onChange={e => setEmail(e.target.value)} className="input-dark !pl-10" id="register-email" />
               </div>
               <div className="relative">
                 <Lock size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-dark" />
-                <input type={showPassword ? 'text' : 'password'} placeholder="Password (8+ characters)" value={password} onChange={e => setPassword(e.target.value)} className="input-dark !pl-10 !pr-12" id="register-password" />
+                <input type={showPassword ? 'text' : 'password'} aria-label="Password (8 or more characters)" placeholder="Password (8+ characters)" value={password} onChange={e => setPassword(e.target.value)} className="input-dark !pl-10 !pr-12" id="register-password" />
                 <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-dark hover:text-cream transition-colors">
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
               <div className="relative">
                 <Lock size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-dark" />
-                <input type="password" placeholder="Confirm password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} className="input-dark !pl-10" id="register-confirm" />
+                <input type="password" aria-label="Confirm password" placeholder="Confirm password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} className="input-dark !pl-10" id="register-confirm" />
               </div>
               <label className="flex items-start gap-2 cursor-pointer group">
                 <input 
@@ -133,7 +133,7 @@ export default function RegisterPage() {
                   onChange={(e) => setAgreedToTerms(e.target.checked)}
                 />
                 <span className="text-[11px] text-muted leading-tight group-hover:text-cream transition-colors">
-                  I agree to the <a href="#" className="text-gold hover:underline">Terms of Service</a> and <a href="#" className="text-gold hover:underline">Privacy Policy</a>
+                  I agree to the <Link to="/terms" className="text-gold hover:underline">Terms of Service</Link> and <Link to="/privacy" className="text-gold hover:underline">Privacy Policy</Link>
                 </span>
               </label>
               <button type="submit" className="btn-gold w-full !py-3.5 text-base" id="register-submit-btn">

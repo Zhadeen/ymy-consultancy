@@ -185,15 +185,36 @@ plausibly has cross-border users. The following **likely** apply:
 
 ---
 
-## 8. Proposed Phase 2 scope (for your approval — NOT yet done)
+## 8. Phase 2 — remediation completed (this pass)
 
-Once you've reviewed the above, Phase 2 would: create `src/config/legal.js` (owner
-placeholders) + DRAFT-bannered `/privacy`, `/terms`, `/cookies`, `/refunds`
-reflecting the **actual** flows in §1-§2; add a consent gate that blocks GA +
-Zendesk + non-essential embeds until opt-in (reject-all == accept-all); add
-unchecked consent checkboxes linking to `/privacy` on the register + contact
-forms and fix the dead `href="#"` links; remove the false/unsupported claims
-(H1) and the real-face placeholders (H2); trim Stripe metadata (H3); fix contrast
-(H5) and form labels (H6); and either wire or remove the newsletter (M4). Every
-legal page will carry the DRAFT banner and nothing will be described as
-"compliant".
+All legal pages carry a visible DRAFT banner; nothing is described as "compliant".
+
+| Item | Action taken | Status |
+|------|--------------|--------|
+| Legal pages | New `src/config/legal.js` (all owner values as highlighted `[OWNER MUST PROVIDE: …]`) drives DRAFT-bannered **/privacy, /terms, /cookies, /refunds** via `LegalPage`. Privacy/cookies reflect the **actual** flows in §1-§2. Prerendered + in sitemap. | ✅ |
+| C2 privacy inaccuracy | New privacy policy does **not** claim geolocation (the app collects none) and no longer says "encrypted passwords". Register consent links now go to `/terms` and `/privacy` (were `href="#"`). | ✅ |
+| C3 consent | Cookie banner (`src/consent/`) blocks **Google Analytics and Zendesk** until "Accept all"; "Reject non-essential" is equally prominent. Read via `useSyncExternalStore` (SSR/hydration-safe). **Proven in-browser:** pre-consent → no `ze-snippet`, no GA, banner shown; after Accept → Zendesk loads. Reject keeps both off. | ✅ |
+| M1 form consent | `/contact` now has an **unchecked, required** consent checkbox linking to `/privacy`. Register already had one (default off) — its dead links are fixed. | ✅ |
+| H3 data minimization | `visitPurpose` / `localExperience` free-text **removed from Stripe metadata** (`api/create-checkout-session.js`); still stored in Firestore, not shared with the processor. | ✅ |
+| M4 newsletter | Non-functional email capture **removed** from the footer; replaced with a "Contact us" link (no data collected into a dead end). | ✅ |
+| H5 contrast | `muted-dark` token `#6B6B6B → #8A8A8A` (tailwind.config.js): **3.72:1 → 5.73:1** on near-black — passes WCAG AA. Fixes all ~100 usages at once. | ✅ |
+| H6 labels | `aria-label` added to all placeholder-only inputs on **Login, Register, and Guide onboarding** (name/email/password/phone/city/bio/specialties/prices). | ✅ |
+| H1 stats | **Left unchanged at owner's instruction** ("I have real numbers"). ➜ Owner must be able to substantiate "10K+ Happy Travelers", "500+", "50+ cities", "since 2024" (H1 stays an open owner-substantiation item). |   owner |
+| H2 guide avatars | **Left unchanged at owner's instruction.** ⚠️ Note for the record: the fallback array `GUIDE_PHOTOS` (`mockData.js:275`) still contains **`images.unsplash.com` URLs of real faces**, used when a guide has no photo. If any depict a real person without a release, the misrepresentation/publicity-rights risk (H2) remains — owner to confirm rights or replace. | ⚠️ owner |
+
+### Accessibility — before / after
+
+| Check | Before | After |
+|-------|--------|-------|
+| Contrast (`muted-dark`) | ❌ 3.72:1 (fails AA), ~100 uses | ✅ 5.73:1 (passes AA) |
+| Form labels (login/register/guide) | ❌ placeholder-only | ✅ `aria-label` on every input |
+| Alt text | all `<img>` have `alt`; new components use `alt`/`aria-hidden` | unchanged (no regressions) |
+| Keyboard / focus | native controls reachable | cookie banner + consent checkboxes are native, reachable |
+| Button labels | already specific | unchanged |
+
+**Still open (owner):** everything in §6 (`[OWNER MUST PROVIDE]`) and §7 (counsel)
+remains — the legal pages show highlighted placeholders until you fill them, and
+H1/H2 above are your calls to substantiate/replace. A self-service data
+export/deletion feature (M6) and defined retention (M7, incl. ID documents) are
+still owner/engineering follow-ups, and the ID-document-at-public-URL exposure
+(C1) needs the authenticated-delivery work flagged in the earlier security audit.

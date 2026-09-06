@@ -1,13 +1,15 @@
 import { useEffect } from 'react';
 import { SITE } from '../../config/site';
+import { useConsent } from '../../consent/useConsent';
 
-// GA4 loads ONLY when VITE_GA_ID is set at build time. When unset, this renders
-// nothing and injects no script — analytics is fully disabled, never with a
-// placeholder or invented measurement ID.
+// GA4 loads ONLY when BOTH: VITE_GA_ID is set at build time, AND the visitor has
+// accepted cookies. When unset or not consented, nothing is injected — analytics
+// never fires before consent, and never with a placeholder/invented ID.
 export default function Analytics() {
   const id = SITE.gaId;
+  const consent = useConsent();
   useEffect(() => {
-    if (!id) return;
+    if (!id || consent !== 'accepted') return;
     if (document.getElementById('ga4-src')) return;
 
     const s = document.createElement('script');
@@ -21,7 +23,7 @@ export default function Analytics() {
     window.gtag = gtag;
     gtag('js', new Date());
     gtag('config', id);
-  }, [id]);
+  }, [id, consent]);
 
   return null;
 }

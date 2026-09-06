@@ -52,8 +52,10 @@ export default async function handler(req, res) {
         type: 'booking_payment',
         guests,
         tourType,
-        visitPurpose: bookingData.visitPurpose || '',
-        localExperience: bookingData.localExperience || '',
+        // Data minimization (COMPLIANCE.md H3): the free-text visitPurpose /
+        // localExperience fields are NOT sent to Stripe. They are already
+        // persisted to Firestore on the pre-checkout booking, so the payment
+        // processor does not need them.
         bookingId: bookingData.bookingId || ''
       },
       // Note: In a real Stripe Connect Destination Charge, you would add:
