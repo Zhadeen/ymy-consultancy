@@ -27,3 +27,6 @@ dist-ssr
 .env.local
 .env.*.local
 .gstack/
+
+# iyzico logo source pack (only the footer band in public/payment-logos is used)
+iyzico-logo-pack/
