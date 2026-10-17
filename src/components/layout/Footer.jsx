@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Globe } from 'lucide-react'; // if needed later
-import { Mail, MapPin, Phone, ExternalLink, Hash, Heart, Play, Shield } from 'lucide-react';
+import { Mail, MapPin, Phone, ExternalLink, Hash, Heart, Play } from 'lucide-react';
 import logo from '../../assets/logo.png';
 import PaymentLogos from '../common/PaymentLogos';
 
@@ -131,15 +131,6 @@ export default function Footer() {
               <MapPin size={12} />
               <span>Serving 50+ cities worldwide</span>
             </div>
-            {/* Discreet staff entry point. Not an access control: /admin is
-                guarded by ProtectedRoute and the Firestore rules. */}
-            <Link
-              to="/ymy-console"
-              className="flex items-center gap-1.5 text-muted-dark/50 hover:text-gold text-xs transition-colors duration-300"
-            >
-              <Shield size={11} />
-              <span>Admin</span>
-            </Link>
           </div>
         </div>
       </div>
