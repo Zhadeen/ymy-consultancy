@@ -19,6 +19,12 @@ export const LEGAL = {
     address: P('registered business address'),
     country: P('country of establishment (determines home data-protection law, e.g. KVKK / NDPR)'),
     companyNumber: P('company registration number'),
+    // Turkish merchant identifiers — required on the Distance Sale Contract and
+    // shown on /about for payment-provider (iyzico) review.
+    taxOffice: P('tax office (vergi dairesi)'),
+    taxNumber: P('tax number (vergi no / VKN)'),
+    mersis: P('MERSİS number'),
+    phone: P('customer-service phone number'),
     privacyEmail: P('privacy/data-protection contact email'),
     generalEmail: P('general contact email'),
     dpo: P('Data Protection Officer / EU-UK representative, or state "not appointed — confirm if required"'),
@@ -180,16 +186,116 @@ export const LEGAL = {
 
   // ---------------------------------------------------------------------------
   refunds: {
-    title: 'Refund & Cancellation Policy',
-    subtitle: 'How cancellations and refunds work for bookings.',
+    title: 'Delivery, Cancellation & Refund Policy',
+    subtitle: 'How services are delivered, and how cancellations and refunds work.',
     intro:
-      'This policy explains cancellations and refunds for guide bookings made through YMY. Exact commercial terms are set by the operator and appear where marked.',
+      'YMY sells services, not physical goods: guided experiences performed in person by independent local guides, and digital subscription plans for guides. Nothing is shipped. This policy explains how each is delivered and how cancellations and refunds work. Exact commercial terms are set by the operator and appear where marked.',
     sections: [
+      {
+        h: 'Delivery of guided experiences',
+        body: [
+          'Once your payment is confirmed, your booking confirmation is delivered immediately on screen and in your YMY dashboard, and the guide is notified. You can message your guide through the platform to agree the meeting point and details.',
+          'The service itself is delivered in person by the guide on the date, at the time, and for the duration shown in your booking. No physical item is shipped and no shipping fee applies.',
+          `If a booking confirmation does not appear within ${P('confirmation time, e.g. 1 hour')}, contact ${P('general contact email')}.`,
+        ],
+      },
+      {
+        h: 'Delivery of guide subscription plans',
+        body: [
+          'Paid guide plans are digital services. They are activated on your account immediately after successful payment and remain active for the billing period you selected.',
+        ],
+      },
       { h: 'Cancellations by travelers', body: [`${P('exact cancellation window and refund percentages')}. As a starting point, the platform currently states that full refunds are available for cancellations made more than 24 hours before the scheduled experience; cancellations within 24 hours are non-refundable.`] },
       { h: 'Cancellations by guides', body: [`If a guide cancels, you are entitled to a full refund. ${P('any additional remedy, e.g. rebooking support')}.`] },
-      { h: 'How refunds are issued', body: ['Refunds are returned to your original payment method via Stripe. Processing times depend on your bank/card provider.'] },
-      { h: 'Statutory rights', body: ['Consumer-protection and distance-selling laws in your country may give you additional cancellation/refund rights that override this policy. Nothing here limits those rights.'] },
-      { h: 'Disputes', body: [`To raise a refund issue, contact ${P('general contact email')}.`] },
+      { h: 'Returns', body: ['Because guided experiences are services performed on a set date, they cannot be "returned" once performed. Where a service was not delivered as booked (for example the guide did not attend), contact us and the booking will be reviewed for a refund.'] },
+      { h: 'How refunds are issued', body: [`Approved refunds are returned to the card or payment method used for the original payment, through the same payment provider. Refunds are initiated within ${P('refund initiation time, e.g. 3 business days')}; the time for the money to appear depends on your bank or card issuer.`] },
+      { h: 'Statutory rights', body: ['Consumer-protection and distance-selling laws in your country may give you additional cancellation/refund rights that override this policy. Nothing here limits those rights. See also our Distance Sale Contract.'] },
+      { h: 'Disputes', body: [`To raise a delivery or refund issue, contact ${P('general contact email')} or ${P('customer-service phone number')}.`] },
+    ],
+  },
+
+  // ---------------------------------------------------------------------------
+  // Mesafeli Satış Sözleşmesi — structured after Turkish Law No. 6502 on
+  // Consumer Protection and the Distance Contracts Regulation. Required by
+  // iyzico's merchant website criteria. Counsel must confirm, in particular,
+  // the right-of-withdrawal exemption in Article 6.
+  distanceSales: {
+    title: 'Distance Sale Contract',
+    subtitle: 'The contract that applies when you buy a service on YMY online.',
+    intro:
+      'This Distance Sale Contract ("Contract") applies to every booking or subscription purchased through the YMY website. By ticking the acceptance box and completing payment, the Buyer confirms they have read and accepted it. The booking-specific details (service, date, price) are those shown on the checkout page and in the booking confirmation, which form part of this Contract.',
+    sections: [
+      {
+        h: 'Article 1 — Parties',
+        body: [
+          `Seller / Intermediary Service Provider: ${P('registered legal entity name')} (trading as YMY Consultancy). Address: ${P('registered business address')}. Tax office / number: ${P('tax office (vergi dairesi)')} / ${P('tax number (vergi no / VKN)')}. MERSİS: ${P('MERSİS number')}. Email: ${P('general contact email')}. Phone: ${P('customer-service phone number')}.`,
+          'Service Provider (guide): the independent local guide named in the booking, who performs the guided experience.',
+          'Buyer: the person who completes the booking or purchase, using the name and email address entered at checkout.',
+        ],
+      },
+      {
+        h: 'Article 2 — Subject',
+        body: [
+          'This Contract sets out the rights and obligations of the parties regarding the service the Buyer orders electronically through the YMY website, in accordance with the applicable consumer-protection and distance-contract legislation.',
+        ],
+      },
+      {
+        h: 'Article 3 — The service and its price',
+        body: [
+          'Service: a private guided experience with the guide, date, start time, duration and number of guests shown on the checkout page; or a guide subscription plan with the term shown on the checkout page.',
+          'Price: the total amount shown on the checkout page before payment, including all taxes and fees. YMY retains a platform fee of 15% of each booking; the guide receives 85%. No delivery or shipping fee applies.',
+          'Payment: by credit or debit card through YMY’s payment service provider. Card details are entered directly with the provider; YMY never sees or stores them.',
+        ],
+      },
+      {
+        h: 'Article 4 — Delivery and performance',
+        body: [
+          'The booking confirmation is delivered electronically immediately after payment. The guided experience is performed in person by the guide on the booked date and time; subscription plans are activated immediately. Details are in our Delivery, Cancellation & Refund Policy.',
+        ],
+      },
+      {
+        h: 'Article 5 — Preliminary information',
+        body: [
+          'Before concluding this Contract, the Buyer was shown the Seller’s identity and contact details, the essential features of the service, the total price including taxes, the payment method, the performance date, and the cancellation and complaint conditions, and confirmed they received this information electronically.',
+        ],
+      },
+      {
+        h: 'Article 6 — Right of withdrawal',
+        body: [
+          `As a rule, the Buyer may withdraw from a distance contract within 14 days without giving a reason. However, under the Distance Contracts Regulation, contracts for leisure services that must be performed on a specific date or period, and services whose performance has begun with the Buyer’s approval before the withdrawal period ends, are exempt from the right of withdrawal. Guided experiences booked for a fixed date fall within this exemption. ${P('confirmation from counsel that this exemption applies to your services')}.`,
+          'Cancellation of a booking is therefore governed by the cancellation terms in Article 7.',
+          `Guide subscription plans: the Buyer may withdraw within 14 days of purchase unless the service has been used with the Buyer’s approval. To withdraw, notify ${P('general contact email')}.`,
+        ],
+      },
+      {
+        h: 'Article 7 — Cancellation and refunds',
+        body: [
+          'Cancellations and refunds follow our Delivery, Cancellation & Refund Policy as published on the date of the booking. If the guide cancels or does not perform the service, the Buyer receives a full refund. Approved refunds are returned to the original payment method.',
+        ],
+      },
+      {
+        h: 'Article 8 — Obligations of the parties',
+        body: [
+          'The Buyer must provide accurate booking details, attend at the agreed time and meeting point, and follow lawful and reasonable safety instructions given by the guide.',
+          'The Seller provides the platform, processes the payment, delivers the booking confirmation, and passes the booking to the guide. The guide is responsible for performing the experience as described.',
+        ],
+      },
+      {
+        h: 'Article 9 — Personal data',
+        body: ['Personal data shared under this Contract is processed as described in our Privacy Policy.'],
+      },
+      {
+        h: 'Article 10 — Complaints and disputes',
+        body: [
+          `Complaints can be sent to ${P('general contact email')}. Buyers who are consumers in Türkiye may apply to the Consumer Arbitration Committee or Consumer Court at their place of residence or where the transaction took place, within the monetary limits announced each year by the Ministry of Trade. ${P('governing law / jurisdiction for non-Turkish consumers, confirmed with counsel')}.`,
+        ],
+      },
+      {
+        h: 'Article 11 — Entry into force',
+        body: [
+          'This Contract enters into force when the Buyer accepts it electronically at checkout and completes payment. A copy is available at any time on this page, and the booking-specific details remain available in the Buyer’s YMY dashboard.',
+        ],
+      },
     ],
   },
 };

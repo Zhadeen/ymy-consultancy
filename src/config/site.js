@@ -141,9 +141,23 @@ export const ROUTE_META = {
     og: '/og/home.png',
   },
   '/refunds': {
-    title: 'Refund & Cancellation Policy',
+    title: 'Delivery, Cancellation & Refund Policy',
     description:
-      'How cancellations and refunds work for YMY guide bookings. A template pending legal review; exact terms set by the operator.',
+      'How YMY services are delivered, and how cancellations and refunds work for guide bookings. A template pending legal review.',
+    index: true,
+    og: '/og/home.png',
+  },
+  '/distance-sales-contract': {
+    title: 'Distance Sale Contract',
+    description:
+      'The distance sale contract that applies to bookings and subscriptions bought on YMY: parties, price, delivery, withdrawal and refunds.',
+    index: true,
+    og: '/og/home.png',
+  },
+  '/about': {
+    title: 'About Us',
+    description:
+      'Who runs YMY, how the local-guide marketplace works, how guides are verified, and how to reach us.',
     index: true,
     og: '/og/home.png',
   },
@@ -184,8 +198,8 @@ export const ROUTE_META = {
 
 // The public, prerendered, indexable routes (drives sitemap + SSG route list).
 export const PRERENDER_ROUTES = [
-  '/', '/pricing', '/visitor-pricing', '/help', '/safety',
-  '/cancellation', '/terms', '/privacy', '/cookies', '/refunds', '/faq', '/stories', '/contact', '/thank-you',
+  '/', '/about', '/pricing', '/visitor-pricing', '/help', '/safety',
+  '/cancellation', '/terms', '/privacy', '/cookies', '/refunds', '/distance-sales-contract', '/faq', '/stories', '/contact', '/thank-you',
 ];
 
 // FAQ — exactly 5. Technical/marketplace-services framing. Answers are the

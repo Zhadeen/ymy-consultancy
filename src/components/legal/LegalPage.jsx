@@ -4,19 +4,10 @@ import { LEGAL } from '../../config/legal';
 import { breadcrumbLd } from '../../seo/jsonLd';
 import Breadcrumbs from '../conversion/Breadcrumbs';
 import DraftBanner from './DraftBanner';
+import { renderText } from './renderText';
 
 // Renders a legal document from LEGAL config: DRAFT banner, title, breadcrumb,
-// and sections. Owner placeholders (`[OWNER MUST PROVIDE: …]`) are highlighted so
-// they're obvious and can't be mistaken for finished copy.
-function renderText(text) {
-  const parts = text.split(/(\[OWNER MUST PROVIDE:[^\]]*\])/g);
-  return parts.map((p, i) =>
-    p.startsWith('[OWNER MUST PROVIDE:')
-      ? <mark key={i} className="bg-amber-500/20 text-amber-200 px-1 rounded not-italic">{p}</mark>
-      : p
-  );
-}
-
+// and sections, with owner placeholders highlighted.
 export default function LegalPage({ doc, path }) {
   const meta = ROUTE_META[path];
   const crumbs = [{ name: 'Home', path: '/' }, { name: doc.title, path }];

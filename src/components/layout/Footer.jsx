@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { Globe } from 'lucide-react'; // if needed later
 import { Mail, MapPin, Phone, ExternalLink, Hash, Heart, Play, Shield } from 'lucide-react';
 import logo from '../../assets/logo.png';
+import PaymentLogos from '../common/PaymentLogos';
 
 export default function Footer() {
   return (
@@ -52,6 +53,7 @@ export default function Footer() {
             <h4 className="font-heading text-cream font-semibold mb-4">Quick Links</h4>
             <div className="flex flex-col gap-3">
               {[
+                { to: '/about', label: 'About Us' },
                 { to: '/search', label: 'Find a Local Guide' },
                 { to: '/#how-it-works', label: 'How It Works' },
                 { to: '/guide-register', label: 'Become a Local Guide' },
@@ -77,7 +79,8 @@ export default function Footer() {
                 { label: 'Pricing', to: '/pricing' },
                 { label: 'Chat on WhatsApp', href: 'https://wa.me/905435082886' },
                 { label: 'Cancellation Policy', to: '/cancellation' },
-                { label: 'Refund Policy', to: '/refunds' },
+                { label: 'Delivery & Refund Policy', to: '/refunds' },
+                { label: 'Distance Sale Contract', to: '/distance-sales-contract' },
                 { label: 'Terms of Service', to: '/terms' },
                 { label: 'Privacy Policy', to: '/privacy' },
                 { label: 'Cookies Policy', to: '/cookies' },
@@ -106,6 +109,14 @@ export default function Footer() {
               Contact us
             </Link>
           </div>
+        </div>
+      </div>
+
+      {/* Accepted payment methods — required by iyzico's website criteria. */}
+      <div className="border-t border-dark-700 py-5">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <p className="text-muted-dark text-xs">Secure card payments</p>
+          <PaymentLogos />
         </div>
       </div>
 

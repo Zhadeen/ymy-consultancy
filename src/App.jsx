@@ -27,6 +27,8 @@ import TermsPage from './pages/TermsPage';
 import PrivacyPage from './pages/PrivacyPage';
 import CookiesPage from './pages/CookiesPage';
 import RefundsPage from './pages/RefundsPage';
+import DistanceSalesPage from './pages/DistanceSalesPage';
+import AboutPage from './pages/AboutPage';
 import PricingPage from './pages/PricingPage';
 import PaymentSuccess from './pages/PaymentSuccess';
 import PaymentCancel from './pages/PaymentCancel';
@@ -135,6 +137,8 @@ export function AppTree() {
               <Route path="/privacy" element={<PrivacyPage />} />
               <Route path="/cookies" element={<CookiesPage />} />
               <Route path="/refunds" element={<RefundsPage />} />
+              <Route path="/distance-sales-contract" element={<DistanceSalesPage />} />
+              <Route path="/about" element={<AboutPage />} />
               <Route path="/pricing" element={<PricingPage />} />
               <Route path="/payment/success" element={<PaymentSuccess />} />
               <Route path="/payment/cancel" element={<PaymentCancel />} />

@@ -9,7 +9,9 @@ import { organizationLd, webSiteLd, localBusinessLd } from './jsonLd';
 const SELF_MANAGED = new Set([
   '/faq', '/stories', '/contact', '/thank-you',
   // Legal pages render their own <Seo> via LegalPage.
-  '/privacy', '/terms', '/cookies', '/refunds',
+  '/privacy', '/terms', '/cookies', '/refunds', '/distance-sales-contract',
+  // About renders its own <Seo> with breadcrumb JSON-LD.
+  '/about',
 ]);
 
 export default function RouteHead() {
