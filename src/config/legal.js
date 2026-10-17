@@ -11,22 +11,28 @@
 
 const P = (x) => `[OWNER MUST PROVIDE: ${x}]`;
 
+// Set once the MERSİS number is issued (mirrors company.mersis).
+const MERSIS = null;
+const LEGAL_MERSIS = MERSIS ? ` MERSİS: ${MERSIS}.` : '';
+
 export const LEGAL = {
   // --- Owner / controller identity (all placeholders until supplied) ---------
   company: {
-    entityName: P('registered legal entity name'),
+    entityName: 'Yusuf Muhammad YAHYA',
     tradingName: 'YMY Consultancy',
-    address: P('registered business address'),
-    country: P('country of establishment (determines home data-protection law, e.g. KVKK / NDPR)'),
+    address: 'Bulgurlu Mah. Karlidere Cad. No: 46C Daire: 10, Üsküdar, İstanbul, Türkiye',
+    country: 'Türkiye',
     companyNumber: P('company registration number'),
     // Turkish merchant identifiers — required on the Distance Sale Contract and
     // shown on /about for payment-provider (iyzico) review.
-    taxOffice: P('tax office (vergi dairesi)'),
-    taxNumber: P('tax number (vergi no / VKN)'),
-    mersis: P('MERSİS number'),
-    phone: P('customer-service phone number'),
-    privacyEmail: P('privacy/data-protection contact email'),
-    generalEmail: P('general contact email'),
+    taxOffice: 'Ümraniye',
+    taxNumber: '9281115033',
+    // TODO(owner): MERSİS number not yet obtained — set it here once issued;
+    // /about and the Distance Sale Contract show it only when non-null.
+    mersis: MERSIS,
+    phone: '+90 543 508 28 86',
+    privacyEmail: 'ymyahyaa@gmail.com',
+    generalEmail: 'ymyahyaa@gmail.com',
     dpo: P('Data Protection Officer / EU-UK representative, or state "not appointed — confirm if required"'),
   },
 
@@ -46,8 +52,8 @@ export const LEGAL = {
       {
         h: 'Who we are',
         body: [
-          `The platform is operated by ${P('registered legal entity name')} ("YMY"), ${P('registered business address')}.`,
-          `For any privacy question or to exercise your rights, contact ${P('privacy/data-protection contact email')}.`,
+          `The platform is operated by Yusuf Muhammad YAHYA ("YMY"), Bulgurlu Mah. Karlidere Cad. No: 46C Daire: 10, Üsküdar, İstanbul, Türkiye.`,
+          `For any privacy question or to exercise your rights, contact ymyahyaa@gmail.com.`,
         ],
       },
       {
@@ -106,7 +112,7 @@ export const LEGAL = {
         h: 'Your rights',
         body: [
           'Depending on where you live, you may have rights to access, correct, delete, restrict, or port your data, and to object to certain processing.',
-          `To exercise them, contact ${P('privacy/data-protection contact email')}. A self-service data export/deletion feature is not yet available; requests are handled manually.`,
+          `To exercise them, contact ymyahyaa@gmail.com. A self-service data export/deletion feature is not yet available; requests are handled manually.`,
         ],
       },
       {
@@ -117,7 +123,7 @@ export const LEGAL = {
       },
       {
         h: 'Contact',
-        body: [`Questions or complaints: ${P('privacy/data-protection contact email')}. You may also have the right to complain to your local data-protection authority.`],
+        body: [`Questions or complaints: ymyahyaa@gmail.com. You may also have the right to complain to your local data-protection authority.`],
       },
     ],
   },
@@ -140,7 +146,7 @@ export const LEGAL = {
       { h: '9. Intellectual property', body: ['The platform, its branding and content are owned by YMY or its licensors. You retain rights in content you submit but grant YMY a licence to use it to operate the service.'] },
       { h: '10. Termination', body: ['We may suspend or terminate accounts that breach these terms or create risk to the marketplace.'] },
       { h: '11. Governing law', body: [`These terms are governed by the laws of ${P('governing law / jurisdiction')}.`] },
-      { h: '12. Contact', body: [`Questions: ${P('general contact email')}.`] },
+      { h: '12. Contact', body: [`Questions: ymyahyaa@gmail.com.`] },
     ],
   },
 
@@ -196,7 +202,7 @@ export const LEGAL = {
         body: [
           'Once your payment is confirmed, your booking confirmation is delivered immediately on screen and in your YMY dashboard, and the guide is notified. You can message your guide through the platform to agree the meeting point and details.',
           'The service itself is delivered in person by the guide on the date, at the time, and for the duration shown in your booking. No physical item is shipped and no shipping fee applies.',
-          `If a booking confirmation does not appear within ${P('confirmation time, e.g. 1 hour')}, contact ${P('general contact email')}.`,
+          `If a booking confirmation does not appear within ${P('confirmation time, e.g. 1 hour')}, contact ymyahyaa@gmail.com.`,
         ],
       },
       {
@@ -210,7 +216,7 @@ export const LEGAL = {
       { h: 'Returns', body: ['Because guided experiences are services performed on a set date, they cannot be "returned" once performed. Where a service was not delivered as booked (for example the guide did not attend), contact us and the booking will be reviewed for a refund.'] },
       { h: 'How refunds are issued', body: [`Approved refunds are returned to the card or payment method used for the original payment, through the same payment provider. Refunds are initiated within ${P('refund initiation time, e.g. 3 business days')}; the time for the money to appear depends on your bank or card issuer.`] },
       { h: 'Statutory rights', body: ['Consumer-protection and distance-selling laws in your country may give you additional cancellation/refund rights that override this policy. Nothing here limits those rights. See also our Distance Sale Contract.'] },
-      { h: 'Disputes', body: [`To raise a delivery or refund issue, contact ${P('general contact email')} or ${P('customer-service phone number')}.`] },
+      { h: 'Disputes', body: [`To raise a delivery or refund issue, contact ymyahyaa@gmail.com or +90 543 508 28 86.`] },
     ],
   },
 
@@ -228,7 +234,7 @@ export const LEGAL = {
       {
         h: 'Article 1 — Parties',
         body: [
-          `Seller / Intermediary Service Provider: ${P('registered legal entity name')} (trading as YMY Consultancy). Address: ${P('registered business address')}. Tax office / number: ${P('tax office (vergi dairesi)')} / ${P('tax number (vergi no / VKN)')}. MERSİS: ${P('MERSİS number')}. Email: ${P('general contact email')}. Phone: ${P('customer-service phone number')}.`,
+          `Seller / Intermediary Service Provider: Yusuf Muhammad YAHYA (trading as YMY Consultancy). Address: Bulgurlu Mah. Karlidere Cad. No: 46C Daire: 10, Üsküdar, İstanbul, Türkiye. Tax office / number: Ümraniye / 9281115033.${LEGAL_MERSIS} Email: ymyahyaa@gmail.com. Phone: +90 543 508 28 86.`,
           'Service Provider (guide): the independent local guide named in the booking, who performs the guided experience.',
           'Buyer: the person who completes the booking or purchase, using the name and email address entered at checkout.',
         ],
@@ -264,7 +270,7 @@ export const LEGAL = {
         body: [
           `As a rule, the Buyer may withdraw from a distance contract within 14 days without giving a reason. However, under the Distance Contracts Regulation, contracts for leisure services that must be performed on a specific date or period, and services whose performance has begun with the Buyer’s approval before the withdrawal period ends, are exempt from the right of withdrawal. Guided experiences booked for a fixed date fall within this exemption. ${P('confirmation from counsel that this exemption applies to your services')}.`,
           'Cancellation of a booking is therefore governed by the cancellation terms in Article 7.',
-          `Guide subscription plans: the Buyer may withdraw within 14 days of purchase unless the service has been used with the Buyer’s approval. To withdraw, notify ${P('general contact email')}.`,
+          `Guide subscription plans: the Buyer may withdraw within 14 days of purchase unless the service has been used with the Buyer’s approval. To withdraw, notify ymyahyaa@gmail.com.`,
         ],
       },
       {
@@ -287,7 +293,7 @@ export const LEGAL = {
       {
         h: 'Article 10 — Complaints and disputes',
         body: [
-          `Complaints can be sent to ${P('general contact email')}. Buyers who are consumers in Türkiye may apply to the Consumer Arbitration Committee or Consumer Court at their place of residence or where the transaction took place, within the monetary limits announced each year by the Ministry of Trade. ${P('governing law / jurisdiction for non-Turkish consumers, confirmed with counsel')}.`,
+          `Complaints can be sent to ymyahyaa@gmail.com. Buyers who are consumers in Türkiye may apply to the Consumer Arbitration Committee or Consumer Court at their place of residence or where the transaction took place, within the monetary limits announced each year by the Ministry of Trade. ${P('governing law / jurisdiction for non-Turkish consumers, confirmed with counsel')}.`,
         ],
       },
       {

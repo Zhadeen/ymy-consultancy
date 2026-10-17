@@ -34,7 +34,7 @@ export default function AboutPage() {
     ['Trading name', c.tradingName],
     ['Registered address', c.address],
     ['Tax office / number', `${c.taxOffice} / ${c.taxNumber}`],
-    ['MERSİS number', c.mersis],
+    ...(c.mersis ? [['MERSİS number', c.mersis]] : []),
     ['Email', SITE.contact.email || c.generalEmail],
     ['Phone', SITE.contact.phone || c.phone],
   ];
