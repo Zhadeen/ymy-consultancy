@@ -258,85 +258,51 @@ export const LEGAL = {
   },
 
   // ---------------------------------------------------------------------------
-  // Mesafeli Satış Sözleşmesi — structured after Turkish Law No. 6502 on
-  // Consumer Protection and the Distance Contracts Regulation. Required by
-  // iyzico's merchant website criteria. Counsel must confirm, in particular,
-  // the right-of-withdrawal exemption in Article 6.
+  // Mesafeli Satış Sözleşmesi — short form, structured after Turkish Law No. 6502
+  // and the Distance Contracts Regulation. Required by iyzico's merchant website
+  // criteria. Counsel must still confirm the withdrawal exemption (section 4)
+  // and governing law for non-Turkish consumers.
   distanceSales: {
     title: 'Distance Sale Contract',
-    subtitle: 'The contract that applies when you buy a service on YMY online.',
+    subtitle: 'The short contract that applies when you book or buy on YMY.',
     intro:
-      'This Distance Sale Contract ("Contract") applies to every booking or subscription purchased through the YMY website. By ticking the acceptance box and completing payment, the Buyer confirms they have read and accepted it. The booking-specific details (service, date, price) are those shown on the checkout page and in the booking confirmation, which form part of this Contract.',
+      'By ticking the acceptance box and paying at checkout, you (the Buyer) accept this contract. The service, date and price shown at checkout and in your booking confirmation are part of it.',
     sections: [
       {
-        h: 'Article 1 — Parties',
+        h: '1. Parties',
         body: [
-          `Seller / Intermediary Service Provider: Yusuf Muhammad YAHYA (trading as YMY Consultancy). Address: Bulgurlu Mah. Karlidere Cad. No: 46C Daire: 10, Üsküdar, İstanbul, Türkiye. Tax office / number: Ümraniye / 9281115033.${LEGAL_MERSIS} Email: ymyahyaa@gmail.com. Phone: +90 543 508 28 86.`,
-          'Service Provider (guide): the independent local guide named in the booking, who performs the guided experience.',
-          'Buyer: the person who completes the booking or purchase, using the name and email address entered at checkout.',
+          `Seller: Yusuf Muhammad YAHYA, trading as YMY Consultancy — Bulgurlu Mah. Karlidere Cad. No: 46C Daire: 10, Üsküdar, İstanbul, Türkiye. Tax office / no: Ümraniye / 9281115033.${LEGAL_MERSIS} Email: ymyahyaa@gmail.com · Phone: +90 543 508 28 86.`,
+          'Service provider: the independent local expert named in your booking. Buyer: the person who completes the booking.',
         ],
       },
       {
-        h: 'Article 2 — Subject',
+        h: '2. Service and price',
         body: [
-          'This Contract sets out the rights and obligations of the parties regarding the service the Buyer orders electronically through the YMY website, in accordance with the applicable consumer-protection and distance-contract legislation.',
+          'A private guided experience (or a guide subscription plan) as described at checkout. The total price shown before payment includes all taxes and fees; there is no delivery fee. YMY keeps a 15% platform fee and the local expert receives 85%. Payment is by card through our payment provider — we never see or store your card details.',
         ],
       },
       {
-        h: 'Article 3 — The service and its price',
+        h: '3. Delivery',
         body: [
-          'Service: a private guided experience with the guide, date, start time, duration and number of guests shown on the checkout page; or a guide subscription plan with the term shown on the checkout page.',
-          'Price: the total amount shown on the checkout page before payment, including all taxes and fees. YMY retains a platform fee of 15% of each booking; the guide receives 85%. No delivery or shipping fee applies.',
-          'Payment: by credit or debit card through YMY’s payment service provider. Card details are entered directly with the provider; YMY never sees or stores them.',
+          'Your booking confirmation is sent electronically right after payment. The experience is delivered in person on the booked date and time; subscription plans start immediately.',
         ],
       },
       {
-        h: 'Article 4 — Delivery and performance',
+        h: '4. Right of withdrawal',
         body: [
-          'The booking confirmation is delivered electronically immediately after payment. The guided experience is performed in person by the guide on the booked date and time; subscription plans are activated immediately. Details are in our Delivery, Cancellation & Refund Policy.',
+          'Guided experiences booked for a fixed date are leisure services and are exempt from the 14-day right of withdrawal under the Distance Contracts Regulation, so the cancellation terms below apply instead. Guide subscription plans can be withdrawn within 14 days unless already used.',
         ],
       },
       {
-        h: 'Article 5 — Preliminary information',
+        h: '5. Cancellation and refunds',
         body: [
-          'Before concluding this Contract, the Buyer was shown the Seller’s identity and contact details, the essential features of the service, the total price including taxes, the payment method, the performance date, and the cancellation and complaint conditions, and confirmed they received this information electronically.',
+          'More than 72 hours before: 100% refund. 24–72 hours before: 50%. Under 24 hours: no refund. If the local expert cancels, or an emergency such as a travel ban or natural disaster makes the service impossible, you get a full refund or free rescheduling. Refunds go back to your original payment method. Full terms are in our Delivery, Cancellation & Refund Policy.',
         ],
       },
       {
-        h: 'Article 6 — Right of withdrawal',
+        h: '6. Complaints and disputes',
         body: [
-          `As a rule, the Buyer may withdraw from a distance contract within 14 days without giving a reason. However, under the Distance Contracts Regulation, contracts for leisure services that must be performed on a specific date or period, and services whose performance has begun with the Buyer’s approval before the withdrawal period ends, are exempt from the right of withdrawal. Guided experiences booked for a fixed date fall within this exemption. ${P('confirmation from counsel that this exemption applies to your services')}.`,
-          'Cancellation of a booking is therefore governed by the cancellation terms in Article 7.',
-          `Guide subscription plans: the Buyer may withdraw within 14 days of purchase unless the service has been used with the Buyer’s approval. To withdraw, notify ymyahyaa@gmail.com.`,
-        ],
-      },
-      {
-        h: 'Article 7 — Cancellation and refunds',
-        body: [
-          'Cancellations and refunds follow our Delivery, Cancellation & Refund Policy as published on the date of the booking. If the guide cancels or does not perform the service, the Buyer receives a full refund. Where an extraordinary event (such as a travel ban, natural disaster or officially declared emergency) makes the service impossible or unsafe, the Buyer may choose a full refund or free rescheduling, as set out in that policy. Approved refunds are returned to the original payment method.',
-        ],
-      },
-      {
-        h: 'Article 8 — Obligations of the parties',
-        body: [
-          'The Buyer must provide accurate booking details, attend at the agreed time and meeting point, and follow lawful and reasonable safety instructions given by the guide.',
-          'The Seller provides the platform, processes the payment, delivers the booking confirmation, and passes the booking to the guide. The guide is responsible for performing the experience as described.',
-        ],
-      },
-      {
-        h: 'Article 9 — Personal data',
-        body: ['Personal data shared under this Contract is processed as described in our Privacy Policy.'],
-      },
-      {
-        h: 'Article 10 — Complaints and disputes',
-        body: [
-          `Complaints can be sent to ymyahyaa@gmail.com. Buyers who are consumers in Türkiye may apply to the Consumer Arbitration Committee or Consumer Court at their place of residence or where the transaction took place, within the monetary limits announced each year by the Ministry of Trade. ${P('governing law / jurisdiction for non-Turkish consumers, confirmed with counsel')}.`,
-        ],
-      },
-      {
-        h: 'Article 11 — Entry into force',
-        body: [
-          'This Contract enters into force when the Buyer accepts it electronically at checkout and completes payment. A copy is available at any time on this page, and the booking-specific details remain available in the Buyer’s YMY dashboard.',
+          'Contact ymyahyaa@gmail.com. Consumers in Türkiye may also apply to the Consumer Arbitration Committee or Consumer Court, within the limits set each year by the Ministry of Trade. Personal data is handled as described in our Privacy Policy.',
         ],
       },
     ],
