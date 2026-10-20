@@ -194,6 +194,7 @@ export const LEGAL = {
   refunds: {
     title: 'Delivery, Cancellation & Refund Policy',
     subtitle: 'How services are delivered, and how cancellations and refunds work.',
+    lastUpdated: '21 October 2026',
     intro:
       'At YMY Cons, we understand that travel and business plans can change. Our cancellation policy is designed to be fair to both customers and local experts. YMY sells services, not physical goods: guided experiences performed in person by independent local experts, and digital subscription plans for guides. Nothing is shipped. This policy explains how each is delivered and how cancellations and refunds work.',
     sections: [
@@ -251,7 +252,7 @@ export const LEGAL = {
       },
       { h: 'Service problems and returns', body: ['Because guided experiences are services performed on a set date, they cannot be “returned” once performed. If the booked service is not provided as described or the local expert does not attend, customers may contact YMY Cons for a review and possible full or partial refund.'] },
       { h: 'Refund processing', body: ['Approved refunds will be returned through the original payment method. Processing times may vary depending on the payment provider or bank.'] },
-      { h: 'Statutory rights', body: ['Consumer-protection and distance-selling laws in your country may give you additional cancellation/refund rights that override this policy. Nothing here limits those rights. See also our Distance Sale Contract.'] },
+      { h: 'Statutory rights', body: ['Consumer-protection and distance-selling laws in your country may give you additional cancellation/refund rights that override this policy. Nothing here limits those rights. See also our [Distance Sale Contract](/distance-sales-contract).'] },
       { h: 'Disputes', body: [`To raise a delivery or refund issue, contact ymyahyaa@gmail.com or +90 543 508 28 86.`] },
       { h: 'Acceptance', body: ['By completing a booking, the customer agrees to this Cancellation & Refund Policy.'] },
     ],
@@ -265,44 +266,54 @@ export const LEGAL = {
   distanceSales: {
     title: 'Distance Sale Contract',
     subtitle: 'The short contract that applies when you book or buy on YMY.',
+    lastUpdated: '21 October 2026',
     intro:
-      'By ticking the acceptance box and paying at checkout, you (the Buyer) accept this contract. The service, date and price shown at checkout and in your booking confirmation are part of it.',
+      'You (the Buyer) accept this contract by ticking the acceptance box when you send a booking request, and it takes effect when you pay. The service, date and price shown on the booking page and in your confirmation are part of it.',
     sections: [
       {
         h: '1. Parties',
         body: [
-          `Seller: Yusuf Muhammad YAHYA, trading as YMY Consultancy — Bulgurlu Mah. Karlidere Cad. No: 46C Daire: 10, Üsküdar, İstanbul, Türkiye. Tax office / no: Ümraniye / 9281115033.${LEGAL_MERSIS} Email: ymyahyaa@gmail.com · Phone: +90 543 508 28 86.`,
-          'Service provider: the independent local expert named in your booking. Buyer: the person who completes the booking.',
+          { list: [
+            `Seller: Yusuf Muhammad YAHYA, trading as YMY Consultancy. Bulgurlu Mah. Karlidere Cad. No: 46C Daire: 10, Üsküdar, İstanbul, Türkiye. Tax office / no: Ümraniye / 9281115033.${LEGAL_MERSIS} Email: [ymyahyaa@gmail.com](mailto:ymyahyaa@gmail.com). Phone: [+90 543 508 28 86](tel:+905435082886).`,
+            'Service provider: the independent local expert named in your booking.',
+            'Buyer: the person who sends the booking request and pays.',
+          ] },
         ],
       },
       {
         h: '2. Service and price',
         body: [
-          'A private guided experience (or a guide subscription plan) as described at checkout. The total price shown before payment includes all taxes and fees; there is no delivery fee. YMY keeps a 15% platform fee and the local expert receives 85%. Payment is by card through our payment provider — we never see or store your card details.',
+          'A private guided experience (or a guide subscription plan) as described on the booking page. The total price shown before you pay includes all taxes and fees; there is no delivery fee. YMY keeps a 15% platform fee and the local expert receives 85%. Payment is by card through our payment provider; we never see or store your card details.',
         ],
       },
       {
         h: '3. Delivery',
         body: [
-          'Your booking confirmation is sent electronically right after payment. The experience is delivered in person on the booked date and time; subscription plans start immediately.',
+          'Your payment confirmation appears in your dashboard right after payment. The experience is delivered in person on the booked date and time; subscription plans start immediately.',
         ],
       },
       {
         h: '4. Right of withdrawal',
         body: [
-          'Guided experiences booked for a fixed date are leisure services and are exempt from the 14-day right of withdrawal under the Distance Contracts Regulation, so the cancellation terms below apply instead. Guide subscription plans can be withdrawn within 14 days unless already used.',
+          'Guided experiences booked for a fixed date are leisure services and are exempt from the 14-day right of withdrawal under the Distance Contracts Regulation, so the cancellation terms in section 5 apply instead. Guide subscription plans can be withdrawn within 14 days unless already used.',
         ],
       },
       {
         h: '5. Cancellation and refunds',
         body: [
-          'More than 72 hours before: 100% refund. 24–72 hours before: 50%. Under 24 hours: no refund. If the local expert cancels, or an emergency such as a travel ban or natural disaster makes the service impossible, you get a full refund or free rescheduling. Refunds go back to your original payment method. Full terms are in our Delivery, Cancellation & Refund Policy.',
+          { list: [
+            'More than 72 hours before the booking: 100% refund.',
+            '24–72 hours before: 50% refund.',
+            'Less than 24 hours before: no refund.',
+            'Within 24 hours of booking: full refund, if the booking is more than 72 hours away.',
+          ] },
+          'If the local expert cancels, you get a full refund or may choose another available verified expert. If a confirmed emergency (such as a travel ban or natural disaster) makes the service impossible or unsafe, you may choose a full refund or rescheduling. Refunds go back to your original payment method. Full terms: [Delivery, Cancellation & Refund Policy](/refunds).',
         ],
       },
       {
         h: '6. Complaints and disputes',
         body: [
-          'Contact ymyahyaa@gmail.com. Consumers in Türkiye may also apply to the Consumer Arbitration Committee or Consumer Court, within the limits set each year by the Ministry of Trade. Personal data is handled as described in our Privacy Policy.',
+          'Contact [ymyahyaa@gmail.com](mailto:ymyahyaa@gmail.com). Consumers in Türkiye may also apply to the Consumer Arbitration Committee or Consumer Court, within the limits set each year by the Ministry of Trade. Personal data is handled as described in our [Privacy Policy](/privacy).',
         ],
       },
     ],

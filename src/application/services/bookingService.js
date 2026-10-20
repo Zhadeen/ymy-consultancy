@@ -57,6 +57,7 @@ export async function createPendingBooking(bookingData) {
       visitPurpose: bookingData.visitPurpose || '',
       localExperience: bookingData.localExperience || '',
       specialRequests: bookingData.specialRequests || '',
+      contractAcceptedAt: bookingData.contractAcceptedAt || null,
       reference,
       status: BOOKING_STATUS.PENDING,
       paymentStatus: 'unpaid',

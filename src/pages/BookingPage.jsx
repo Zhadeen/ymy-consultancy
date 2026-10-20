@@ -118,6 +118,8 @@ export default function BookingPage() {
         visitPurpose,
         localExperience,
         specialRequests,
+        // The confirm button is only enabled once the contract box is ticked.
+        contractAcceptedAt: new Date().toISOString(),
       };
 
       await createPendingBooking(bookingData);

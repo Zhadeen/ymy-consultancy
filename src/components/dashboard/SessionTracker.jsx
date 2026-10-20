@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { serverTimestamp } from 'firebase/firestore';
 import { updateBooking } from '../../infrastructure/firebase/repositories/bookingsRepository';
 import { CheckCircle2, XCircle, MapPin, PlayCircle, Flag, CreditCard, Clock, Loader2, Star } from 'lucide-react';
@@ -162,6 +163,9 @@ export default function SessionTracker({ booking, role, onReviewClick }) {
             <button onClick={handlePayNow} className="btn-gold w-full flex items-center justify-center gap-2 !py-2 text-sm">
               <CreditCard size={16} /> Secure Payment via Stripe
             </button>
+            <p className="text-muted-dark text-[11px] text-center">
+              By paying you confirm the <Link to="/distance-sales-contract" className="text-gold underline underline-offset-2">Distance Sale Contract</Link> you accepted when booking.
+            </p>
           </div>
         );
       case 'on_the_way':

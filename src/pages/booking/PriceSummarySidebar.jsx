@@ -1,9 +1,15 @@
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import ScrollReveal from '../../components/common/ScrollReveal';
 
 export default function PriceSummarySidebar({
   guide, date, tourType, basePrice, guests, totalPrice,
   error, processing, canConfirm, onConfirm
 }) {
+  // Distance Sale Contract acceptance — required before a booking request
+  // (Turkish distance-contract rules; iyzico merchant criteria). Unticked by default.
+  const [accepted, setAccepted] = useState(false);
+
   return (
     <aside className="lg:w-96 flex-shrink-0">
       <div className="sticky top-28">
@@ -53,9 +59,26 @@ export default function PriceSummarySidebar({
               </div>
             )}
 
+            <label className="flex items-start gap-3 mb-4 text-xs text-muted leading-relaxed cursor-pointer">
+              <input
+                type="checkbox"
+                checked={accepted}
+                onChange={(e) => setAccepted(e.target.checked)}
+                required
+                className="mt-0.5 h-4 w-4 shrink-0 accent-gold"
+                id="accept-distance-contract"
+              />
+              <span>
+                I have read and accept the{' '}
+                <Link to="/distance-sales-contract" target="_blank" className="text-gold underline underline-offset-2">Distance Sale Contract</Link>
+                {' '}and the{' '}
+                <Link to="/refunds" target="_blank" className="text-gold underline underline-offset-2">Cancellation &amp; Refund Policy</Link>.
+              </span>
+            </label>
+
             <button
               onClick={onConfirm}
-              disabled={!canConfirm || processing}
+              disabled={!canConfirm || !accepted || processing}
               className="btn-gold w-full !py-4 text-lg flex items-center justify-center gap-2"
               id="confirm-booking-btn"
             >

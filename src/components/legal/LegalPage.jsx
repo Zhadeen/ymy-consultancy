@@ -28,7 +28,7 @@ export default function LegalPage({ doc, path }) {
 
         <DraftBanner />
 
-        <p className="text-muted-dark text-xs mb-8">Last updated: {renderText(LEGAL.lastUpdated)}</p>
+        <p className="text-muted-dark text-xs mb-8">Last updated: {renderText(doc.lastUpdated || LEGAL.lastUpdated)}</p>
 
         {doc.intro && <p className="text-cream/90 leading-relaxed mb-8">{renderText(doc.intro)}</p>}
 
