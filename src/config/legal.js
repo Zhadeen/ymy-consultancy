@@ -40,7 +40,8 @@ export const LEGAL = {
   draftNotice:
     'This is a DRAFT template, not legal advice. It has not been reviewed by a lawyer and does not certify compliance with any law. Have it reviewed and finalised by qualified legal counsel in your relevant jurisdiction(s) before relying on it.',
 
-  lastUpdated: P('effective date'),
+  // Shown as "Last updated" on every legal page (Istanbul time).
+  lastUpdated: '21 October 2026, 02:55 (TRT)',
 
   // ---------------------------------------------------------------------------
   privacy: {
@@ -194,7 +195,6 @@ export const LEGAL = {
   refunds: {
     title: 'Delivery, Cancellation & Refund Policy',
     subtitle: 'How services are delivered, and how cancellations and refunds work.',
-    lastUpdated: '21 October 2026',
     intro:
       'At YMY Cons, we understand that travel and business plans can change. Our cancellation policy is designed to be fair to both customers and local experts. YMY sells services, not physical goods: guided experiences performed in person by independent local experts, and digital subscription plans for guides. Nothing is shipped. This policy explains how each is delivered and how cancellations and refunds work.',
     sections: [
@@ -266,7 +266,6 @@ export const LEGAL = {
   distanceSales: {
     title: 'Distance Sale Contract',
     subtitle: 'The short contract that applies when you book or buy on YMY.',
-    lastUpdated: '21 October 2026',
     intro:
       'You (the Buyer) accept this contract by ticking the acceptance box when you send a booking request, and it takes effect when you pay. The service, date and price shown on the booking page and in your confirmation are part of it.',
     sections: [
