@@ -129,21 +129,21 @@ export const ROUTE_META = {
   '/privacy': {
     title: 'Privacy Policy',
     description:
-      'How YMY collects, uses, and protects your data. A template policy pending legal review by the owner.',
+      'How YMY collects, uses, and protects your data.',
     index: true,
     og: '/og/home.png',
   },
   '/cookies': {
     title: 'Cookies Policy',
     description:
-      'The cookies and trackers the YMY site uses, categorized, and how to accept or reject non-essential ones. A template pending legal review.',
+      'The cookies and trackers the YMY site uses, categorized, and how to accept or reject non-essential ones.',
     index: true,
     og: '/og/home.png',
   },
   '/refunds': {
     title: 'Delivery, Cancellation & Refund Policy',
     description:
-      'How YMY services are delivered, and how cancellations and refunds work for guide bookings. A template pending legal review.',
+      'How YMY services are delivered, and how cancellations and refunds work for guide bookings.',
     index: true,
     og: '/og/home.png',
   },

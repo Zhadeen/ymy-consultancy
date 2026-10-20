@@ -1,8 +1,8 @@
-// Legal content — DRAFT templates, config-driven.
+// Legal content, config-driven.
 //
-// ⚠️ Every document here is a STARTING-POINT TEMPLATE, not legal advice, and is
-// rendered with a visible "DRAFT — review with counsel" banner. Nothing here is
-// described as "compliant". Values the owner must supply are written as
+// The DRAFT banner was removed at the owner's request (Oct 2026). The texts have
+// not been reviewed by a lawyer; nothing here is described as "compliant".
+// Values the owner must supply are written as
 // `[OWNER MUST PROVIDE: X]` and listed in COMPLIANCE.md — never invent them.
 //
 // The privacy + cookies text reflects the ACTUAL data flows found in the Phase 1
@@ -35,10 +35,6 @@ export const LEGAL = {
     generalEmail: 'ymyahyaa@gmail.com',
     dpo: P('Data Protection Officer / EU-UK representative, or state "not appointed — confirm if required"'),
   },
-
-  // Shown on every legal page; also mirrored in COMPLIANCE.md.
-  draftNotice:
-    'This is a DRAFT template, not legal advice. It has not been reviewed by a lawyer and does not certify compliance with any law. Have it reviewed and finalised by qualified legal counsel in your relevant jurisdiction(s) before relying on it.',
 
   // Shown as "Last updated" on every legal page (Istanbul time).
   lastUpdated: '21 October 2026, 02:55 (TRT)',

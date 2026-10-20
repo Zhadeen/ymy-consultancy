@@ -3,11 +3,10 @@ import { ROUTE_META } from '../../config/site';
 import { LEGAL } from '../../config/legal';
 import { breadcrumbLd } from '../../seo/jsonLd';
 import Breadcrumbs from '../conversion/Breadcrumbs';
-import DraftBanner from './DraftBanner';
 import { renderText } from './renderText';
 
-// Renders a legal document from LEGAL config: DRAFT banner, title, breadcrumb,
-// and sections, with owner placeholders highlighted.
+// Renders a legal document from LEGAL config: title, breadcrumb, last-updated
+// date and sections, with owner placeholders highlighted.
 export default function LegalPage({ doc, path }) {
   const meta = ROUTE_META[path];
   const crumbs = [{ name: 'Home', path: '/' }, { name: doc.title, path }];
@@ -25,8 +24,6 @@ export default function LegalPage({ doc, path }) {
         <Breadcrumbs items={crumbs} />
         <h1 className="font-heading text-4xl md:text-5xl font-bold text-cream mt-4 mb-2">{doc.title}</h1>
         {doc.subtitle && <p className="text-muted text-lg mb-8">{doc.subtitle}</p>}
-
-        <DraftBanner />
 
         <p className="text-muted-dark text-xs mb-8">Last updated: {renderText(doc.lastUpdated || LEGAL.lastUpdated)}</p>
 
