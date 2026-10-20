@@ -52,7 +52,7 @@ export default function BookingSidebar({ guide, isOwnProfile, isBookable, onBook
                 </div>
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-muted">Cancellation</span>
-                  <span className="text-cream font-medium">Free up to 24h</span>
+                  <span className="text-cream font-medium">Free up to 72h</span>
                 </div>
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-muted">Languages</span>

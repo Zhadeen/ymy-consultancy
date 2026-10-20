@@ -94,7 +94,7 @@ export const ROUTE_META = {
   '/visitor-pricing': {
     title: 'Pricing for Travelers',
     description:
-      'What travelers pay on YMY: transparent booking fees, secure checkout, and free cancellation up to 24 hours before your experience.',
+      'What travelers pay on YMY: transparent booking fees, secure checkout, and a full refund for cancellations more than 72 hours before your experience.',
     index: true,
     og: '/og/home.png',
   },
@@ -115,7 +115,7 @@ export const ROUTE_META = {
   '/cancellation': {
     title: 'Cancellation Policy',
     description:
-      'YMY cancellation terms: full refunds for cancellations made more than 24 hours before your scheduled experience.',
+      'YMY cancellation terms: 100% refund more than 72 hours before, 50% at 24–72 hours, and free rescheduling subject to availability.',
     index: true,
     og: '/og/home.png',
   },

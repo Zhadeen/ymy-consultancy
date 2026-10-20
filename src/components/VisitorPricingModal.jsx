@@ -48,7 +48,7 @@ export default function VisitorPricingModal({ isOpen, onClose }) {
               {[
                 'Pay only per booking',
                 `${PLATFORM_FEE_PERCENT}% platform fee (included)`,
-                '24h full refund protection',
+                'Full refund up to 72h before',
                 'Real-time chat with Local Guides',
                 'Verified local expertise'
               ].map((feature, i) => (

@@ -79,7 +79,7 @@ export default function VisitorPricingPage() {
               {[
                 'Access to 500+ verified Local Guides',
                 'Unlimited chat requests',
-                '24-hour full refund protection',
+                'Full refund up to 72 hours before',
                 'Fast, secure checkout via Stripe',
                 'No monthly or hidden fees'
               ].map((benefit, i) => (
@@ -106,7 +106,7 @@ export default function VisitorPricingPage() {
         
         <div className="mt-16 text-center space-y-4">
             <p className="text-muted-dark text-xs italic">
-                *Cancellations made more than 24 hours before the experience start time receive a 100% refund.
+                *Cancellations more than 72 hours before the experience receive a 100% refund; 24–72 hours before, 50%; under 24 hours, no refund. See our <Link to="/refunds" className="underline underline-offset-2 hover:text-gold">Cancellation &amp; Refund Policy</Link>.
             </p>
             <Link to="/search" className="text-muted hover:text-gold transition-colors text-sm underline underline-offset-4 block">
                 Skip and browse guides

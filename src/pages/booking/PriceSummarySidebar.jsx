@@ -67,7 +67,7 @@ export default function PriceSummarySidebar({
             </button>
 
             <p className="text-muted-dark text-xs text-center mt-4">
-              Full refund if cancelled more than 24 hours before the tour
+              Full refund if cancelled more than 72 hours before the tour
             </p>
           </div>
         </ScrollReveal>

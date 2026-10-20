@@ -37,7 +37,15 @@ export default function LegalPage({ doc, path }) {
             <section key={i}>
               <h2 className="text-xl font-heading font-semibold text-gold mb-3">{s.h}</h2>
               <div className="space-y-2 text-cream/90 leading-relaxed">
-                {s.body.map((b, j) => <p key={j}>{renderText(b)}</p>)}
+                {s.body.map((b, j) => {
+                  if (typeof b === 'string') return <p key={j}>{renderText(b)}</p>;
+                  const List = b.ordered ? 'ol' : 'ul';
+                  return (
+                    <List key={j} className={`${b.ordered ? 'list-decimal' : 'list-disc'} pl-6 space-y-1`}>
+                      {b.list.map((item, k) => <li key={k}>{renderText(item)}</li>)}
+                    </List>
+                  );
+                })}
               </div>
             </section>
           ))}

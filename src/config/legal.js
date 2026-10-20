@@ -195,7 +195,7 @@ export const LEGAL = {
     title: 'Delivery, Cancellation & Refund Policy',
     subtitle: 'How services are delivered, and how cancellations and refunds work.',
     intro:
-      'YMY sells services, not physical goods: guided experiences performed in person by independent local guides, and digital subscription plans for guides. Nothing is shipped. This policy explains how each is delivered and how cancellations and refunds work. Exact commercial terms are set by the operator and appear where marked.',
+      'At YMY Cons, we understand that travel and business plans can change. Our cancellation policy is designed to be fair to both customers and local experts. YMY sells services, not physical goods: guided experiences performed in person by independent local experts, and digital subscription plans for guides. Nothing is shipped. This policy explains how each is delivered and how cancellations and refunds work.',
     sections: [
       {
         h: 'Delivery of guided experiences',
@@ -211,12 +211,49 @@ export const LEGAL = {
           'Paid guide plans are digital services. They are activated on your account immediately after successful payment and remain active for the billing period you selected.',
         ],
       },
-      { h: 'Cancellations by travelers', body: [`${P('exact cancellation window and refund percentages')}. As a starting point, the platform currently states that full refunds are available for cancellations made more than 24 hours before the scheduled experience; cancellations within 24 hours are non-refundable.`] },
-      { h: 'Cancellations by guides', body: [`If a guide cancels, you are entitled to a full refund. ${P('any additional remedy, e.g. rebooking support')}.`] },
-      { h: 'Returns', body: ['Because guided experiences are services performed on a set date, they cannot be "returned" once performed. Where a service was not delivered as booked (for example the guide did not attend), contact us and the booking will be reviewed for a refund.'] },
-      { h: 'How refunds are issued', body: [`Approved refunds are returned to the card or payment method used for the original payment, through the same payment provider. Refunds are initiated within ${P('refund initiation time, e.g. 3 business days')}; the time for the money to appear depends on your bank or card issuer.`] },
+      {
+        // Owner-supplied cancellation terms (Oct 2026).
+        h: 'Customer cancellation',
+        body: [
+          { list: [
+            'More than 72 hours before the booking: 100% refund.',
+            '24–72 hours before the booking: 50% refund.',
+            'Less than 24 hours before the booking: no refund.',
+            'Within 24 hours of booking: full refund, provided the booking is more than 72 hours away.',
+          ] },
+        ],
+      },
+      { h: 'Rescheduling', body: ['Customers may request to change their booking date, subject to the local expert’s availability.'] },
+      { h: 'If a local expert cancels', body: ['If a local expert cancels a confirmed booking, the customer will receive a full refund or may choose another available verified expert.'] },
+      {
+        // Owner-supplied policy text (Oct 2026).
+        h: 'Emergency & exceptional circumstances',
+        body: [
+          'YMY Cons understands that unexpected events may affect travel and bookings. If an extraordinary event makes it impossible or unsafe to provide or attend a booked service, YMY Cons may offer a full refund or free rescheduling.',
+          'Eligible circumstances may include:',
+          { list: [
+            'Government-imposed travel restrictions or entry bans',
+            'War, armed conflict, or significant civil unrest',
+            'Natural disasters such as earthquakes, floods, or severe storms',
+            'Major security emergencies or officially declared emergencies',
+            'Government or airport closures that prevent travel',
+            'Other serious events beyond the reasonable control of the customer, local expert, or YMY Cons',
+          ] },
+          'YMY Cons will review each situation individually and may request reasonable supporting information where necessary.',
+          'Where an emergency situation is confirmed, the customer may choose between:',
+          { ordered: true, list: [
+            'A full refund, or',
+            'Rescheduling the booking to a later available date.',
+          ] },
+          'This policy does not apply to ordinary changes of personal plans, missed flights, personal emergencies, or failure to attend the booking where the service remains available.',
+          'YMY Cons reserves the right to assess each case fairly based on the circumstances and available information.',
+        ],
+      },
+      { h: 'Service problems and returns', body: ['Because guided experiences are services performed on a set date, they cannot be “returned” once performed. If the booked service is not provided as described or the local expert does not attend, customers may contact YMY Cons for a review and possible full or partial refund.'] },
+      { h: 'Refund processing', body: ['Approved refunds will be returned through the original payment method. Processing times may vary depending on the payment provider or bank.'] },
       { h: 'Statutory rights', body: ['Consumer-protection and distance-selling laws in your country may give you additional cancellation/refund rights that override this policy. Nothing here limits those rights. See also our Distance Sale Contract.'] },
       { h: 'Disputes', body: [`To raise a delivery or refund issue, contact ymyahyaa@gmail.com or +90 543 508 28 86.`] },
+      { h: 'Acceptance', body: ['By completing a booking, the customer agrees to this Cancellation & Refund Policy.'] },
     ],
   },
 
@@ -276,7 +313,7 @@ export const LEGAL = {
       {
         h: 'Article 7 — Cancellation and refunds',
         body: [
-          'Cancellations and refunds follow our Delivery, Cancellation & Refund Policy as published on the date of the booking. If the guide cancels or does not perform the service, the Buyer receives a full refund. Approved refunds are returned to the original payment method.',
+          'Cancellations and refunds follow our Delivery, Cancellation & Refund Policy as published on the date of the booking. If the guide cancels or does not perform the service, the Buyer receives a full refund. Where an extraordinary event (such as a travel ban, natural disaster or officially declared emergency) makes the service impossible or unsafe, the Buyer may choose a full refund or free rescheduling, as set out in that policy. Approved refunds are returned to the original payment method.',
         ],
       },
       {
