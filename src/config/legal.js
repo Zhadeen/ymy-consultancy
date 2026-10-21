@@ -62,9 +62,9 @@ export const LEGAL = {
         body: [
           'Information you give us:',
           { list: [
-            'Account details: your name and email address, or the name and email from Google if you sign in with Google. Passwords are handled by Firebase Authentication; we never see or store them.',
+            'Account details: your name and email address, or the name and email from Google if you sign in with Google. Passwords are handled by our secure sign-in provider; we never see or store them.',
             'Booking details: your name, email, booking date, tour type, number of guests, price, the purpose of your visit and any experience notes or special requests, and the time you accepted our Distance Sale Contract.',
-            'Messages you send to guides or to us through the platform chat, the contact form, live chat or WhatsApp.',
+            'Messages you send to guides or to us through the platform chat, the contact form, live chat or messaging apps.',
             'Reviews you write about guides or travelers.',
             'If you are a guide or apply to be one: your name, email, phone number, country and city, bio, specialties, languages, prices, photos, and a copy of a government identity document (such as a passport) for verification.',
           ] },
@@ -99,20 +99,20 @@ export const LEGAL = {
       {
         h: '5. Payments and identity verification',
         body: [
-          'Card payments are handled by our payment provider (Stripe, and iyzico once enabled). You enter your card details directly with the provider; we never see or store your full card number. We receive the payment amount, status and a transaction reference, which we use to manage your booking, refunds and records.',
-          'Guide identity documents are sensitive. We use them only to verify that a guide is who they say they are. The document is uploaded to our file host (Cloudinary), and the link to it is saved in your guide application, which only you and our admin team can view. We keep it only as long as needed for verification, safety and legal obligations.',
+          'Card payments are handled by licensed payment providers. You enter your card details directly with the provider; we never see or store your full card number. We receive the payment amount, status and a transaction reference, which we use to manage your booking, refunds and records.',
+          'Guide identity documents are sensitive. We use them only to verify that a guide is who they say they are. The document is stored with our file-hosting provider, and the link to it is saved in your guide application, which only you and our admin team can view. We keep it only as long as needed for verification, safety and legal obligations.',
         ],
       },
       {
         h: '6. Customer support and communications',
         body: [
-          'When you contact us, we use your contact details, account and booking information and your message to respond. Contact-form messages are stored in our database. Live chat is provided by Zendesk and loads only if you accept non-essential cookies. If you message us on WhatsApp, WhatsApp’s own privacy policy also applies.',
+          'When you contact us, we use your contact details, account and booking information and your message to respond. Contact-form messages are stored in our database. Live chat is provided by a support-chat provider and loads only if you accept non-essential cookies. If you message us through a messaging app, that app’s own privacy policy also applies.',
         ],
       },
       {
         h: '7. Cookies and analytics',
         body: [
-          'We use a strictly necessary cookie to keep you signed in. Google Analytics and the Zendesk live chat load only after you click "Accept all" in the cookie banner, and you can reject them just as easily. We do not use advertising cookies. Details are in our [Cookies Policy](/cookies).',
+          'We use a strictly necessary cookie to keep you signed in. Analytics and the live chat load only after you click "Accept all" in the cookie banner, and you can reject them just as easily. We do not use advertising cookies. Details are in our [Cookies Policy](/cookies).',
         ],
       },
       {
@@ -120,7 +120,7 @@ export const LEGAL = {
         body: [
           { list: [
             'Other users, where needed for a booking: for example, a guide sees your name, booking details and messages.',
-            'Service providers who run the Services for us: Firebase / Google Cloud (accounts and database), Vercel (website hosting), Cloudinary (photos and uploaded documents), Stripe and iyzico (payments), Zendesk (live chat), Google Analytics (only with consent), and Google Fonts and Unsplash (fonts and images, which may receive your IP address).',
+            'Service providers who run the Services for us, such as providers of website hosting, databases and sign-in, file storage, payments, customer support, analytics (only with your consent), and fonts and images (which may receive your IP address). They may only use your data to provide their services to us.',
             'Authorities, courts or advisers, where required by law or to protect rights and safety.',
             'A buyer or successor, if the business is sold or restructured.',
             'Anyone else you ask us to share with.',
@@ -137,7 +137,7 @@ export const LEGAL = {
       {
         h: '10. International transfers',
         body: [
-          'Some of our service providers (such as Google, Vercel, Cloudinary, Stripe and Zendesk) store or process data outside Türkiye, including in the United States and the EU. Where Turkish law (KVKK) or other applicable law requires, we rely on the transfer safeguards it allows. Contact us for more information.',
+          'Some of our service providers store or process data outside Türkiye, including in the United States and the EU. Where Turkish law (KVKK) or other applicable law requires, we rely on the transfer safeguards it allows. Contact us for more information.',
         ],
       },
       {
@@ -168,7 +168,7 @@ export const LEGAL = {
       },
       {
         h: '14. Third-party websites',
-        body: ['The site links to other services, such as WhatsApp and social media. Their own privacy policies apply when you use them.'],
+        body: ['The site links to other services, such as messaging apps and social media. Their own privacy policies apply when you use them.'],
       },
       {
         h: '15. Changes to this policy',
@@ -193,7 +193,7 @@ export const LEGAL = {
       { h: '1. The service', body: ['YMY is a marketplace that connects travelers with independent local guides. YMY is not the provider of the guiding services and does not employ the guides; guides are independent third parties.'] },
       { h: '2. Accounts', body: ['You must provide accurate information and keep your credentials secure. You are responsible for activity under your account. Guides must complete identity verification before listing.'] },
       { h: '3. Bookings', body: ['A booking is a contract for guiding services between the traveler and the guide. YMY facilitates the connection and payment but is not a party to the guiding contract.'] },
-      { h: '4. Payments and fees', body: ['Payments are processed by Stripe. YMY retains a platform fee of 15% of each booking; guides receive 85%. Prices are shown before you pay.'] },
+      { h: '4. Payments and fees', body: ['Payments are processed by licensed payment providers. YMY retains a platform fee of 15% of each booking; guides receive 85%. Prices are shown before you pay.'] },
       { h: '5. Cancellations and refunds', body: ['Cancellations and refunds are governed by our Refund & Cancellation Policy. Consumer-protection laws in your country may give you additional rights.'] },
       { h: '6. Acceptable use', body: ['Do not misuse the platform, post unlawful content, misrepresent your identity, or attempt to circumvent the platform’s payments.'] },
       { h: '7. Guide obligations', body: ['Guides are responsible for the lawfulness, safety, and quality of the experiences they offer and for any licences or permits their activity requires.'] },
@@ -215,27 +215,26 @@ export const LEGAL = {
       {
         h: 'Strictly necessary (always on)',
         body: [
-          'Firebase Authentication — keeps you signed in and secures your session. Set when you log in. Without it the site cannot function, so it is not subject to consent.',
+          'Sign-in cookie — keeps you signed in and secures your session. Set when you log in. Without it the site cannot function, so it is not subject to consent.',
         ],
       },
       {
         h: 'Functional (consent required)',
         body: [
-          'Zendesk “Live Chat” widget — sets cookies to run the support chat. Loads only after you accept non-essential cookies.',
+          'Live chat widget — sets cookies to run the support chat. Loads only after you accept non-essential cookies.',
         ],
       },
       {
         h: 'Analytics (consent required, and only if enabled)',
         body: [
-          'Google Analytics 4 — measures site usage. It is disabled unless the operator has configured an analytics ID, and even then loads only after you consent.',
+          'Analytics — measures how the site is used. It loads only after you consent.',
         ],
       },
       {
         h: 'Third-party content (may transfer your IP)',
         body: [
-          'Google Fonts — serving fonts may send your IP address to Google.',
-          'Image providers (e.g. Unsplash) — loading images may send your IP to the provider.',
-          'Google Maps — only if a location is configured (currently off); embeds may set cookies.',
+          'Font and image providers — loading fonts and images may send your IP address to the provider.',
+          'Map embeds — only if a map is shown (currently off); embeds may set cookies.',
         ],
       },
       {
