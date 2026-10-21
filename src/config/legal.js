@@ -37,90 +37,148 @@ export const LEGAL = {
   },
 
   // Shown as "Last updated" on every legal page (Istanbul time).
-  lastUpdated: '21 October 2026, 02:55 (TRT)',
+  lastUpdated: '21 October 2026, 03:04 (TRT)',
 
   // ---------------------------------------------------------------------------
   privacy: {
     title: 'Privacy Policy',
-    subtitle: 'How YMY collects, uses, shares, and protects personal data.',
+    subtitle: 'How YMY collects, uses, shares and protects your personal data.',
     intro:
-      'This policy describes how the YMY local-guide marketplace ("we", "us") handles personal data. It reflects how the platform is currently built. Where a detail depends on the operator, a clearly-marked placeholder appears until the owner supplies it.',
+      'YMY respects your privacy. This policy explains how Yusuf Muhammad YAHYA, trading as YMY Consultancy ("YMY", "we", "us"), collects, uses, shares and protects personal data when you use the YMY website and marketplace (the "Services"), and the choices and rights you have.',
     sections: [
       {
-        h: 'Who we are',
+        h: '1. Who is responsible for your data',
         body: [
-          `The platform is operated by Yusuf Muhammad YAHYA ("YMY"), Bulgurlu Mah. Karlidere Cad. No: 46C Daire: 10, Üsküdar, İstanbul, Türkiye.`,
-          `For any privacy question or to exercise your rights, contact ymyahyaa@gmail.com.`,
+          'YMY is the data controller for personal data processed through the Services, including under Turkish Law No. 6698 on the Protection of Personal Data (KVKK).',
+          { list: [
+            'Yusuf Muhammad YAHYA, trading as YMY Consultancy',
+            'Bulgurlu Mah. Karlidere Cad. No: 46C Daire: 10, Üsküdar, İstanbul, Türkiye',
+            'Email: [ymyahyaa@gmail.com](mailto:ymyahyaa@gmail.com)',
+          ] },
         ],
       },
       {
-        h: 'What we collect',
+        h: '2. Personal data we collect',
         body: [
-          'Account data: your name and email address (via email/password or Google sign-in). Passwords are handled by Firebase Authentication and are never stored by us.',
-          'Guide onboarding data: first/last name, email, phone number, country and city, a short bio, specialties and pricing, and — for identity verification — a copy of a government identity document (e.g. passport) that you upload.',
-          'Booking data: your name, email, number of guests, the amount, and any free-text you provide (purpose of visit, experience notes, special requests).',
-          'Messages: the content of chats you send to guides or to support.',
-          'Contact form: your name, email, and message.',
-          'Technical data: standard server/log and device data, and — only where enabled — analytics data (see “Cookies & analytics”).',
+          'Information you give us:',
+          { list: [
+            'Account details: your name and email address, or the name and email from Google if you sign in with Google. Passwords are handled by Firebase Authentication; we never see or store them.',
+            'Booking details: your name, email, booking date, tour type, number of guests, price, the purpose of your visit and any experience notes or special requests, and the time you accepted our Distance Sale Contract.',
+            'Messages you send to guides or to us through the platform chat, the contact form, live chat or WhatsApp.',
+            'Reviews you write about guides or travelers.',
+            'If you are a guide or apply to be one: your name, email, phone number, country and city, bio, specialties, languages, prices, photos, and a copy of a government identity document (such as a passport) for verification.',
+          ] },
+          'Guide profiles, tour details, photos and reviews are shown publicly on the site. If you give us information about another person, such as a fellow traveler, please only do so with their permission.',
+          'Information collected automatically: your IP address, browser and device type, pages visited, and dates and times of visits. Analytics data is collected only if you accept non-essential cookies.',
+          'Information from others: sign-in details from Google if you use Google sign-in, and payment status (amount, result and transaction reference) from our payment provider.',
         ],
       },
       {
-        h: 'Identity documents (sensitive data)',
+        h: '3. How we use your data',
         body: [
-          'To verify guides, we collect a government identity document. This is sensitive data and is treated as such.',
-          `Retention and access: ${P('ID-document retention period, who may view it, and when it is deleted')}. We are working to ensure these documents are stored with restricted, authenticated access rather than public links.`,
+          { list: [
+            'to create, run and secure your account;',
+            'to show guide profiles and let travelers find, message and book guides;',
+            'to process bookings, payments, refunds and guide subscriptions;',
+            'to review guide applications and verify guide identity;',
+            'to answer questions, complaints and disputes;',
+            'to send messages about your account and bookings;',
+            'to keep the marketplace safe, including reviewing platform messages to prevent fraud and misuse;',
+            'to understand how the site is used and improve it (only with your cookie consent); and',
+            'to keep business and tax records and meet our legal obligations.',
+          ] },
+          'Our legal bases are: performing our contract with you (or steps before it), our legitimate interests in running a safe and working marketplace, compliance with legal obligations, and your consent (for analytics and the live-chat widget). You can withdraw consent at any time; this does not affect processing done before.',
         ],
       },
       {
-        h: 'Why we use it and our legal basis',
+        h: '4. Signing in with Google',
         body: [
-          'To provide the service (create your account, list guides, process bookings, enable messaging): performance of a contract.',
-          'To verify guide identity and keep the marketplace safe: our legitimate interests and, where applicable, legal obligation.',
-          'To process payments: performance of a contract (via Stripe).',
-          `Legal-basis mapping should be confirmed with counsel for your jurisdiction: ${P('confirmed lawful-basis mapping')}.`,
+          'If you sign in with Google, we receive your name, email address and Google account identifier. We use them only to create and secure your YMY account.',
         ],
       },
       {
-        h: 'Who we share it with',
+        h: '5. Payments and identity verification',
         body: [
-          'Firebase / Google Cloud — authentication, database, and file storage (data hosted on Google infrastructure).',
-          'Cloudinary — image and document hosting (including uploaded identity documents).',
-          'Stripe — payment processing. We share your email and booking details necessary to take payment. Card details are entered directly with Stripe; we never see or store them.',
-          'Zendesk — the “Live Chat” support widget, if you use it.',
-          'Google Analytics — only if analytics is enabled and you have consented (see “Cookies & analytics”).',
-          'Google Fonts and image providers (e.g. Unsplash) — serving fonts/images may transfer your IP address to those providers.',
-          'Note: platform administrators can access booking records and, for support and safety, message content. See our Cookies Policy for the trackers involved.',
+          'Card payments are handled by our payment provider (Stripe, and iyzico once enabled). You enter your card details directly with the provider; we never see or store your full card number. We receive the payment amount, status and a transaction reference, which we use to manage your booking, refunds and records.',
+          'Guide identity documents are sensitive. We use them only to verify that a guide is who they say they are. The document is uploaded to our file host (Cloudinary), and the link to it is saved in your guide application, which only you and our admin team can view. We keep it only as long as needed for verification, safety and legal obligations.',
         ],
       },
       {
-        h: 'International transfers',
+        h: '6. Customer support and communications',
         body: [
-          'Several providers above are based in the United States, so your data may be transferred internationally.',
-          `The transfer mechanism (e.g. Standard Contractual Clauses / adequacy) must be confirmed with counsel: ${P('cross-border transfer mechanism')}.`,
+          'When you contact us, we use your contact details, account and booking information and your message to respond. Contact-form messages are stored in our database. Live chat is provided by Zendesk and loads only if you accept non-essential cookies. If you message us on WhatsApp, WhatsApp’s own privacy policy also applies.',
         ],
       },
       {
-        h: 'How long we keep it',
+        h: '7. Cookies and analytics',
         body: [
-          `Retention periods per data category (accounts, bookings, messages, identity documents, contact messages, applications): ${P('retention schedule per data category')}.`,
+          'We use a strictly necessary cookie to keep you signed in. Google Analytics and the Zendesk live chat load only after you click "Accept all" in the cookie banner, and you can reject them just as easily. We do not use advertising cookies. Details are in our [Cookies Policy](/cookies).',
         ],
       },
       {
-        h: 'Your rights',
+        h: '8. Who we share your data with',
         body: [
-          'Depending on where you live, you may have rights to access, correct, delete, restrict, or port your data, and to object to certain processing.',
-          `To exercise them, contact ymyahyaa@gmail.com. A self-service data export/deletion feature is not yet available; requests are handled manually.`,
+          { list: [
+            'Other users, where needed for a booking: for example, a guide sees your name, booking details and messages.',
+            'Service providers who run the Services for us: Firebase / Google Cloud (accounts and database), Vercel (website hosting), Cloudinary (photos and uploaded documents), Stripe and iyzico (payments), Zendesk (live chat), Google Analytics (only with consent), and Google Fonts and Unsplash (fonts and images, which may receive your IP address).',
+            'Authorities, courts or advisers, where required by law or to protect rights and safety.',
+            'A buyer or successor, if the business is sold or restructured.',
+            'Anyone else you ask us to share with.',
+          ] },
+          'We do not sell your personal data.',
         ],
       },
       {
-        h: 'Cookies & analytics',
+        h: '9. How long we keep your data',
         body: [
-          'We use strictly-necessary cookies to keep you signed in. Non-essential cookies/trackers (analytics, the chat widget) load only after you consent via our cookie banner. See the Cookies Policy for the full list.',
+          'We keep personal data only as long as needed for the purposes above: to run your account and bookings, provide support, keep tax and accounting records, prevent fraud, resolve disputes and meet legal obligations. How long depends on the type of data and the law that applies. When data is no longer needed, we delete or anonymise it. You can ask us to delete your data at any time (see section 12).',
         ],
       },
       {
-        h: 'Contact',
-        body: [`Questions or complaints: ymyahyaa@gmail.com. You may also have the right to complain to your local data-protection authority.`],
+        h: '10. International transfers',
+        body: [
+          'Some of our service providers (such as Google, Vercel, Cloudinary, Stripe and Zendesk) store or process data outside Türkiye, including in the United States and the EU. Where Turkish law (KVKK) or other applicable law requires, we rely on the transfer safeguards it allows. Contact us for more information.',
+        ],
+      },
+      {
+        h: '11. Security',
+        body: [
+          'We use reasonable technical and organisational safeguards, including encrypted connections (HTTPS), sign-in protection and database rules that restrict who can read each record. No system is completely secure, so please keep your password safe and tell us straight away if you think your account has been accessed without permission.',
+        ],
+      },
+      {
+        h: '12. Your rights',
+        body: [
+          'Depending on where you live (including under KVKK article 11 and the GDPR), you may have the right to:',
+          { list: [
+            'find out whether we process your data and get a copy of it;',
+            'correct inaccurate or incomplete data;',
+            'ask us to delete your data;',
+            'receive certain data in a portable format;',
+            'object to or restrict certain processing;',
+            'withdraw consent; and',
+            'complain to a data-protection authority (in Türkiye, the Personal Data Protection Authority, KVKK).',
+          ] },
+          'To use any of these rights, email [ymyahyaa@gmail.com](mailto:ymyahyaa@gmail.com). We may ask for information to confirm your identity first, and we will respond within the time the law requires.',
+        ],
+      },
+      {
+        h: '13. Children',
+        body: ['The Services are not intended for children under 18, and we do not knowingly collect their personal data.'],
+      },
+      {
+        h: '14. Third-party websites',
+        body: ['The site links to other services, such as WhatsApp and social media. Their own privacy policies apply when you use them.'],
+      },
+      {
+        h: '15. Changes to this policy',
+        body: ['We may update this policy when our Services, technology or legal requirements change, and will post the updated version here. The "Last updated" date at the top shows when it last changed.'],
+      },
+      {
+        h: '16. Contact us',
+        body: [
+          'For questions about this policy or your data, contact Yusuf Muhammad YAHYA (YMY Consultancy), Bulgurlu Mah. Karlidere Cad. No: 46C Daire: 10, Üsküdar, İstanbul, Türkiye. Email: [ymyahyaa@gmail.com](mailto:ymyahyaa@gmail.com).',
+        ],
       },
     ],
   },
