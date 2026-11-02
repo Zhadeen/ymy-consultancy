@@ -1,8 +1,8 @@
 import { BOOKING_STATUS } from '../../domain/constants/bookingStatus';
 import { createBooking, getBookingById, updateBooking as updateBookingRecord } from '../../infrastructure/firebase/repositories/bookingsRepository';
 import { addMessage, upsertChatMeta } from '../../infrastructure/firebase/repositories/messagesRepository';
+import { AVATAR_PLACEHOLDER } from '../../utils/avatar';
 
-const PEER_FALLBACK_PHOTO = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200';
 
 export function generateReference() {
   return 'YMY-' + Math.random().toString(36).substr(2, 6).toUpperCase();
@@ -29,7 +29,7 @@ export async function sendAutomatedBookingMessage(metadata, customText = null) {
       participants: [userId, guideId],
       lastMessage: text,
       updatedAt: new Date(),
-      [userId]: { name: visitorName, photo: PEER_FALLBACK_PHOTO },
+      [userId]: { name: visitorName, photo: AVATAR_PLACEHOLDER },
       [guideId]: { name: guideName, photo: guidePhoto || '' },
     });
 

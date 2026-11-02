@@ -7,6 +7,7 @@ import { LANGUAGES, COUNTRIES, CITIES_BY_COUNTRY } from '../data/mockData';
 import ScrollReveal from '../components/common/ScrollReveal';
 import { useAuth } from '../context/AuthContext';
 import { uploadFile } from '../utils/firebaseHelpers';
+import { AVATAR_PLACEHOLDER } from '../utils/avatar';
 import logo from '../assets/logo.png';
 
 const steps = ['Personal Info', 'Photo', 'ID Verification', 'Bio & Languages', 'Pricing', 'Review'];
@@ -118,8 +119,7 @@ export default function GuideRegistration() {
       // for the admin to review. Each upload is attempted on its own; a failure
       // is recorded and the application is saved regardless, flagged so an admin
       // does not approve someone whose ID never made it onto the record.
-      const PLACEHOLDER_PHOTO = 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&q=80&w=200';
-      let photoUrl = PLACEHOLDER_PHOTO;
+      let photoUrl = AVATAR_PLACEHOLDER;
       let idDocumentUrl = '';
       let uploadFailed = false;
 

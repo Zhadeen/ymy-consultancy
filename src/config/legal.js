@@ -7,7 +7,7 @@
 //
 // The privacy + cookies text reflects the ACTUAL data flows found in the Phase 1
 // audit (see COMPLIANCE.md §1-§2): Firebase, Cloudinary (incl. ID documents),
-// Stripe, Zendesk, Google Analytics (only if enabled), Google Fonts, Unsplash.
+// Stripe, Zendesk, Google Analytics (only if enabled).
 
 const P = (x) => `[OWNER MUST PROVIDE: ${x}]`;
 
@@ -120,7 +120,7 @@ export const LEGAL = {
         body: [
           { list: [
             'Other users, where needed for a booking: for example, a guide sees your name, booking details and messages.',
-            'Service providers who run the Services for us, such as providers of website hosting, databases and sign-in, file storage, payments, customer support, analytics (only with your consent), and delivery of fonts and images (which uses your IP address to send them to your device). They may only use your data to provide their services to us.',
+            'Service providers who run the Services for us, such as providers of website hosting, databases and sign-in, file storage, payments, customer support, and analytics (only with your consent). They may only use your data to provide their services to us.',
             'Authorities, courts or advisers, where required by law or to protect rights and safety.',
             'A buyer or successor, if the business is sold or restructured.',
             'Anyone else you ask us to share with.',

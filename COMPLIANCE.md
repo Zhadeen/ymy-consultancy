@@ -56,8 +56,8 @@ Every personal field the app collects and where it goes.
 | **Stripe** | Payment + `customer_email`, visitorName, visitPurpose, localExperience | `api/create-checkout-session.js:42-56` | Payment processor; card data handled by Stripe (good) |
 | **Zendesk** (chat widget) | Anything typed into Live Chat; loads on **every page** | `src/hooks/useZendesk.js:18`, mounted in `App.jsx` | ✅ Sets cookies; loads **pre-consent** |
 | **Google Analytics 4** | Page views, device/IP (if `VITE_GA_ID` set) | `Analytics.jsx:16-23` | ✅ Sets cookies; fires **pre-consent** |
-| **Google Fonts** | Visitor IP to Google on every load | `index.html:10-12` | IP transfer pre-consent |
-| **Unsplash** (hotlinked images) | Visitor IP to Unsplash on every load | 15 URLs incl. `mockData.js:275` | IP transfer pre-consent |
+| ~~Google Fonts~~ | **Removed.** DM Sans and Playfair Display are self-hosted from `public/fonts/` | `public/fonts/fonts.css` | No outside request |
+| ~~Unsplash~~ | **Removed.** Hero image is served from `public/images/`; avatars use a neutral placeholder | `public/images/`, `src/utils/avatar.js` | No outside request |
 | **Google Maps** (embed) | IP + location query — **gated behind an address, currently off** | `MapDirections.jsx:33` | Only if an address is configured |
 | WhatsApp | Link only (no embed) | `FloatingContact.jsx`, `Footer.jsx` | Off-site link |
 
@@ -76,7 +76,7 @@ Guide onboarding collects a passport/ID scan (`GuideRegistration.jsx:29` `idDocu
 → Rewrite the policy to reflect actual flows (§1/§2); point consent links to `/terms` and `/privacy`.
 
 **C3 — Non-essential trackers load before any consent, and there is no consent mechanism.**
-No cookie-consent component exists anywhere in `src/`. GA4 (`Analytics.jsx:9-23`), Zendesk (`useZendesk.js`, mounted globally in `App.jsx`), Google Fonts (`index.html:10-12`) and hotlinked Unsplash all fire on page load, setting cookies / transferring IPs **before** the visitor can choose. For EU/UK visitors this is an ePrivacy/GDPR consent breach (see Phase 3).
+No cookie-consent component exists anywhere in `src/`. GA4 (`Analytics.jsx:9-23`) and Zendesk (`useZendesk.js`, mounted globally in `App.jsx`) fire on page load, setting cookies / transferring IPs **before** the visitor can choose. (Google Fonts and hotlinked Unsplash were also listed here; both are now removed, see §2.) For EU/UK visitors this is an ePrivacy/GDPR consent breach (see Phase 3).
 → If EU/UK/consent-required users are in scope: add a consent gate that blocks GA + Zendesk + non-essential embeds until opt-in, with reject-all as easy as accept-all; self-host fonts or gate them.
 
 ### 🟠 HIGH
@@ -88,13 +88,14 @@ No cookie-consent component exists anywhere in `src/`. GA4 (`Analytics.jsx:9-23`
 **H2 — Real people's faces used as placeholder "guide" avatars.**
 `mockData.js:275-287` `GUIDE_PHOTOS` = 12 Unsplash "crop=face" portraits of real individuals, used as fallback guide/peer photos (`bookingService.js`, `AdminPanel.jsx`, `ChatPage.jsx`, `ChatInbox.jsx`). Depicting real people as "verified local guides" they are not is a misrepresentation and a personality/publicity-rights risk (Unsplash's licence does not grant the right to imply a depicted person endorses or provides your service).
 → Replace with clearly-illustrative/abstract placeholders or licensed model-released imagery; never imply a stock face is a real guide.
+✅ **Fixed:** `GUIDE_PHOTOS` is deleted. Missing photos and older stored stock-photo URLs now show the neutral `public/images/avatar-placeholder.svg` (`src/utils/avatar.js`).
 
 **H3 — More PII than necessary is transmitted to Stripe.**
 `create-checkout-session.js:45-56` sends `visitorName`, `visitorEmail`, and free-text `visitPurpose` / `localExperience` as Stripe **metadata**. `customer_email` is defensible; the free-text purpose/experience fields are unlikely to be necessary for payment and expand the data shared with a processor.
 → Minimise: send only what payment needs; drop `visitPurpose`/`localExperience` from Stripe metadata.
 
 **H4 — Image licence/provenance is undocumented (takedown risk).**
-No `LICENSE`/`CREDITS`/`ATTRIBUTION` file exists. `logo.png` and `world-map.jpg` (`src/assets/`) have no in-repo provenance, and 15 Unsplash URLs are hotlinked. Do **not** assume these are cleared.
+No `LICENSE`/`CREDITS`/`ATTRIBUTION` file exists. `logo.png` and `world-map.jpg` (`src/assets/`) have no in-repo provenance. Do **not** assume these are cleared. The hero image (`public/images/hero.jpg`) is a downloaded Unsplash photo, `photo-1488085061387-422e29b40080`, no people shown. Self-hosted fonts are SIL OFL 1.1, licences in `public/fonts/`.
 → `[OWNER MUST PROVIDE]` licence/source for the logo, the world-map image, and any non-Unsplash imagery; record them in an attribution file.
 
 **H5 — Accessibility: colour-contrast failures (WCAG AA).**
@@ -171,7 +172,7 @@ plausibly has cross-border users. The following **likely** apply:
 - [ ] Substantiation for every stat/claim in H1, or instruction to remove.
 - [ ] Licence/source evidence for `logo.png`, `world-map.jpg`, and any non-Unsplash image.
 - [ ] Whether the newsletter (M4) should be built (with a real, consented list) or removed.
-- [ ] Decision on the Unsplash "guide face" placeholders (H2) — replace with what?
+- [x] Decision on the Unsplash "guide face" placeholders (H2): replaced with a neutral silhouette.
 
 ## 7. "Confirm with counsel" checklist
 
@@ -201,7 +202,7 @@ All legal pages carry a visible DRAFT banner; nothing is described as "compliant
 | H5 contrast | `muted-dark` token `#6B6B6B → #8A8A8A` (tailwind.config.js): **3.72:1 → 5.73:1** on near-black — passes WCAG AA. Fixes all ~100 usages at once. | ✅ |
 | H6 labels | `aria-label` added to all placeholder-only inputs on **Login, Register, and Guide onboarding** (name/email/password/phone/city/bio/specialties/prices). | ✅ |
 | H1 stats | **Left unchanged at owner's instruction** ("I have real numbers"). ➜ Owner must be able to substantiate "10K+ Happy Travelers", "500+", "50+ cities", "since 2024" (H1 stays an open owner-substantiation item). |   owner |
-| H2 guide avatars | **Left unchanged at owner's instruction.** ⚠️ Note for the record: the fallback array `GUIDE_PHOTOS` (`mockData.js:275`) still contains **`images.unsplash.com` URLs of real faces**, used when a guide has no photo. If any depict a real person without a release, the misrepresentation/publicity-rights risk (H2) remains — owner to confirm rights or replace. | ⚠️ owner |
+| H2 guide avatars | Stock faces removed; a neutral placeholder is shown when a guide has no photo (`src/utils/avatar.js`). | ✅ |
 
 ### Accessibility — before / after
 
@@ -215,7 +216,7 @@ All legal pages carry a visible DRAFT banner; nothing is described as "compliant
 
 **Still open (owner):** everything in §6 (`[OWNER MUST PROVIDE]`) and §7 (counsel)
 remains — the legal pages show highlighted placeholders until you fill them, and
-H1/H2 above are your calls to substantiate/replace. A self-service data
+H1 above is your call to substantiate/replace. A self-service data
 export/deletion feature (M6) and defined retention (M7, incl. ID documents) are
 still owner/engineering follow-ups, and the ID-document-at-public-URL exposure
 (C1) needs the authenticated-delivery work flagged in the earlier security audit.

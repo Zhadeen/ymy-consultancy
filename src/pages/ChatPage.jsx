@@ -5,6 +5,7 @@ import { serverTimestamp, increment } from 'firebase/firestore';
 import { useAuth } from '../context/AuthContext';
 import { getChatById, subscribeToMessages, addMessage, upsertChatMeta } from '../infrastructure/firebase/repositories/messagesRepository';
 import { getGuideById } from '../infrastructure/firebase/repositories/guidesRepository';
+import { AVATAR_PLACEHOLDER, avatarSrc } from '../utils/avatar';
 
 export default function ChatPage() {
   const { guideId } = useParams();
@@ -34,7 +35,7 @@ export default function ChatPage() {
         if (chatData) {
           const peerData = chatData[guideId];
           if (peerData) {
-            setGuide({ id: guideId, name: peerData.name, photo: peerData.photo, city: peerData.city || 'YMY Platform' });
+            setGuide({ id: guideId, name: peerData.name, photo: avatarSrc(peerData.photo), city: peerData.city || 'YMY Platform' });
             return;
           }
         }
@@ -47,9 +48,9 @@ export default function ChatPage() {
         // written onto the chat document as soon as the first message is sent.
         const guideData = await getGuideById(guideId);
         if (guideData) {
-          setGuide({ id: guideId, name: guideData.name, photo: guideData.photo, city: guideData.city || 'YMY Platform' });
+          setGuide({ id: guideId, name: guideData.name, photo: avatarSrc(guideData.photo), city: guideData.city || 'YMY Platform' });
         } else {
-          setGuide({ id: guideId, name: 'Traveler', photo: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200', city: 'Guest' });
+          setGuide({ id: guideId, name: 'Traveler', photo: AVATAR_PLACEHOLDER, city: 'Guest' });
         }
       } catch (err) {
         console.error("Error fetching peer for chat:", err);
@@ -100,7 +101,7 @@ export default function ChatPage() {
         unreadCount: {
           [guideId]: increment(1)
         },
-        [user.uid]: { name: user.name || 'Traveler', photo: user.photo || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200' },
+        [user.uid]: { name: user.name || 'Traveler', photo: user.photo || AVATAR_PLACEHOLDER },
         [guideId]: { name: guide.name, photo: guide.photo }
       });
 

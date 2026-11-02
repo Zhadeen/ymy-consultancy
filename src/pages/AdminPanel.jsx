@@ -6,6 +6,7 @@ import { useAuth } from '../context/AuthContext';
 import { PAID_BOOKING_STATUSES } from '../domain/constants/bookingStatus';
 import { growthPercent, startOfCurrentMonth, countBefore, sumBefore } from '../domain/stats';
 import { toDateSafe } from '../utils/timeUtils';
+import { avatarSrc } from '../utils/avatar';
 import { getAllUsers, updateUser } from '../infrastructure/firebase/repositories/usersRepository';
 import { getAllGuides, createGuide } from '../infrastructure/firebase/repositories/guidesRepository';
 import { getAllBookings } from '../infrastructure/firebase/repositories/bookingsRepository';
@@ -150,7 +151,7 @@ export default function AdminPanel() {
         city: app.city || 'Not specified',
         country: app.country || 'Not specified',
         countryCode: app.countryCode || '',
-        photo: app.photo || 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=400&h=400&fit=crop&crop=face',
+        photo: avatarSrc(app.photo),
         bio: app.bio || '',
         languages: app.languages || [],
         specialties: app.specialties || '',

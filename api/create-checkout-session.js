@@ -32,7 +32,8 @@ export default async function handler(req, res) {
             product_data: {
               name: `Local Guide: ${guideName}`,
               description: `${tourType} day guide on ${new Date(date).toLocaleDateString()} for ${guests} guests`,
-              images: [bookingData.guidePhoto || ''],
+              // Stripe only accepts absolute URLs, so the self-hosted placeholder is left out.
+              ...(/^https:\/\//.test(bookingData.guidePhoto || '') ? { images: [bookingData.guidePhoto] } : {}),
             },
             unit_amount: Math.round(totalPrice * 100), // In cents
           },

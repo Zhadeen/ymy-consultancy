@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { subscribeToUserChatsOrdered } from '../infrastructure/firebase/repositories/messagesRepository';
 import { useAuth } from '../context/AuthContext';
+import { avatarSrc } from '../utils/avatar';
 import { ChevronLeft, MessageSquare } from 'lucide-react';
 import ScrollReveal from '../components/common/ScrollReveal';
 
@@ -20,13 +21,13 @@ export default function ChatInbox() {
     const unsubscribe = subscribeToUserChatsOrdered(user.uid, (chats) => {
       const activeChats = chats.map(data => {
         const peerId = data.participants.find(id => id !== user.uid) || data.participants[0];
-        const peerData = data[peerId] || { name: 'Unknown', photo: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200' };
+        const peerData = data[peerId] || { name: 'Unknown' };
 
         return {
           id: data.id,
           peerId,
           peerName: peerData.name,
-          peerPhoto: peerData.photo,
+          peerPhoto: avatarSrc(peerData.photo),
           lastMessage: data.lastMessage,
           updatedAt: data.updatedAt?.toDate() || new Date(),
           unreadCount: data.unreadCount?.[user.uid] || 0

@@ -42,7 +42,7 @@ export default function Hero() {
       {/* Background image with overlay */}
       <div className="absolute inset-0">
         <img
-          src="https://images.unsplash.com/photo-1488085061387-422e29b40080?w=1920&q=80"
+          src="/images/hero.jpg"
           alt="Travel destination"
           className="w-full h-full object-cover"
         />
