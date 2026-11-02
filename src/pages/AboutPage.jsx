@@ -104,9 +104,7 @@ export default function AboutPage() {
             <h2 id="founder-heading" className="text-2xl font-heading font-semibold text-gold mb-1">Who runs YMY</h2>
             <p className="text-cream font-semibold">{SITE.founder.name}, {SITE.founder.role}</p>
             <p className="text-muted leading-relaxed mt-2">
-              {SITE.founder.bio
-                ? SITE.founder.bio
-                : renderText('[OWNER MUST PROVIDE: 1–3 sentence founder bio]')}
+              {SITE.founder.bio}
             </p>
           </div>
         </section>

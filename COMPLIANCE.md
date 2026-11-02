@@ -176,6 +176,7 @@ plausibly has cross-border users. The following **likely** apply:
 ## 7. "Confirm with counsel" checklist
 
 - [ ] All four legal pages (privacy, terms, cookies, refunds) reviewed & approved by a lawyer.
+- [ ] Terms: governing law (set to the Republic of Türkiye, Nov 2026) and the liability clause.
 - [ ] GDPR/UK-GDPR applicability and the lawful basis for each processing purpose.
 - [ ] Cookie-consent design (is a banner required? scope of "strictly necessary"?).
 - [ ] Cross-border transfer mechanism (SCCs / adequacy) for US processors.

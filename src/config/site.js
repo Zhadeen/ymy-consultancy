@@ -22,8 +22,7 @@ export const SITE = {
     name: 'Engineer Yusuf',
     role: 'Founder',
     photo: '/engineer-yusuf.jpg', // moved into /public from the repo root
-    // TODO(owner): supply a 1–3 sentence founder bio for the About/Person schema.
-    bio: null,
+    bio: 'Engineer Yusuf founded YMY on a simple belief: the best way to know a place is through someone who lives there. His vision is a platform where travelers can book trusted local guides with confidence, and where guides earn fairly from their own expertise. That is why every guide is identity-checked, every price is shown before you pay, and guides keep 85% of each booking.',
     // TODO(owner): supply founder profile links (LinkedIn, etc.) if any.
     sameAs: [],
   },

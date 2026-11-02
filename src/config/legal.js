@@ -37,7 +37,7 @@ export const LEGAL = {
   },
 
   // Shown as "Last updated" on every legal page (Istanbul time).
-  lastUpdated: '21 October 2026, 03:04 (TRT)',
+  lastUpdated: '2 November 2026, 08:45 (TRT)',
 
   // ---------------------------------------------------------------------------
   privacy: {
@@ -197,10 +197,10 @@ export const LEGAL = {
       { h: '5. Cancellations and refunds', body: ['Cancellations and refunds are governed by our Refund & Cancellation Policy. Consumer-protection laws in your country may give you additional rights.'] },
       { h: '6. Acceptable use', body: ['Do not misuse the platform, post unlawful content, misrepresent your identity, or attempt to circumvent the platform’s payments.'] },
       { h: '7. Guide obligations', body: ['Guides are responsible for the lawfulness, safety, and quality of the experiences they offer and for any licences or permits their activity requires.'] },
-      { h: '8. Liability', body: [`To the extent permitted by law, YMY is not liable for the acts or omissions of guides or travelers or for the guiding experience itself. Nothing limits liability that cannot be limited by law. ${P('liability terms confirmed with counsel')}.`] },
+      { h: '8. Liability', body: [`To the extent permitted by law, YMY is not liable for the acts or omissions of guides or travelers or for the guiding experience itself. Nothing limits liability that cannot be limited by law.`] },
       { h: '9. Intellectual property', body: ['The platform, its branding and content are owned by YMY or its licensors. You retain rights in content you submit but grant YMY a licence to use it to operate the service.'] },
       { h: '10. Termination', body: ['We may suspend or terminate accounts that breach these terms or create risk to the marketplace.'] },
-      { h: '11. Governing law', body: [`These terms are governed by the laws of ${P('governing law / jurisdiction')}.`] },
+      { h: '11. Governing law', body: [`These terms are governed by the laws of the Republic of Türkiye.`] },
       { h: '12. Contact', body: [`Questions: ymyahyaa@gmail.com.`] },
     ],
   },
@@ -256,7 +256,7 @@ export const LEGAL = {
         body: [
           'Once your payment is confirmed, your booking confirmation is delivered immediately on screen and in your YMY dashboard, and the guide is notified. You can message your guide through the platform to agree the meeting point and details.',
           'The service itself is delivered in person by the guide on the date, at the time, and for the duration shown in your booking. No physical item is shipped and no shipping fee applies.',
-          `If a booking confirmation does not appear within ${P('confirmation time, e.g. 1 hour')}, contact ymyahyaa@gmail.com.`,
+          'If a booking confirmation does not appear shortly after payment, contact ymyahyaa@gmail.com.',
         ],
       },
       {
