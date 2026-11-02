@@ -37,7 +37,7 @@ export const LEGAL = {
   },
 
   // Shown as "Last updated" on every legal page (Istanbul time).
-  lastUpdated: '2 November 2026, 08:45 (TRT)',
+  lastUpdated: '2 November 2026, 08:46 (TRT)',
 
   // ---------------------------------------------------------------------------
   privacy: {
@@ -256,7 +256,7 @@ export const LEGAL = {
         body: [
           'Once your payment is confirmed, your booking confirmation is delivered immediately on screen and in your YMY dashboard, and the guide is notified. You can message your guide through the platform to agree the meeting point and details.',
           'The service itself is delivered in person by the guide on the date, at the time, and for the duration shown in your booking. No physical item is shipped and no shipping fee applies.',
-          'If a booking confirmation does not appear shortly after payment, contact ymyahyaa@gmail.com.',
+          'If a booking confirmation does not appear within 1 hour of payment, contact ymyahyaa@gmail.com.',
         ],
       },
       {
