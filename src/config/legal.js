@@ -37,7 +37,7 @@ export const LEGAL = {
   },
 
   // Shown as "Last updated" on every legal page (Istanbul time).
-  lastUpdated: '2 November 2026, 08:46 (TRT)',
+  lastUpdated: '2 November 2026, 08:54 (TRT)',
 
   // ---------------------------------------------------------------------------
   privacy: {
@@ -112,7 +112,7 @@ export const LEGAL = {
       {
         h: '7. Cookies and analytics',
         body: [
-          'We use a strictly necessary cookie to keep you signed in. Analytics and the live chat load only after you click "Accept all" in the cookie banner, and you can reject them just as easily. We do not use advertising cookies. Details are in our [Cookies Policy](/cookies).',
+          'We use strictly necessary cookies and browser storage to keep you signed in and keep payments secure. Analytics and the live chat load only after you click "Accept all" in the cookie banner, and you can reject them just as easily. We do not use advertising cookies. Details are in our [Cookies Policy](/cookies).',
         ],
       },
       {
@@ -120,7 +120,7 @@ export const LEGAL = {
         body: [
           { list: [
             'Other users, where needed for a booking: for example, a guide sees your name, booking details and messages.',
-            'Service providers who run the Services for us, such as providers of website hosting, databases and sign-in, file storage, payments, customer support, analytics (only with your consent), and fonts and images (which may receive your IP address). They may only use your data to provide their services to us.',
+            'Service providers who run the Services for us, such as providers of website hosting, databases and sign-in, file storage, payments, customer support, analytics (only with your consent), and delivery of fonts and images (which uses your IP address to send them to your device). They may only use your data to provide their services to us.',
             'Authorities, courts or advisers, where required by law or to protect rights and safety.',
             'A buyer or successor, if the business is sold or restructured.',
             'Anyone else you ask us to share with.',
@@ -208,38 +208,48 @@ export const LEGAL = {
   // ---------------------------------------------------------------------------
   cookies: {
     title: 'Cookies Policy',
-    subtitle: 'The cookies and trackers this site uses, and your choices.',
+    subtitle: 'How YMY uses cookies, and the choices you have.',
     intro:
-      'This policy lists the cookies and similar technologies the site uses. Non-essential trackers load only after you accept them in the cookie banner; you can reject them just as easily.',
+      'Cookies are small files a website stores on your device. We also use similar technologies, such as your browser’s local storage, and this policy covers them too. We use them to keep you signed in and keep the site secure and, if you agree, to run live chat and understand how the site is used. We do not use advertising cookies.',
     sections: [
       {
         h: 'Strictly necessary (always on)',
         body: [
-          'Sign-in cookie — keeps you signed in and secures your session. Set when you log in. Without it the site cannot function, so it is not subject to consent.',
+          'These are needed for the site to work, so they do not require consent.',
+          { list: [
+            'Sign-in: keeps you signed in and your session secure. It stays until you sign out.',
+            'Secure payments: when you pay, our payment provider uses cookies to process your payment safely and prevent fraud.',
+            'Your preferences: remembers your cookie choice and any messages you have dismissed. It stays until you clear your browser data.',
+          ] },
         ],
       },
       {
-        h: 'Functional (consent required)',
+        h: 'Live chat (with your consent)',
         body: [
-          'Live chat widget — sets cookies to run the support chat. Loads only after you accept non-essential cookies.',
+          'Lets you talk to our support team and keeps your conversation going as you move around the site. It loads only if you click "Accept all".',
         ],
       },
       {
-        h: 'Analytics (consent required, and only if enabled)',
+        h: 'Analytics (with your consent)',
         body: [
-          'Analytics — measures how the site is used. It loads only after you consent.',
-        ],
-      },
-      {
-        h: 'Third-party content (may transfer your IP)',
-        body: [
-          'Font and image providers — loading fonts and images may send your IP address to the provider.',
-          'Map embeds — only if a map is shown (currently off); embeds may set cookies.',
+          'Helps us understand which pages are useful and where the site can improve. It loads only if you click "Accept all", and its cookies can last for up to 2 years.',
         ],
       },
       {
         h: 'Managing your choices',
-        body: ['Use the cookie banner to accept or reject non-essential cookies. You can change your choice at any time by clearing the site’s stored preference and reloading.'],
+        body: [
+          { list: [
+            'Cookie banner: accept or reject non-essential cookies on your first visit. Rejecting is as easy as accepting, and the site still works.',
+            'Changing your mind: clear this site’s data in your browser settings and the banner will appear again.',
+            'Browser settings: most browsers let you block or delete cookies. If you block strictly necessary ones, sign-in and booking may not work.',
+          ] },
+        ],
+      },
+      {
+        h: 'Changes and contact',
+        body: [
+          'If we change how we use cookies, we will update this page and the date at the top. For how we handle personal data, see our [Privacy Policy](/privacy). Questions: [ymyahyaa@gmail.com](mailto:ymyahyaa@gmail.com).',
+        ],
       },
     ],
   },
